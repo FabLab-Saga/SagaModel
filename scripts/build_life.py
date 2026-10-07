@@ -115,7 +115,12 @@ def build():
     pencil = mat("Pencil", "#E8B21E", 0.5)
     acr = [mat("Acrylic_Clear", "#DDE8EE", 0.05), MAT["bins"][0], MAT["bins"][2]]
     ply = MAT["ply"]
-    benches = sorted([o.name for o in bpy.data.objects["ROOT"].children if o.name.startswith("Component_237631")])
+    benches = sorted([o.name for o in bpy.data.objects["ROOT"].children if o.name.startswith("Component_237631")
+                      and o.name != "Component_237631.006"])          # .006 removed: aisle behind the micro bench
+    o6 = bpy.data.objects.get("Component_237631.006")
+    if o6:
+        for k in (o6, *o6.children_recursive):
+            k.hide_render = k.hide_viewport = True
     for bi, bn in enumerate(benches):
         x0, x1, y0, y1, zt = bench_top(bn)
         long_x = (x1 - x0) > (y1 - y0)
@@ -167,7 +172,7 @@ def build():
     for k, bn in enumerate(benches[:2]):
         x0, x1, y0, y1, zt = bench_top(bn)
         instance("Drill_01", col, f"Drill_{k}", x1 - 0.25, y0 + 0.2, zt, rng.uniform(0, 6.28), target=0.30)
-    instance("cardboard_box_01", col, "CardboardBox_1", 24.6, 31.4, 0.0, 0.3, target=0.75)
+    instance("cardboard_box_01", col, "CardboardBox_1", 27.30, 31.75, 0.0, 0.3, target=0.75)
     print("life built:", len(benches), "benches")
 
 

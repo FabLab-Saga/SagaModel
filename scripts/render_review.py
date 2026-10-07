@@ -4,8 +4,8 @@ exposure_offset). Writes renders/tmp/review_<cam>.png and renders/tmp/review.png
 """
 import bpy
 
-CAMS = ["Cam_Cutaway", "Cam_Entrance", "Cam_Workshop", "Cam_FeltWall", "Cam_Mural",
-        "Cam_LaserRoom", "Cam_PrintFarm", "Cam_Bank", "Cam_Craft"]
+CAMS = ["Cam_Cutaway", "Cam_Entrance", "Cam_Micro", "Cam_FeltWall", "Cam_Mural",
+        "Cam_CNCRoom", "Cam_PrintFarm", "Cam_WorkshopLong", "Cam_Craft"]
 OUT = bpy.path.abspath("//renders/tmp/")
 sc = bpy.context.scene
 res = (sc.render.resolution_x, sc.render.resolution_y, sc.cycles.samples)

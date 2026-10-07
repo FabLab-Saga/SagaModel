@@ -555,23 +555,17 @@ def build():
                            xa + 0.05 + i * 0.52 + 0.23, 0.17 + j * 0.105, zt + 0.21, axis="y", width=0.06)
     bins.emit("PrintFarm_Bins", fcol, loc, rot)
 
-    # ---- mill table in the CNC corner (between the WNW tool wall and the ShopBot): 2x Roland SRM-20
-    part, _ = lib["table_unit"](1.30, 0.70, 0.85, [0.0, 1.26], lower=(0.16,))
-    loc, rot = unit_on((1.30, 0.70), 23.42, 16.40, "+y")
-    part.emit("MillTable", fcol, loc, rot)
-    for i, lx in enumerate((0.33, 0.97)):
-        put(srm20(), f"Roland_SRM20_{i + 1}", loc, rot, (lx, 0.33), 0.85, 0.451, 0.426)
-
-    # ---- CNC corner: ShopBot PRS Alpha 120 along the corner, FT100 beside it
+    # ---- CNC room: ShopBot PRS Alpha 120 against the interior wall (x 24.15), collector out by the far glass
+    #      corner, control box on the glass side (user layout, 2026-10-07)
     W, Lg = 2.15, 4.30
-    sb_loc = Vector((21.00, 22.75 - Lg, 0.0))
+    sb_loc = Vector((24.13 - W, 22.75 - Lg, 0.0))
     shopbot(W, Lg).emit("ShopBot_PRSAlpha_120", col, sb_loc, 0.0)
-    place(dust_collector(), "ACword_FT100", col, 23.80, 19.40, 0.0, 0.84, 0.50, "-x")
-    place(control_box(), "ShopBot_Control", col, 23.98, 21.90, 0.0, 0.50, 0.30, "-x")
-    gy = sb_loc.y + Lg * 0.42                                           # flexible hose: dust shoe -> boom -> collector inlet
+    place(dust_collector(), "ACword_FT100", col, 21.50, 16.45, 0.0, 0.84, 0.50, "+y")
+    place(control_box(), "ShopBot_Control", col, 21.17, 21.95, 0.0, 0.50, 0.30, "+x")
+    gy = sb_loc.y + Lg * 0.42                                           # flexible hose: dust shoe -> overhead -> collector
     hx = sb_loc.x + W * 0.45
-    hose_pts = [(hx, gy - 0.21, 1.52), (hx, gy - 0.21, 2.15), (hx + 0.35, gy - 0.30, 2.45), (22.90, 19.80, 2.35),
-                (23.30, 19.45, 1.80), (23.35, 19.40, 1.25), (23.55, 19.40, 1.12)]
+    hose_pts = [(hx, gy - 0.21, 1.52), (hx, gy - 0.21, 2.20), (hx - 0.35, gy - 0.9, 2.50), (21.90, 17.80, 2.40),
+                (21.55, 17.05, 1.90), (21.50, 16.85, 1.30), (21.50, 16.72, 1.12)]
     cu = bpy.data.curves.new("ShopBot_DustHose", "CURVE")
     cu.dimensions = "3D"; cu.bevel_depth = 0.052; cu.bevel_resolution = 4; cu.resolution_u = 16
     sp = cu.splines.new("NURBS"); sp.points.add(len(hose_pts) - 1)
