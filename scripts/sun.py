@@ -42,6 +42,16 @@ def sun_vector(when_utc):
     return (x * ce, y * ce, math.sin(math.radians(el))), az, el
 
 
+def sky_angles(when_utc):
+    """(sun_elevation, sun_rotation) in radians for Blender's Sky Texture.
+
+    sun_rotation is measured clockwise from model +Y (verified with a panorama
+    render against a marker placed along sun_vector).
+    """
+    (x, y, _), _az, el = sun_vector(when_utc)
+    return math.radians(el), math.atan2(x, y)
+
+
 if __name__ == "__main__":
     for h in (11, 13, 15, 17, 19):
         v, az, el = sun_vector(datetime(2026, 5, 15, h, tzinfo=timezone.utc))
