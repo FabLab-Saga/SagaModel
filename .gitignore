@@ -4,3 +4,4 @@
 __pycache__/
 renders/tmp/
 assets/polyhaven/hdri/*.exr
+claude_state/
