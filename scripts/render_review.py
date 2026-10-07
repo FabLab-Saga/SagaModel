@@ -9,7 +9,7 @@ CAMS = ["Cam_Cutaway", "Cam_Entrance", "Cam_Workshop", "Cam_FeltWall", "Cam_Mura
 OUT = bpy.path.abspath("//renders/tmp/")
 sc = bpy.context.scene
 res = (sc.render.resolution_x, sc.render.resolution_y, sc.cycles.samples)
-sc.render.resolution_x, sc.render.resolution_y, sc.cycles.samples = 960, 540, 48
+sc.render.resolution_x, sc.render.resolution_y, sc.cycles.samples = 960, 540, 12   # fast: denoiser does the rest
 cut = [bpy.data.objects["Ceiling_Slab"]] + list(bpy.data.collections["Services"].objects) + \
       [o for o in bpy.data.collections["Signs"].objects if o.name.endswith("_Cables")]
 ground = [bpy.data.objects[n] for n in ("Ground_Paving", "Ground_Grass") if n in bpy.data.objects]

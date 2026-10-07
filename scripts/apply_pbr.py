@@ -165,13 +165,13 @@ def add_bevel(mat_name, radius=0.002):
 
 
 def run():
-    pbr("Parquet", "wood_floor_worn", rot_z=math.radians(90), coat=0.15, bevel=0)
+    pbr("Parquet", "wood_floor_worn", rot_z=math.radians(90), coat=0.0, rough_mul=1.35, bevel=0)
     pbr("Concrete_Exposed", "concrete_slab_wall", normal=0.8)
     pbr("Paint_White", "painted_plaster_wall", tint="#EEECE7", tint_mix=0.82, normal=0.35, rough_mul=1.0)
     pbr("OSB", "oriented_strand_board", normal=0.8)                 # no rotation: box projection on vertical boards
     for mname in ("Plywood_Birch", "Material_27"):
         pbr(mname, "plywood", normal=0.6, coat=0.0, bevel=0.0015, rough_mul=2.2)
-    pbr("Sofa_LightGrey", "rough_linen", scale=0.6, tint="#C9C8C3", tint_mix=0.7, normal=1.0, bevel=0.02)
+    pbr("Sofa_LightGrey", "rough_linen", scale=0.6, tint="#9C9B96", tint_mix=0.6, normal=1.6, bevel=0.02)
     for mname in ("Alu_Black_Anodized", "Alu_Frame_Dark", "Mach_White", "Mach_Grey", "Mach_DarkGrey", "Mach_Black",
                   "Desk_Black", "Cart_Black", "Galvanised", "Enamel_Black"):
         add_bevel(mname, 0.0015)
