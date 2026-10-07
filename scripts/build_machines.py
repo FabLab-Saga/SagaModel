@@ -67,6 +67,7 @@ def materials():
         brass=mat("Mach_Brass", "#B58B4A", 0.3, metal=1.0),
         spoolflange=mat("Spool_Flange", "#202020", 0.35),
         mat_blue=mat("Cricut_Mat", "#6E8FB0", 0.6),
+        label=mat("Spool_Label", "#EDEBE4", 0.7),
         desk=mat("Desk_Black", "#141414", 0.45),
         rubber=mat("Mach_Rubber", "#0E0E0E", 0.8),
         galv=bpy.data.materials.get("Galvanised") or mat("Galvanised", "#B9BEC2", 0.35, metal=1.0),
@@ -178,6 +179,11 @@ def spool_part(p, filament, cx, cy, cz, axis="x", r_out=0.100, width=0.065):
         a0 = c + ax * side * (width / 2)
         p.cyl(M["spoolflange"], a0 - ax * 0.002, a0 + ax * 0.002, r_out, seg=48)
     p.cyl(filament, c - ax * (width / 2 - 0.003), c + ax * (width / 2 - 0.003), r_out * 0.82, seg=48)
+    for k in range(1, 9):                                                    # wound-filament grooves
+        g = c - ax * (width / 2 - 0.003) + ax * (width - 0.006) * k / 9
+        p.cyl(M["dark"], g - ax * 0.0004, g + ax * 0.0004, r_out * 0.821, seg=48)
+    lab = c + ax * (width / 2 + 0.0025)                                          # label on the outer flange
+    p.cyl(M["label"], lab, lab + ax * 0.0006, 0.045, seg=32)
     p.cyl(M["dark"], c - ax * (width / 2 + 0.003), c + ax * (width / 2 + 0.003), 0.027, seg=24)
 
 
@@ -226,6 +232,24 @@ def prusa(spool):
     p.box(M["black"], ex + 0.015, ex + 0.055, fy - 0.07, fy - 0.03, zx + 0.10, zx + 0.14, bevel=0.003)  # extruder motor
     p.cyl(M["brass"], (ex + 0.035, fy - 0.07, zx - 0.03), (ex + 0.035, fy - 0.07, zx - 0.05), 0.004, seg=10)  # nozzle
     p.cyl(M["dark"], (ex + 0.035, fy - 0.07, zx + 0.14), (ex + 0.035, fy + 0.04, 0.47), 0.003, seg=8)   # PTFE/filament path
+    # --- close-up detail: screw heads on printed parts, hotend fan grille, sleeved cable bundle
+    def screws(x0, x1, z0, z1, yface, n=2):
+        for i in range(n):
+            for zz in (z0 + 0.012, z1 - 0.012):
+                xx = x0 + (i + 0.5) * (x1 - x0) / n
+                p.cyl(M["chrome"], (xx, yface - 0.0015, zz), (xx, yface, zz), 0.0028, seg=10)
+    screws(ex, ex + 0.07, zx - 0.03, zx + 0.10, fy - 0.10)
+    for x0 in (0.035, w - 0.095):
+        screws(x0, x0 + 0.06, zx - 0.025, zx + 0.07, fy - 0.06, n=1)
+    for k in range(4):                                                                          # fan grille rings
+        r = 0.006 + k * 0.0045
+        p.cyl(M["dark"], (ex + 0.035, fy - 0.1125, zx + 0.025), (ex + 0.035, fy - 0.1121, zx + 0.025), r, seg=24)
+        p.cyl(M["black"], (ex + 0.035, fy - 0.1127, zx + 0.025), (ex + 0.035, fy - 0.1123, zx + 0.025), r - 0.0018, seg=24)
+    for k in range(5):                                                                          # sleeved bundle arc to the frame
+        t0, t1 = k / 5, (k + 1) / 5
+        a = (ex + 0.05 + t0 * 0.12, fy - 0.03 + t0 * 0.03, zx + 0.10 + 0.08 * (1 - (2 * t0 - 1) ** 2))
+        b = (ex + 0.05 + t1 * 0.12, fy - 0.03 + t1 * 0.03, zx + 0.10 + 0.08 * (1 - (2 * t1 - 1) ** 2))
+        p.cyl(M["black"], a, b, 0.006, seg=10)
     # --- LCD box at the front left
     p.box(M["orange"], 0.10, 0.36, -0.035, 0.03, 0.01, 0.085, bevel=0.006)
     p.box(M["lcd"], 0.13, 0.27, -0.0365, -0.034, 0.03, 0.07)
