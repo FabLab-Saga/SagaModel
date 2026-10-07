@@ -10,8 +10,9 @@ Placement (model frame: +X = SSW, +Y = ESE; main entrance = SSW door at y 35.1-3
   the facade edge beam (Epilog run > 2.5 m gets an inline fan, per the spec).
   Print farm: profile shelving outside the laser room (2 bays x 4 levels, 0.58 m pitch):
   12x Prusa MK3S+, Bambu Lab P2S, filament bins.
-  Machine counter: 3 profile counters along the SSW glass (y 27.05-34.01, entrance kept clear):
-  Roland vinyl cutter, SRM-20, Mayku, 2x Cricut, Brother sewing + embroidery, overlocker.
+  Mill table in the CNC corner: 2x Roland SRM-20. Craft machines (vinyl cutters, Cricut, Mayku,
+  sewing) live in the equipment bank (scripts/build_bank_lounge.py); the SSW glass by the
+  entrance is the lounge/entryway.
   CNC: ShopBot PRS Alpha 120 + ACword FT100 dust collector (clearance ignored per the brief).
   Colleague's placeholders in those spots are hidden, not deleted.
 """
@@ -453,29 +454,12 @@ def build():
             lib["bin_box"](bins, lib["MAT"]["bins"][(bi * 3 + i) % 6], xa + 0.05 + i * 0.52, 0.12, zt, w=0.46, d=0.42, h=0.30)
     bins.emit("PrintFarm_Bins", fcol, loc, rot)
 
-    # ---- machine counter along the SSW glass, entrance (y 35.1) kept clear
-    C_L, C_D, C_H = 2.30, 0.70, 0.90
-    counters = []
-    for i in range(3):
-        part, _ = lib["table_unit"](C_L, C_D, C_H, [0.0, 1.13, 2.26], lower=(0.14, 0.50))
-        cy = 27.05 + i * 2.33 + C_L / 2
-        loc, rot = unit_on((C_L, C_D), 32.42 - C_D / 2, cy, "-x")
-        part.emit(f"MachineCounter_{i + 1}", fcol, loc, rot)
-        b = Part()
-        for zl in (0.14, 0.50):
-            for j in range(5):
-                lib["bin_box"](b, lib["MAT"]["bins"][(i * 2 + j + int(zl * 10)) % 6], 0.06 + j * 0.44, 0.06, zl, w=0.40, d=0.30, h=0.20)
-        b.emit(f"MachineCounter_{i + 1}_Bins", fcol, loc, rot)
-        counters.append((loc, rot))
-    (l0, r0), (l1, r1), (l2, r2) = counters
-    put(vinyl(), "Roland_VinylCutter", l0, r0, (0.60, 0.30), C_H, 0.851, 0.310)
-    put(srm20(), "Roland_SRM20", l0, r0, (1.70, 0.32), C_H, 0.451, 0.426)
-    put(mayku(), "Mayku_FormBox", l1, r1, (0.35, 0.33), C_H, 0.274, 0.466)
-    put(cricut(), "Cricut_Maker_1", l1, r1, (1.05, 0.25), C_H, 0.60, 0.179)
-    put(cricut(), "Cricut_Maker_3", l1, r1, (1.80, 0.25), C_H, 0.60, 0.179)
-    put(sewing(), "Brother_Sewing", l2, r2, (0.40, 0.30), C_H, 0.42, 0.20)
-    put(sewing(0.50, 0.24, 0.32), "Brother_Embroidery", l2, r2, (1.15, 0.30), C_H, 0.50, 0.24)
-    put(overlock(), "Overlock", l2, r2, (1.85, 0.30), C_H, 0.33, 0.28)
+    # ---- mill table in the CNC corner (between the WNW tool wall and the ShopBot): 2x Roland SRM-20
+    part, _ = lib["table_unit"](1.30, 0.70, 0.85, [0.0, 1.26], lower=(0.16,))
+    loc, rot = unit_on((1.30, 0.70), 23.42, 16.40, "+y")
+    part.emit("MillTable", fcol, loc, rot)
+    for i, lx in enumerate((0.33, 0.97)):
+        put(srm20(), f"Roland_SRM20_{i + 1}", loc, rot, (lx, 0.33), 0.85, 0.451, 0.426)
 
     # ---- CNC corner: ShopBot PRS Alpha 120 along the corner, FT100 beside it
     W, Lg = 2.15, 4.30
