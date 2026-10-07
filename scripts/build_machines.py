@@ -2,14 +2,18 @@
 but recognisable models at the listed sizes. Re-runnable: rebuilds the "Machines"
 collection. Run inside Blender: exec(open(path).read()).
 
-Placement (model frame: +X = SSW, +Y = ESE):
+Furniture comes from scripts/profile_furniture.py (black 20x20/40x40 profile + birch ply).
+Placement (model frame: +X = SSW, +Y = ESE; main entrance = SSW door at y 35.1-36.2):
   Laser room (glazed room x 29.67-32.53, y 20.14-26.92): Epilog Fusion Edge 24 against
-  the NNE partition; 2x Glowforge Pro HD, Glowforge Aura, xTool F1 Ultra on black
-  electric desks along the SSW glass; 100/80 mm exhausts straight out through the
-  facade edge beam (Epilog run > 2.5 m gets an inline fan, per the spec).
-  Print farm: 12x Prusa MK3S+ on the ESE shelving (two boards per unit hidden -> 0.8 m pitch).
-  Benches: Bambu Lab P2S, Roland SRM-20, Roland vinyl cutter, Mayku, sewing machine.
-  The CNC (colleague's ShopBot 96x60) is left as is pending confirmation of the PRS Alpha 120.
+  the NNE partition; 2x Glowforge Pro HD, Glowforge Aura, xTool F1 Ultra on profile laser
+  tables (sheet storage below) along the SSW glass; 100/80 mm exhausts straight out through
+  the facade edge beam (Epilog run > 2.5 m gets an inline fan, per the spec).
+  Print farm: profile shelving outside the laser room (2 bays x 4 levels, 0.58 m pitch):
+  12x Prusa MK3S+, Bambu Lab P2S, filament bins.
+  Machine counter: 3 profile counters along the SSW glass (y 27.05-34.01, entrance kept clear):
+  Roland vinyl cutter, SRM-20, Mayku, 2x Cricut, Brother sewing + embroidery, overlocker.
+  CNC: ShopBot PRS Alpha 120 + ACword FT100 dust collector (clearance ignored per the brief).
+  Colleague's placeholders in those spots are hidden, not deleted.
 """
 import math
 
@@ -227,13 +231,98 @@ def sewing(w=0.42, d=0.20, h=0.30):
     return p
 
 
+# ---------------------------------------------------------------- more models
+def cricut(w=0.60, d=0.179, h=0.158):
+    p = Part()
+    p.box(M["white"], 0, w, 0, d, 0, h, bevel=0.03)
+    p.box(M["grey"], 0.04, w - 0.04, -0.003, 0.02, 0.05, 0.09, bevel=0.004)
+    return p
+
+
+def overlock(w=0.33, d=0.28, h=0.29):
+    p = Part()
+    p.box(M["white"], 0, w, 0, d, 0, h * 0.7, bevel=0.03)
+    for i, x in enumerate((0.08, 0.13, 0.18, 0.23)):                                            # thread cones
+        p.cyl(M["spools"][i], (x, d * 0.6, h * 0.7), (x, d * 0.6, h * 1.25), 0.018, seg=12)
+    return p
+
+
+def shopbot(W=2.15, Lg=4.30):
+    """ShopBot PRS Alpha 120 (60" x 120" table): black steel frame, MDF spoilboard, aluminium gantry."""
+    p = Part()
+    blk, alu, mdf = M["black"], M["alusatin"], M["mdf"]
+    for x in (0.08, W - 0.20):                                                                  # side beams
+        p.box(blk, x, x + 0.12, 0.0, Lg, 0.62, 0.82, bevel=0.004)
+        p.box(alu, x + 0.02, x + 0.10, 0.0, Lg, 0.82, 0.85)                                    # Y rails
+    for y in (0.15, 1.45, 2.85, Lg - 0.23):                                                    # legs + feet + cross members
+        for x in (0.10, W - 0.18):
+            p.box(blk, x, x + 0.08, y, y + 0.08, 0.04, 0.62)
+            p.cyl(M["rubber"], (x + 0.04, y + 0.04, 0.0), (x + 0.04, y + 0.04, 0.04), 0.045, seg=16)
+        p.box(blk, 0.10, W - 0.10, y, y + 0.06, 0.25, 0.31)
+        p.box(blk, 0.10, W - 0.10, y, y + 0.06, 0.70, 0.78)
+    p.box(mdf, 0.22, W - 0.22, 0.10, Lg - 0.10, 0.80, 0.86)                                   # spoilboard
+    for i in range(12):                                                                         # surfacing marks
+        y = 0.25 + i * 0.32
+        p.box(M["mdfdark"], 0.24, W - 0.24, y, y + 0.004, 0.8601, 0.8605)
+    gy = Lg * 0.42                                                                              # gantry position
+    for x in (0.02, W - 0.12):                                                                  # gantry side cars
+        p.box(blk, x, x + 0.10, gy - 0.20, gy + 0.20, 0.78, 1.32, bevel=0.006)
+    p.box(alu, 0.0, W, gy - 0.07, gy + 0.07, 1.20, 1.40, bevel=0.006)                          # gantry beam
+    p.box(blk, 0.0, W, gy + 0.07, gy + 0.09, 1.30, 1.40)                                       # cable tray on beam
+    cx = W * 0.45
+    p.box(blk, cx - 0.14, cx + 0.14, gy - 0.16, gy - 0.07, 1.10, 1.45, bevel=0.005)            # X car
+    p.box(blk, cx - 0.08, cx + 0.08, gy - 0.26, gy - 0.16, 0.98, 1.52, bevel=0.005)            # Z axis
+    p.cyl(alu, (cx, gy - 0.21, 0.95), (cx, gy - 0.21, 1.18), 0.045, seg=24)                    # spindle
+    p.cyl(blk, (cx, gy - 0.21, 0.90), (cx, gy - 0.21, 0.95), 0.10, seg=24)                     # dust shoe
+    p.box(blk, W - 0.06, W, 0.2, Lg - 0.2, 0.86, 0.96)                                          # cable chain
+    return p
+
+
+def dust_collector(w=0.84, d=0.50, h=2.20):
+    """ACword FT100 single-bag collector: stand, motor/impeller, white filter bag, clear lower bag."""
+    p = Part()
+    cx = w / 2
+    for x in (0.08, w - 0.12):
+        for y in (0.08, d - 0.12):
+            p.box(M["dark"], x, x + 0.04, y, y + 0.04, 0.0, 1.0)
+    p.cyl(M["dark"], (cx, d / 2, 0.98), (cx, d / 2, 1.06), 0.27, seg=32)                       # ring
+    p.cyl(M["grey"], (cx - 0.05, d / 2, 1.12), (cx + 0.30, d / 2, 1.12), 0.17, seg=28)         # motor
+    p.cyl(M["grey"], (cx, -0.02, 1.12), (cx, d / 2, 1.12), 0.06, seg=20)                       # inlet
+    p.cyl(M["felt"], (cx, d / 2, 1.06), (cx, d / 2, h - 0.06), 0.24, seg=32)                   # filter bag
+    bmesh.ops.create_uvsphere(p.bm(M["felt"]), u_segments=32, v_segments=8, radius=0.24,
+                              matrix=Matrix.Translation((cx, d / 2, h - 0.06)) @ Matrix.Scale(0.25, 4, (0, 0, 1)))
+    p.cyl(M["bag"], (cx, d / 2, 0.10), (cx, d / 2, 0.98), 0.24, seg=32)                       # chip bag
+    return p
+
+
+def control_box(w=0.50, d=0.30, h=0.70):
+    p = Part()
+    p.box(M["grey"], 0, w, 0, d, 0, h, bevel=0.01)
+    p.box(M["red"], w * 0.4, w * 0.6, -0.02, 0.0, h * 0.75, h * 0.85, bevel=0.005)            # e-stop
+    return p
+
+
+def sheets(n, w, d, colors):
+    """A stack of material sheets (ply + coloured acrylic)."""
+    p = Part()
+    z = 0.0
+    for i in range(n):
+        t = 0.006 if i % 2 else 0.003
+        p.box(colors[i % len(colors)], 0, w, 0, d, z, z + t)
+        z += t
+    return p
+
+
+def spool_stack(n):
+    p = Part()
+    for i in range(n):
+        x = 0.10 + (i % 4) * 0.21
+        z = 0.09 + (i // 4) * 0.075
+        p.cyl(M["spools"][i % len(M["spools"])], (x, 0.03, z), (x, 0.10, z), 0.09, seg=24)
+    return p
+
+
 # ---------------------------------------------------------------- placement helpers
-def top_of(name):
-    o = bpy.data.objects[name]
-    pts = [k.matrix_world @ Vector(c) for k in (o, *o.children_recursive) if k.type == "MESH" and not k.hide_render for c in k.bound_box]
-    return (min(p.x for p in pts), max(p.x for p in pts), min(p.y for p in pts), max(p.y for p in pts), max(p.z for p in pts))
-
-
 FACE = {"-x": -math.pi / 2, "+x": math.pi / 2, "-y": 0.0, "+y": math.pi}   # rotation so local front (-y) faces this way
 
 
@@ -253,72 +342,161 @@ def exhaust(col, name, pts, r=0.05):
     return p.emit(name, col, Vector((0, 0, 0)), 0.0)
 
 
+def set_hidden(names, hidden=True):
+    n = 0
+    for nm in names:
+        o = bpy.data.objects.get(nm)
+        if not o:
+            continue
+        for k in (o, *o.children_recursive):
+            k.hide_render = k.hide_viewport = hidden
+        n += 1
+    return n
+
+
 def build():
     scene = bpy.context.scene
+    lib = {}
+    exec(open(bpy.path.abspath("//scripts/profile_furniture.py")).read(), lib)
+    lib["materials"]()
     col = bpy.data.collections.get("Machines") or bpy.data.collections.new("Machines")
-    if col.name not in scene.collection.children:
-        scene.collection.children.link(col)
-    for o in list(col.objects):
-        me = o.data
-        bpy.data.objects.remove(o)
-        if me and me.users == 0:
-            bpy.data.meshes.remove(me)
+    fcol = bpy.data.collections.get("Furniture") or bpy.data.collections.new("Furniture")
+    for c in (col, fcol):
+        if c.name not in scene.collection.children:
+            scene.collection.children.link(c)
+        for o in list(c.objects):
+            data = o.data
+            bpy.data.objects.remove(o)
+            if data is not None and data.users == 0:
+                (bpy.data.curves if isinstance(data, bpy.types.Curve) else bpy.data.meshes).remove(data)
     materials()
+    M.update(alusatin=mat("Mach_AluSatin", "#C3C7CB", 0.3, metal=1.0), mdf=mat("MDF", "#B48C5C", 0.8),
+             mdfdark=mat("MDF_Mark", "#8E6C45", 0.8), felt=mat("FilterFelt", "#ECEAE4", 0.95),
+             bag=mat("ChipBag", "#C9CED1", 0.25, coat=0.5), hose=mat("Hose_Flex", "#3B3F43", 0.55))
 
-    # ---- laser room: desks along the SSW glass, fronts facing -x (into the room)
-    GX0, GX1 = 31.85, 32.45
-    xc = (GX0 + GX1) / 2
-    place(desk(2.5), "Desk_250", col, xc, 20.30 + 1.25, 0, 2.5, 0.6, "-x")
-    place(desk(2.0), "Desk_200", col, xc, 22.85 + 1.0, 0, 2.0, 0.6, "-x")
-    H = 0.75
+    # ---- placeholders out, ESE shelf boards back
+    ph = ["Component_1046510", "Component_1046510.001", "PRSalpha 9660"]
+    for o in bpy.data.objects["ROOT"].children:                       # shallow shelves along the SSW glass
+        if o.name.startswith(("Component_1062473", "Component_1484326", "Component_1483885")):
+            pts = [k.matrix_world @ Vector(c) for k in o.children_recursive if k.type == "MESH" for c in k.bound_box]
+            if pts and min(p.x for p in pts) > 31.0:
+                ph.append(o.name)
+    hidden = set_hidden(ph)
+    for unit in ("Component_289785", "Component_289785.001", "Component_289785.002"):
+        for c in bpy.data.objects[unit].children_recursive:
+            if c.type == "MESH" and c.parent.name.startswith("Plywood") and [m.name for m in c.data.materials] != ["Material_1"]:
+                c.hide_render = c.hide_viewport = False
+
+    def unit_on(part_dims, cx, cy, facing):
+        w, d = part_dims
+        return lib["placement"](cx, cy, w, d, facing)
+
+    def put(part, name, loc, rot, local_xy, z, w, d):
+        """Machine centred at a local point of a furniture unit, same facing as the unit."""
+        c = lib["to_world"](loc, rot, (local_xy[0], local_xy[1], 0))
+        off = Matrix.Rotation(rot, 4, "Z") @ Vector((-w / 2, -d / 2, 0))
+        return part.emit(name, col, Vector((c.x, c.y, z)) + off, rot)
+
+    # ---- laser room: profile laser tables along the SSW glass
+    T_D, T_H = 0.65, 0.78
+    tables = [("LaserTable_250", 2.5, [0.0, 1.23, 2.46], 20.30 + 1.25), ("LaserTable_200", 2.0, [0.0, 1.96], 22.85 + 1.0)]
+    tloc = {}
+    for name, L, legs, cy in tables:
+        part, _ = lib["table_unit"](L, T_D, T_H, legs, lower=(0.16,))
+        loc, rot = unit_on((L, T_D), 32.45 - T_D / 2, cy, "-x")
+        part.emit(name, fcol, loc, rot)
+        tloc[name] = (loc, rot, L)
+        st = sheets(14, L - 0.20, T_D - 0.08, [lib["MAT"]["ply"], *lib["MAT"]["bins"]])  # ply + coloured acrylic
+        put(st, f"{name}_Sheets", loc, rot, (L / 2, T_D / 2), 0.16, L - 0.20, T_D - 0.08)
+    gx = 32.45 - 0.03                                                   # back edge of the laser tables
     for i, y in enumerate((20.85, 22.00)):
-        place(glowforge(0.965, 0.527, 0.211, M["smoke"]), f"Glowforge_ProHD_{i + 1}", col, GX1 - 0.03 - 0.527 / 2, y, H, 0.965, 0.527, "-x")
-    place(glowforge(0.556, 0.521, 0.127, M["grey"]), "Glowforge_Aura", col, GX1 - 0.03 - 0.521 / 2, 23.25, H, 0.556, 0.521, "-x")
-    place(xtool(), "xTool_F1_Ultra", col, GX1 - 0.05 - 0.253 / 2, 24.05, H, 0.493, 0.253, "-x")
+        place(glowforge(0.965, 0.527, 0.211, M["smoke"]), f"Glowforge_ProHD_{i + 1}", col, gx - 0.527 / 2, y, T_H, 0.965, 0.527, "-x")
+    place(glowforge(0.556, 0.521, 0.127, M["grey"]), "Glowforge_Aura", col, gx - 0.521 / 2, 23.25, T_H, 0.556, 0.521, "-x")
+    place(xtool(), "xTool_F1_Ultra", col, gx - 0.02 - 0.253 / 2, 24.05, T_H, 0.493, 0.253, "-x")
     place(epilog(), "Epilog_FusionEdge24", col, 29.70 + 0.834 / 2, 20.30 + 1.055 / 2 + 0.05, 0, 1.055, 0.834, "+x")
-    # exhausts: up behind each machine, then straight out through the edge beam (z 3.75)
     ZE, XOUT = 3.75, 32.85
-    for name, y, z0, r in (("Glowforge_ProHD_1", 20.85, H + 0.10, 0.05), ("Glowforge_ProHD_2", 22.00, H + 0.10, 0.05),
-                           ("Glowforge_Aura", 23.25, H + 0.08, 0.05), ("xTool_F1_Ultra", 24.05, H + 0.25, 0.04)):
-        exhaust(col, f"Exhaust_{name}", [(GX1 - 0.04, y, z0), (GX1 - 0.04, y, ZE), (XOUT, y, ZE)], r)
+    for name, y, z0, r in (("Glowforge_ProHD_1", 20.85, T_H + 0.10, 0.05), ("Glowforge_ProHD_2", 22.00, T_H + 0.10, 0.05),
+                           ("Glowforge_Aura", 23.25, T_H + 0.08, 0.05), ("xTool_F1_Ultra", 24.05, T_H + 0.25, 0.04)):
+        exhaust(col, f"Exhaust_{name}", [(gx - 0.01, y, z0), (gx - 0.01, y, ZE), (XOUT, y, ZE)], r)
     ye = 20.30 + 1.055 / 2 + 0.05
     exhaust(col, "Exhaust_Epilog", [(29.75, ye, 0.85), (29.75, ye, ZE), (XOUT, ye, ZE)], 0.05)
-    fan = Part()                                                       # inline fan on the long Epilog run
+    fan = Part()
     fan.cyl(M["galv"], (30.9, ye, ZE), (31.25, ye, ZE), 0.13, seg=28)
     fan.emit("Exhaust_Epilog_InlineFan", col, Vector((0, 0, 0)), 0.0)
-    hoods = Part()                                                     # wall caps outside
+    hoods = Part()
     for y in (20.85, 22.00, 23.25, 24.05, ye):
         hoods.box(M["galv"], XOUT, XOUT + 0.06, y - 0.09, y + 0.09, ZE - 0.09, ZE + 0.09, bevel=0.01)
     hoods.emit("Exhaust_Hoods", col, Vector((0, 0, 0)), 0.0)
 
-    # ---- print farm on the ESE shelving: hide two boards per unit -> two 0.8 m levels
-    farm = ["Component_289785", "Component_289785.001", "Component_289785.002"]
+    # ---- print farm outside the laser room (against its NNE partition, x 28.90-29.50)
+    PF_D, levels = 0.60, [0.15, 0.73, 1.31, 1.89]
+    part, slots, L = lib["shelf_unit"]([1.62, 1.62], PF_D, 2.42, levels, power=True)
+    loc, rot = unit_on((L, PF_D), 29.50 - PF_D / 2, 21.95 + L / 2, "-x")
+    part.emit("PrintFarm_Shelving", fcol, loc, rot)
     k = 0
-    for unit in farm:
-        u = bpy.data.objects[unit]
-        for c in u.children_recursive:
-            if c.type == "MESH" and c.parent and c.parent.name.startswith("Plywood"):
-                zt = max((c.matrix_world @ Vector(v)).z for v in c.bound_box)
-                if abs(zt - 1.035) < 0.02 or abs(zt - 1.841) < 0.02:
-                    c.hide_render = c.hide_viewport = True
-        x0, x1, y0, y1, _ = top_of(unit)
-        for level in (0.643, 1.441):
-            for fx in (0.25, 0.75):
+    for li in (1, 2):
+        for bi in (0, 1):
+            xa, xb, _, _, zt = slots[(bi, li)]
+            for i in range(3):
                 spool = M["spools"][k % len(M["spools"])]
-                place(prusa(spool), f"Prusa_MK3S_{k + 1:02d}", col, x0 + (x1 - x0) * fx, (y0 + y1) / 2, level, 0.50, 0.55, "-y")
+                put(prusa(spool), f"Prusa_MK3S_{k + 1:02d}", loc, rot, (xa + 0.03 + 0.25 + i * 0.52, PF_D / 2), zt, 0.50, 0.55)
                 k += 1
+    xa, xb, _, _, zt = slots[(0, 3)]
+    put(bambu(), "Bambu_P2S", loc, rot, (xa + 0.35, PF_D / 2), zt, 0.392, 0.406)
+    put(spool_stack(8), "Spare_Spools", loc, rot, ((xa + xb) / 2 + 0.35, PF_D / 2), zt, 0.85, 0.12)
+    xa, xb, _, _, zt = slots[(1, 3)]
+    put(spool_stack(12), "Spare_Spools_2", loc, rot, ((xa + xb) / 2, PF_D / 2), zt, 0.85, 0.12)
+    bins = Part()
+    for bi in (0, 1):                                                  # filament dry bins on the bottom level
+        xa, xb, _, _, zt = slots[(bi, 0)]
+        for i in range(3):
+            lib["bin_box"](bins, lib["MAT"]["bins"][(bi * 3 + i) % 6], xa + 0.05 + i * 0.52, 0.12, zt, w=0.46, d=0.42, h=0.30)
+    bins.emit("PrintFarm_Bins", fcol, loc, rot)
 
-    # ---- benchtop machines
-    def on_bench(bench, part, name, w, d, facing, fx=0.5, fy=0.5):
-        x0, x1, y0, y1, zt = top_of(bench)
-        return place(part, name, col, x0 + (x1 - x0) * fx, y0 + (y1 - y0) * fy, zt, w, d, facing)
-    on_bench("Component_237631.006", bambu(), "Bambu_P2S", 0.392, 0.406, "-y", fx=0.3)
-    on_bench("Component_237631", srm20(), "Roland_SRM20", 0.451, 0.426, "+x", fy=0.3)
-    on_bench("Component_237631.002", vinyl(), "Roland_VinylCutter", 0.851, 0.310, "-x")
-    on_bench("Component_237631.004", mayku(), "Mayku_FormBox", 0.274, 0.466, "-x", fy=0.35)
-    on_bench("Component_237631.003", sewing(), "Brother_Sewing", 0.42, 0.20, "+x", fy=0.6)
-    return k
+    # ---- machine counter along the SSW glass, entrance (y 35.1) kept clear
+    C_L, C_D, C_H = 2.30, 0.70, 0.90
+    counters = []
+    for i in range(3):
+        part, _ = lib["table_unit"](C_L, C_D, C_H, [0.0, 1.13, 2.26], lower=(0.14, 0.50))
+        cy = 27.05 + i * 2.33 + C_L / 2
+        loc, rot = unit_on((C_L, C_D), 32.42 - C_D / 2, cy, "-x")
+        part.emit(f"MachineCounter_{i + 1}", fcol, loc, rot)
+        b = Part()
+        for zl in (0.14, 0.50):
+            for j in range(5):
+                lib["bin_box"](b, lib["MAT"]["bins"][(i * 2 + j + int(zl * 10)) % 6], 0.06 + j * 0.44, 0.06, zl, w=0.40, d=0.30, h=0.20)
+        b.emit(f"MachineCounter_{i + 1}_Bins", fcol, loc, rot)
+        counters.append((loc, rot))
+    (l0, r0), (l1, r1), (l2, r2) = counters
+    put(vinyl(), "Roland_VinylCutter", l0, r0, (0.60, 0.30), C_H, 0.851, 0.310)
+    put(srm20(), "Roland_SRM20", l0, r0, (1.70, 0.32), C_H, 0.451, 0.426)
+    put(mayku(), "Mayku_FormBox", l1, r1, (0.35, 0.33), C_H, 0.274, 0.466)
+    put(cricut(), "Cricut_Maker_1", l1, r1, (1.05, 0.25), C_H, 0.60, 0.179)
+    put(cricut(), "Cricut_Maker_3", l1, r1, (1.80, 0.25), C_H, 0.60, 0.179)
+    put(sewing(), "Brother_Sewing", l2, r2, (0.40, 0.30), C_H, 0.42, 0.20)
+    put(sewing(0.50, 0.24, 0.32), "Brother_Embroidery", l2, r2, (1.15, 0.30), C_H, 0.50, 0.24)
+    put(overlock(), "Overlock", l2, r2, (1.85, 0.30), C_H, 0.33, 0.28)
+
+    # ---- CNC corner: ShopBot PRS Alpha 120 along the corner, FT100 beside it
+    W, Lg = 2.15, 4.30
+    sb_loc = Vector((21.00, 22.75 - Lg, 0.0))
+    shopbot(W, Lg).emit("ShopBot_PRSAlpha_120", col, sb_loc, 0.0)
+    place(dust_collector(), "ACword_FT100", col, 23.80, 19.40, 0.0, 0.84, 0.50, "-x")
+    place(control_box(), "ShopBot_Control", col, 23.98, 21.90, 0.0, 0.50, 0.30, "-x")
+    gy = sb_loc.y + Lg * 0.42                                           # flexible hose: dust shoe -> boom -> collector inlet
+    hx = sb_loc.x + W * 0.45
+    hose_pts = [(hx, gy - 0.21, 1.52), (hx, gy - 0.21, 2.15), (hx + 0.35, gy - 0.30, 2.45), (22.90, 19.80, 2.35),
+                (23.30, 19.45, 1.80), (23.35, 19.40, 1.25), (23.55, 19.40, 1.12)]
+    cu = bpy.data.curves.new("ShopBot_DustHose", "CURVE")
+    cu.dimensions = "3D"; cu.bevel_depth = 0.052; cu.bevel_resolution = 4; cu.resolution_u = 16
+    sp = cu.splines.new("NURBS"); sp.points.add(len(hose_pts) - 1)
+    for pt, q in zip(sp.points, hose_pts):
+        pt.co = (*q, 1.0)
+    sp.use_endpoint_u = True; sp.order_u = 4
+    cu.materials.append(M["hose"])
+    col.objects.link(bpy.data.objects.new("ShopBot_DustHose", cu))
+    return k, hidden
 
 
-n = build()
-print("machines built;", n, "printers")
+k, hidden = build()
+print("printers", k, "| placeholders hidden", hidden)
