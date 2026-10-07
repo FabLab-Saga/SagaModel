@@ -11,3 +11,4 @@ free for any use, no attribution required. Credited here as a courtesy.
 | plywood | Rob Tuytel | https://polyhaven.com/a/plywood |
 | rough_linen | colormass (photography), Rico Cilliers (processing) | https://polyhaven.com/a/rough_linen |
 | wood_floor_worn | Dimitrios Savva | https://polyhaven.com/a/wood_floor_worn |
+| buikslotermeerplein (HDRI) | Greg Zaal | https://polyhaven.com/a/buikslotermeerplein |
