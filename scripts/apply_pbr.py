@@ -46,13 +46,64 @@ def pbr(mat_name, asset, rot_z=0.0, scale=1.0, tint=None, tint_mix=0.0, rough_mu
     mp.inputs["Rotation"].default_value = (0, 0, rot_z)
     L(geo.outputs["Position"], mp.inputs["Vector"])
 
+    # world-space triplanar: three planar lookups blended by the WORLD normal, so rotated and
+    # non-uniformly scaled objects (SketchUp instances) get undistorted textures at true scale
+    sep = N("ShaderNodeSeparateXYZ")
+    L(mp.outputs["Vector"], sep.inputs["Vector"])
+    planes = []
+    for a, bb in (("Y", "Z"), ("X", "Z"), ("X", "Y")):
+        cmb = N("ShaderNodeCombineXYZ")
+        L(sep.outputs[a], cmb.inputs["X"])
+        L(sep.outputs[bb], cmb.inputs["Y"])
+        planes.append(cmb)
+    nabs = N("ShaderNodeVectorMath")
+    nabs.operation = "ABSOLUTE"
+    L(geo.outputs["Normal"], nabs.inputs[0])
+    nsep = N("ShaderNodeSeparateXYZ")
+    L(nabs.outputs["Vector"], nsep.inputs["Vector"])
+    w = []
+    for comp in ("X", "Y", "Z"):                                     # sharpen the blend: |n|^6
+        pw = N("ShaderNodeMath")
+        pw.operation = "POWER"
+        pw.inputs[1].default_value = 6.0
+        L(nsep.outputs[comp], pw.inputs[0])
+        w.append(pw)
+    tot = N("ShaderNodeMath")
+    L(w[0].outputs[0], tot.inputs[0])
+    L(w[1].outputs[0], tot.inputs[1])
+    tot2 = N("ShaderNodeMath")
+    L(tot.outputs[0], tot2.inputs[0])
+    L(w[2].outputs[0], tot2.inputs[1])
+    weights = []
+    for pw in w:
+        dv = N("ShaderNodeMath")
+        dv.operation = "DIVIDE"
+        L(pw.outputs[0], dv.inputs[0])
+        L(tot2.outputs[0], dv.inputs[1])
+        weights.append(dv)
+
+    class _Out:                                                       # mimic an image node's .outputs["Color"]
+        def __init__(self, sock):
+            self.outputs = {"Color": sock}
+
     def tex(mapname, noncolor):
-        t = N("ShaderNodeTexImage")
-        t.image = img(asset, mapname, noncolor)
-        t.projection = "BOX"
-        t.projection_blend = blend
-        L(mp.outputs["Vector"], t.inputs["Vector"])
-        return t
+        acc = None
+        for plane, wt in zip(planes, weights):
+            t = N("ShaderNodeTexImage")
+            t.image = img(asset, mapname, noncolor)
+            L(plane.outputs["Vector"], t.inputs["Vector"])
+            sc = N("ShaderNodeVectorMath")
+            sc.operation = "SCALE"
+            L(t.outputs["Color"], sc.inputs[0])
+            L(wt.outputs[0], sc.inputs["Scale"])
+            if acc is None:
+                acc = sc.outputs["Vector"]
+            else:
+                ad = N("ShaderNodeVectorMath")
+                L(acc, ad.inputs[0])
+                L(sc.outputs["Vector"], ad.inputs[1])
+                acc = ad.outputs["Vector"]
+        return _Out(acc)
 
     diff = tex("diff", False)
     col = diff.outputs["Color"]
@@ -73,9 +124,13 @@ def pbr(mat_name, asset, rot_z=0.0, scale=1.0, tint=None, tint_mix=0.0, rough_mu
         L(mm.outputs["Value"], b.inputs["Roughness"])
     else:
         L(rough.outputs["Color"], b.inputs["Roughness"])
-    nrm = N("ShaderNodeNormalMap")
-    nrm.inputs["Strength"].default_value = normal
-    L(tex("nor_gl", True).outputs["Color"], nrm.inputs["Color"])
+    nrm = N("ShaderNodeBump")                                         # relief from the scan's displacement map
+    nrm.inputs["Strength"].default_value = 0.6 * normal
+    nrm.inputs["Distance"].default_value = 0.002
+    dsum = tex("disp", True).outputs["Color"]
+    dsep = N("ShaderNodeSeparateXYZ")
+    L(dsum, dsep.inputs["Vector"])
+    L(dsep.outputs["X"], nrm.inputs["Height"])
     if bevel:
         bv = N("ShaderNodeBevel")
         bv.samples = 6
@@ -111,9 +166,9 @@ def add_bevel(mat_name, radius=0.002):
 
 def run():
     pbr("Parquet", "wood_floor_worn", rot_z=math.radians(90), coat=0.15, bevel=0)
-    pbr("Concrete_Exposed", "concrete_slab_wall", rot_z=math.radians(90), normal=0.8)
+    pbr("Concrete_Exposed", "concrete_slab_wall", normal=0.8)
     pbr("Paint_White", "painted_plaster_wall", tint="#EEECE7", tint_mix=0.82, normal=0.35, rough_mul=1.0)
-    pbr("OSB", "oriented_strand_board", rot_z=math.radians(90), normal=0.8)
+    pbr("OSB", "oriented_strand_board", normal=0.8)                 # no rotation: box projection on vertical boards
     for mname in ("Plywood_Birch", "Material_27"):
         pbr(mname, "plywood", normal=0.6, coat=0.1, bevel=0.0015)
     pbr("Sofa_LightGrey", "rough_linen", scale=0.6, tint="#C9C8C3", tint_mix=0.7, normal=1.0, bevel=0.02)
@@ -132,3 +187,52 @@ def run():
 
 
 run()
+
+
+def fix_columns_and_sofas():
+    """Replace the coarse SketchUp column claddings with true cylinders; soften the sofas."""
+    from mathutils import Vector
+    import bmesh
+    col = bpy.data.collections.get("Shell")
+    for src in ("Component_286302",):
+        o = bpy.data.objects.get(src)
+        if not o:
+            continue
+        pts = [k.matrix_world @ Vector(c) for k in o.children_recursive if k.type == "MESH" for c in k.bound_box]
+        cx = (min(p.x for p in pts) + max(p.x for p in pts)) / 2
+        cy = (min(p.y for p in pts) + max(p.y for p in pts)) / 2
+        r = (max(p.x for p in pts) - min(p.x for p in pts)) / 2
+        z1 = max(p.z for p in pts)
+        name = src + "_Smooth"
+        old = bpy.data.objects.get(name)
+        if old:
+            bpy.data.meshes.remove(old.data)
+        bm = bmesh.new()
+        bmesh.ops.create_cone(bm, cap_ends=True, segments=96, radius1=r, radius2=r, depth=z1,
+                              matrix=__import__("mathutils").Matrix.Translation((cx, cy, z1 / 2)))
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        bm.free()
+        for p in me.polygons:
+            p.use_smooth = True
+        me.materials.append(bpy.data.materials["Paint_White"])
+        ob = bpy.data.objects.new(name, me)
+        col.objects.link(ob)
+        for k in (o, *o.children_recursive):
+            k.hide_render = k.hide_viewport = True
+        print("column replaced:", src, "r=%.3f" % r)
+    for o in bpy.data.objects:
+        if o.type == "MESH" and o.name.startswith("Sofa_") and o.name.endswith("_Sofa_LightGrey"):
+            if "Soft" not in o.modifiers:
+                bv = o.modifiers.new("Soft", "BEVEL")
+                bv.width = 0.035
+                bv.segments = 4
+                bv.limit_method = "ANGLE"
+                sd = o.modifiers.new("Subd", "SUBSURF")
+                sd.levels = 1
+                sd.render_levels = 2
+            for p in o.data.polygons:
+                p.use_smooth = True
+
+
+fix_columns_and_sofas()
