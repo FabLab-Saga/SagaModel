@@ -3,7 +3,7 @@
 Equipment bank = the enclosure at the ESE end (model frame: +X = SSW, +Y = ESE):
   Boxes only - no machinery in the bank (user, 2026-10-07).
   A  back-wall run, y 37.73-38.33, 60 cm deep, x 21.05 -> ~32.4: large-box bays.
-  B  OSB-wall run, y 35.22-35.62, 40 cm deep: small boxes, full height.
+  B  south-wall run, y 34.42-34.82, 40 cm deep: small boxes, full height.
   C  NNE end, x 21.05-21.65, 60 cm deep: biggest boxes.
   Contents: IKEA SAMLA-style clear boxes (5-130 L) full of random teaching kit.
 Lounge/entryway along the SSW glass (y 27.05-34.55; main entrance at y 35.1 kept clear):
@@ -284,7 +284,7 @@ def build():
     # B: small boxes against the OSB wall, facing +y
     lv_b = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]
     part, slots_b, Lb = lib["shelf_unit"]([1.11] * 5, 0.40, H, lv_b)
-    loc_b, rot_b = lib["placement"](21.66 + Lb / 2, 35.22 + 0.20, Lb, 0.40, "+y")
+    loc_b, rot_b = lib["placement"](21.66 + Lb / 2, 34.42 + 0.20, Lb, 0.40, "+y")         # against the moved south wall
     part.emit("Bank_B_SmallBoxShelving", bank, loc_b, rot_b)
     fill_unit(slots_b, lv_b, H, 0.40, big=False).emit("Bank_B_Boxes", bank, loc_b, rot_b)
     # C: NNE end, facing +x: biggest boxes + sewing machines

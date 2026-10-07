@@ -1,9 +1,9 @@
 """Búnaðarbankinn (staff only) closed on all sides, 2.80 m high (open above), with a secret door
 facing the entrance hidden in a sculpture. Re-runnable ("BankWalls" collection).
 
-- South wall (workshop side): OSB-faced stud wall y 35.11-35.19, floor to soffit (replaces the
+- South wall (workshop side): OSB-faced stud wall y 34.32-34.40, 2.80 m (replaces the
   colleague's single OSB sheet that stopped at 3.05 m with a gap underneath).
-- East wall (entrance side): plastered stud wall x 27.49-27.57, y 35.11-38.35, floor to soffit.
+- East wall (entrance side): plastered stud wall x 27.49-27.57, y 34.32-38.35, 2.80 m.
   Door opening y 36.62-37.58, 2.40 m high.
 - Secret door: a parametric "fin wall" relief of 18 mm birch-ply fins (CNC-cut, 55 mm pitch)
   spanning y 36.50-37.70, rippling in depth; the fins over the opening ride on the door leaf, so the
@@ -24,7 +24,7 @@ Part, mat, lin = lib["Part"], lib["simple_mat"], lib["lin"]
 SOFFIT = 3.93
 WALL_H = 2.80                       # stops short of the slab (user): light + air over the top
 XW0, XW1 = 27.49, 27.57            # east wall
-YS0, YS1 = 35.11, 35.19            # south wall
+YS0, YS1 = 34.32, 34.40            # south wall (moved 0.8 m into the electronics area, user)
 YN = 38.35                          # back (exterior) wall line
 D0, D1, DH = 36.62, 37.58, 2.40     # door opening
 F0, F1 = 36.50, 37.70               # sculpture extent
@@ -113,3 +113,44 @@ def build():
 
 
 build()
+
+
+def bank_counter():
+    """Sorting / packing counter in the middle of the bank (staff work surface): 2.4 x 0.8 m
+    profile table at 0.95 m with a lower shelf; boxes being sorted, a label printer, a laptop,
+    a parts tray, kit contents laid out; two stools."""
+    col = bpy.data.collections["BankWalls"]
+    _c = open(HERE + "build_craft_spine.py").read()
+    craft = {}
+    exec(_c[:_c.index("\ndef build():")], craft)
+    _b = open(HERE + "build_bank_lounge.py").read()
+    bank = {}
+    exec(_b[:_b.index("\ndef build():")], bank)
+    L, D, H = 2.40, 0.80, 0.95
+    cx, cy = 24.40, 36.25
+    t, _ = lib["table_unit"](L, D, H, [0.0, L - 0.04], lower=(0.16,))
+    loc, rot = lib["placement"](cx, cy, L, D, "-y")
+    t.emit("Bank_Counter", col, loc, rot)
+    p = Part()
+    samla = bank["samla"]
+    samla(p, 0.15, 0.10, H, 22)                                         # open boxes being sorted
+    samla(p, 0.62, 0.10, H, 11)
+    samla(p, 0.12, 0.10, 0.16, 65)                                     # under-shelf stock
+    samla(p, 0.80, 0.10, 0.16, 65)
+    samla(p, 1.45, 0.10, 0.16, 45)
+    grey = mat("LabelPrinter", "#2B2D30", 0.4)
+    p.box(grey, 1.20, 1.36, 0.45, 0.62, H, H + 0.09, bevel=0.01)                       # label printer
+    p.box(mat("Label_Tape", "#F2F1EC", 0.6), 1.22, 1.34, 0.42, 0.45, H + 0.04, H + 0.041)
+    lap = bpy.data.materials.get("Laptop_Body") or grey
+    p.box(lap, 1.55, 1.87, 0.30, 0.52, H, H + 0.012, bevel=0.003)                      # laptop base
+    p.box(lap, 1.55, 1.87, 0.52, 0.525, H + 0.012, H + 0.23, bevel=0.002)              # lid
+    p.box(mat("Tray_Grey", "#7C8085", 0.5), 0.70, 1.05, 0.48, 0.70, H, H + 0.03, bevel=0.003)
+    for k in range(10):                                                 # kit contents laid out
+        x, y = 2.0 + (k % 3) * 0.10, 0.20 + (k // 3) * 0.13
+        p.box(MAT["bins"][k % 6], x, x + 0.07, y, y + 0.09, H, H + 0.025, bevel=0.003)
+    p.emit("Bank_Counter_Stuff", col, loc, rot)
+    for i, sx in enumerate((cx - 0.6, cx + 0.5)):
+        craft["stool"](0.68).emit(f"Bank_Stool_{i}", col, Vector((sx - 0.18, cy + D / 2 + 0.12, 0.0)), 0.15 * (i - 0.5))
+
+
+bank_counter()

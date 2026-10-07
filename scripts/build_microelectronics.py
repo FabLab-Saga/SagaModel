@@ -440,7 +440,7 @@ def build():
 
 def electronics_commons(m, col):
     """Open floor between the micro bench and the bank wall (x 21.6-27.4, y 31.5-35.1):
-    - on the bank wall (faces -y at y 35.11): a profile-framed board run: pin-up board with
+    - on the bank wall (faces -y at y 34.32): a profile-framed board run: pin-up board with
       schematics and project sheets, a whiteboard with circuit sketches, a pegboard with coiled
       cables / jumper wires, and a shelf of kit boxes above;
     - an electronics teaching table (two 1.6 x 0.8 tables pushed together) with 6 chairs,
@@ -448,7 +448,7 @@ def electronics_commons(m, col):
     _t = open(HERE + "build_textile.py").read()
     tex = {}
     exec(_t[:_t.index("\ndef build():")], tex)
-    YW = 35.105                                                        # wall face
+    YW = 34.315                                                        # wall face (moved bank wall)
     cork = mat("Cork", "#B98D5E", 0.85)
     paper = mat("Paper", "#F4F2EC", 0.8)
     wb = mat("Whiteboard", "#F7F7F5", 0.15, coat=0.6)
@@ -508,7 +508,7 @@ def electronics_commons(m, col):
 
     # teaching table with 6 chairs
     TL, TD, TH = 3.20, 1.20, 0.75
-    tc = Vector((24.55, 33.05))
+    tc = Vector((24.55, 32.85))
     t, _ = lib["table_unit"](TL, TD, TH, [0.0, TL / 2 - 0.02, TL - 0.04], lower=())
     loc, rot = lib["placement"](tc.x, tc.y, TL, TD, "-y")
     t.emit("Electronics_Table", col, loc, rot)
