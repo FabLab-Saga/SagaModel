@@ -203,3 +203,39 @@ def laser_room_life():
 
 
 laser_room_life()
+
+
+def wall_details():
+    """Power sockets above the benches/counters, switches by doors, exit sign over the entrance."""
+    col = bpy.data.collections["Life"]
+    white = mat("Fitting_White", "#F2F1EE", 0.35)
+    grey = mat("Fitting_Grey", "#9A9C9E", 0.4)
+    exitg = mat("Exit_Green", "#1E9E52", 0.3, emit=2.0)
+    p = Part()
+
+    def socket(x, y, z, nx, ny, double=True):
+        w = 0.155 if double else 0.085
+        if nx:                                                     # on a wall facing +-x
+            p.box(white, x, x + 0.012 * nx, y - w / 2, y + w / 2, z - 0.043, z + 0.043, bevel=0.003)
+            for dy in ((-0.035, 0.035) if double else (0.0,)):
+                p.cyl(grey, (x + 0.012 * nx, y + dy, z), (x + 0.0135 * nx, y + dy, z), 0.019, seg=20)
+        else:
+            p.box(white, x - w / 2, x + w / 2, y, y + 0.012 * ny, z - 0.043, z + 0.043, bevel=0.003)
+            for dx in ((-0.035, 0.035) if double else (0.0,)):
+                p.cyl(grey, (x + dx, y + 0.012 * ny, z), (x + dx, y + 0.0135 * ny, z), 0.019, seg=20)
+    # mural wall (faces +y at 21.84): sockets either side of the sink and door, switch by the door
+    for x in (25.35, 27.45, 28.45):
+        socket(x, 21.845, 1.10, 0, 1)
+    socket(25.85, 21.845, 1.20, 0, 1, double=False)
+    # laser-room partition, workshop side (faces -x at 29.52): sockets for the print farm
+    for y in (22.2, 24.9):
+        socket(29.515, y, 0.30, -1, 0)
+    # exit sign above the entrance door on the SSW glazing (hangs from the slab, faces -x)
+    p.box(white, 32.30, 32.36, 35.36, 35.96, 2.62, 2.80, bevel=0.004)
+    p.box(exitg, 32.295, 32.30, 35.40, 35.92, 2.64, 2.78)
+    for yy in (35.42, 35.90):
+        p.cyl(grey, (32.33, yy, 2.80), (32.33, yy, 3.93), 0.002, seg=6)
+    p.emit("Wall_Details", col, Vector((0, 0, 0)))
+
+
+wall_details()
