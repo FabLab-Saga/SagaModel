@@ -1,3 +1,5 @@
+> **Done (2026-10-07).** Superseded by CLAUDE.md for current state.
+
 # Goal (set 2026-10-07, evening session)
 
 Deliver a presentation-ready set of photoreal daylight renders of Fab Lab SAGA,

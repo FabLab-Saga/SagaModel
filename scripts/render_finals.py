@@ -24,7 +24,31 @@ SHOTS += sorted(((f"{int(o['shot_order']):02d}_{o.name[4:].lower()}", o.name) fo
 want = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 sc = bpy.context.scene
 sc.render.engine = "CYCLES"
-sc.cycles.device = "CPU"
+def _pick_device():
+    """Use the fastest GPU backend available (OptiX > CUDA > HIP > oneAPI > Metal), else CPU.
+    Override with SAGA_DEVICE=CPU|OPTIX|CUDA|HIP|ONEAPI|METAL."""
+    import os
+    prefs = bpy.context.preferences.addons["cycles"].preferences
+    order = [os.environ["SAGA_DEVICE"]] if "SAGA_DEVICE" in os.environ else ["OPTIX", "CUDA", "HIP", "ONEAPI", "METAL"]
+    for t in order:
+        if t == "CPU":
+            break
+        try:
+            prefs.compute_device_type = t
+            prefs.get_devices()
+            devs = [d for d in prefs.devices if d.type == t]
+            if devs:
+                for d in prefs.devices:
+                    d.use = d.type == t
+                print("RENDER DEVICE:", t, [d.name for d in devs], flush=True)
+                return "GPU"
+        except Exception:
+            pass
+    print("RENDER DEVICE: CPU", flush=True)
+    return "CPU"
+
+
+sc.cycles.device = _pick_device()
 sc.cycles.samples = int(__import__("os").environ.get("SAGA_SPP", "40"))
 sc.cycles.use_adaptive_sampling = True
 sc.cycles.adaptive_threshold = 0.015
