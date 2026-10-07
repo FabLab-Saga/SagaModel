@@ -276,7 +276,11 @@ def build():
     x2 = 21.05 + L1 + 0.005
     loc2, rot2 = lib["placement"](x2 + L2 / 2, 38.33 - 0.30, L2, 0.60, "-y")
     part.emit("Bank_A2_Shelving", bank, loc2, rot2)
-    fill_unit(slots2, lv_a2, H, 0.60).emit("Bank_A2_Boxes", bank, loc2, rot2)
+    DEMO = {2, 3, 4, 5}                                                 # bays visible from the entrance: demo pieces
+    fill_unit(slots2, lv_a2, H, 0.60, skip={k for k in slots2 if k[0] in DEMO}).emit("Bank_A2_Boxes", bank, loc2, rot2)
+    demo = {}
+    exec(open(HERE + "build_demo.py").read(), demo)
+    print("demo pieces:", demo["demo_fill"](lib, slots2, lv_a2, H, 0.60, loc2, rot2, lounge, DEMO))
     # B: small boxes against the OSB wall, facing +y
     lv_b = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]
     part, slots_b, Lb = lib["shelf_unit"]([1.11] * 5, 0.40, H, lv_b)

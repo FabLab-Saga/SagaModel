@@ -92,7 +92,7 @@ def books_and_plants(part, x0, x1, depth, z, clear, place):
     x = x0 + 0.03
     while x < x1 - 0.12:
         r = rng.random()
-        if r < 0.18 and x + 0.26 < x1 and clear > 0.30:
+        if False:                                                       # plant spots removed (user)
             PLANT_SPOTS.append((place, x + 0.12, depth / 2, z, clear - 0.04))
             x += 0.28
         elif r < 0.30 and x + 0.26 < x1:
@@ -232,7 +232,7 @@ def build():
             for (bi, li), (xa, xb, _, _, zt) in slots.items():
                 books_and_plants(fill, xa, xb, 0.30, zt, tops[li + 1] - zt - 0.06, (loc, rot))
         fill.emit(f"Spine_{side}_Contents", sp, loc, rot)
-    place_plants(sp)
+    PLANT_SPOTS.clear()                                                # no plants indoors (user)
     spine = Part()
     spine.box(MAT["ply"], 27.913, 27.929, 31.57, 31.55 + 4 * 1.22 + 0.04 - 0.02, 0.05, 2.40)
     spine.emit("Spine_Panel", sp, Vector((0, 0, 0)))
