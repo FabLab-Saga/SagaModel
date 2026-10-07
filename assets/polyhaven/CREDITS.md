@@ -20,3 +20,5 @@ free for any use, no attribution required. Credited here as a courtesy.
 | concrete_pavers | Amal Kumar | https://polyhaven.com/a/concrete_pavers |
 | grass_path_2 | (see source) | https://polyhaven.com/a/grass_path_2 |
 | leafy_grass | Charlotte Baglioni | https://polyhaven.com/a/leafy_grass |
+| Drill_01 (model) | Fernando Quinn | https://polyhaven.com/a/Drill_01 |
+| cardboard_box_01 (model) | Rahul Chaudhary | https://polyhaven.com/a/cardboard_box_01 |
