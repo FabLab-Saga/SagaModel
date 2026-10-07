@@ -163,7 +163,7 @@ def shape_stack(p, m, x, y, z):
             bmesh.ops.create_icosphere(p.bm(c), subdivisions=1, radius=s, matrix=Matrix.Translation((x, y, zz + s)))
 
 
-def demo_fill(lib, slots, levels, H, depth, loc, rot, col, bays):
+def demo_fill(lib, slots, levels, H, depth, loc, rot, col, bays, sign=True, name="Demo_Pieces"):
     m = _mats(lib)
     p = lib["Part"]()
     tops = list(levels) + [H]
@@ -193,7 +193,9 @@ def demo_fill(lib, slots, levels, H, depth, loc, rot, col, bays):
             x = xa + (j + 0.5) * (xb - xa) / n + rng.uniform(-0.05, 0.05)
             pieces[k % len(pieces)](x, zt, clear)
             k += 1
-    p.emit("Demo_Pieces", col, loc, rot)
+    p.emit(name, col, loc, rot)
+    if not sign:
+        return k
     # neon sign on the wall above the display
     cu = bpy.data.curves.get("Demo_NeonSign") or bpy.data.curves.new("Demo_NeonSign", "FONT")
     cu.body = "make anything"
