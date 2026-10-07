@@ -172,3 +172,34 @@ def build():
 
 
 build()
+
+
+def laser_room_life():
+    """CO2 extinguisher by the door, sheet stock leaning on the partition, filter unit by the Epilog."""
+    col = bpy.data.collections["Life"]
+    red = mat("Extinguisher_Red", "#B3141B", 0.35, coat=0.6)
+    blk = mat("Extinguisher_Black", "#111111", 0.5)
+    p = Part()
+    ex, ey = 29.80, 26.55                                          # inside the laser room by the door
+    p.cyl(red, (ex, ey, 0.30), (ex, ey, 0.92), 0.075, seg=32)
+    p.cyl(blk, (ex, ey, 0.92), (ex, ey, 1.00), 0.03, seg=16)       # valve
+    p.cyl(blk, (ex, ey + 0.03, 0.97), (ex + 0.0, ey + 0.30, 0.55), 0.012, seg=10)  # horn hose
+    p.box(blk, ex - 0.10, ex - 0.07, ey - 0.06, ey + 0.06, 0.70, 0.95)            # wall bracket
+    # sheet stock leaning against the NNE partition (plywood + acrylic)
+    sx = 29.72
+    for i, m in enumerate([MAT["ply"], MAT["ply"], MAT["ply"], bpy.data.materials.get("Acrylic_Clear") or MAT["ply"], MAT["ply"]]):
+        lean = 0.10 + i * 0.012
+        bm = p.bm(m)
+        r = bmesh.ops.create_cube(bm, size=1.0)
+        for v in r["verts"]:
+            top = v.co.z > 0
+            v.co = Vector((sx + (0.0 if top else lean) + i * 0.012 + (0.006 if v.co.x > 0 else 0.0),
+                           23.40 + (1.22 if v.co.y > 0 else 0.0), 2.40 if top else 0.0))
+    # fume filter unit next to the Epilog
+    gry = bpy.data.materials.get("Mach_Grey")
+    p.box(gry, 29.72, 30.27, 22.10, 22.60, 0.0, 0.85, bevel=0.012)
+    p.box(blk, 29.80, 30.20, 22.098, 22.10, 0.55, 0.78)
+    p.emit("LaserRoom_Life", col, Vector((0, 0, 0)))
+
+
+laser_room_life()
