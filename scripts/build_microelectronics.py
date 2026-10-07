@@ -308,6 +308,43 @@ def glass_toolwall(m, col):
     p.emit("GlassToolWall_Frame", col, Vector((0, 0, 0)))
 
 
+def component_storage(m, col):
+    """Electronics component storage on the NNE glass, micro side (y 30.25-34.15): low profile
+    counter (1.05 m) carrying stacked drawer cabinets, reel rack for SMD reels, ESD bins below."""
+    Y0, Y1, XB = 30.30, 34.10, 20.88
+    L, D, H = Y1 - Y0, 0.50, 1.05
+    part, slots, Lu = lib["shelf_unit"]([1.20, 1.20, 1.20], D, H, [0.12, 0.55], power=False)
+    loc, rot = lib["placement"](XB + D / 2, Y0 + Lu / 2, Lu, D, "+x")
+    part.emit("ComponentStorage", col, loc, rot)
+    top = Part()                                                       # solid birch top for the cabinets
+    top.box(MAT["ply"], XB - 0.005, XB + D + 0.01, Y0, Y0 + Lu, H, H + 0.025, bevel=0.002)
+    top.emit("ComponentStorage_Top", col, Vector((0, 0, 0)))
+    esd = mat("ESD_Black", "#1A1A1C", 0.6)
+    pink = mat("ESD_Pink", "#D98AA0", 0.6)
+    fill = Part()
+    for (bi, li), (xa, xb, _, _, zt) in slots.items():
+        x = xa + 0.03
+        while x < xb - 0.30:
+            lib["bin_box"](fill, esd if (bi + li) % 2 else pink, x, 0.05, zt, w=0.27, d=0.40, h=0.16)
+            x += 0.30
+    fill.emit("ComponentStorage_Bins", col, loc, rot)
+    # on top: three stacks of drawer cabinets + an SMD reel rack
+    for i in range(3):
+        for k in range(2):
+            c2, cw2, ch2 = drawer_cabinet(m, cols=6, rows=6)
+            c2.emit(f"CompCab_{i}_{k}", col, Vector((XB + 0.06 + 0.142, Y0 + 0.10 + i * 1.22, H + 0.025 + k * (ch2 + 0.005))), math.pi / 2)
+    reels = Part()
+    ry = Y0 + 0.10 + 3 * 1.22 - 0.30
+    reels.box(m["steel"], XB + 0.10, XB + 0.12, ry, ry + 0.02, H, H + 0.30)
+    reels.box(m["steel"], XB + 0.10, XB + 0.12, ry + 0.22, ry + 0.24, H, H + 0.30)
+    reels.cyl(m["steel"], (XB + 0.11, ry, H + 0.20), (XB + 0.11, ry + 0.24, H + 0.20), 0.005, seg=8)
+    for j in range(12):
+        yy = ry + 0.012 + j * 0.018
+        reels.cyl(mat("Reel_Blue", "#1E5FA8", 0.3) if j % 3 else mat("Reel_Clear", "#D8DEE2", 0.1),
+                  (XB + 0.11, yy, H + 0.20), (XB + 0.11, yy + 0.010, H + 0.20), 0.09, seg=32)
+    reels.emit("SMD_Reels", col, Vector((0, 0, 0)))
+
+
 # ---------------------------------------------------------------- build
 def build():
     m = mats()
@@ -367,8 +404,7 @@ def build():
     def on_bench(part, name, wx, wy, w, d, facing=math.pi):
         part.emit(name, col, Vector((wx + w, wy + d, top)), facing)
     by = yf + 0.25                                                   # bench back edge (against the tool wall)
-    on_bench(mdx20(m), "Roland_MDX20", 21.85, by + 0.05, 0.362, 0.300)
-    for i, sx in enumerate((22.30, 22.82)):                          # the two Roland SRM-20 mills
+    for i, sx in enumerate((21.95, 22.55)):                          # the only machines here: 2x Roland SRM-20
         on_bench(mach["srm20"](), f"Roland_SRM20_{i + 1}", sx, by + 0.03, 0.451, 0.426)
     for i, sx in enumerate((23.50, 24.70, 25.90)):
         on_bench(soldering_station(m), f"Solder_{i}", sx, by + 0.12, 0.25, 0.16)
@@ -386,6 +422,7 @@ def build():
         craft["stool"](0.68).emit(f"MicroStool_{i}", col, Vector((sx, by + D + 0.12, 0.0)), rng.uniform(-0.2, 0.2))
 
     glass_toolwall(m, col)
+    component_storage(m, col)
     print("microelectronics built; bench length %.2f m" % L)
 
 

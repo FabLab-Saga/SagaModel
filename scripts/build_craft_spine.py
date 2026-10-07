@@ -180,7 +180,7 @@ def build():
     put = bank["put"]
     XG = 20.90                                                         # just inside the NNE glazing frames
     # ---- craft counter A (standing) and B (seated), north of the tool-wall row
-    for name, y0, L, H in (("CraftCounter_A", 30.25, 1.92, 0.90), ("CraftCounter_B", 32.22, 1.92, 0.75)):
+    for name, y0, L, H in ():   # craft counters moved to the textile area (build_textile.py), 2026-10-08
         part, _ = lib["table_unit"](L, 0.70, H, [0.0, L - 0.04], lower=(0.16,))
         loc, rot = lib["placement"](XG + 0.35, y0 + L / 2, L, 0.70, "+x")
         part.emit(name, col, loc, rot)

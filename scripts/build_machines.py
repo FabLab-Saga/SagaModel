@@ -68,6 +68,7 @@ def materials():
         spoolflange=mat("Spool_Flange", "#202020", 0.35),
         mat_blue=mat("Cricut_Mat", "#6E8FB0", 0.6),
         label=mat("Spool_Label", "#EDEBE4", 0.7),
+        srmcover=_make_srm_cover(),
         desk=mat("Desk_Black", "#141414", 0.45),
         rubber=mat("Mach_Rubber", "#0E0E0E", 0.8),
         galv=bpy.data.materials.get("Galvanised") or mat("Galvanised", "#B9BEC2", 0.35, metal=1.0),
@@ -169,6 +170,23 @@ def xtool(w=0.493, d=0.253, h=0.373):
 
 
 PRINT_RNG = __import__('random').Random(5)
+
+
+def _make_srm_cover():
+    """Smoked violet polycarbonate: mostly transmissive glass."""
+    m = bpy.data.materials.get("SRM_Cover") or bpy.data.materials.new("SRM_Cover")
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    g = nt.nodes.new("ShaderNodeBsdfPrincipled")
+    g.inputs["Base Color"].default_value = lin("#7A6A9A")
+    g.inputs["Roughness"].default_value = 0.05
+    g.inputs["Transmission Weight"].default_value = 0.85
+    g.inputs["IOR"].default_value = 1.58
+    o = nt.nodes.new("ShaderNodeOutputMaterial")
+    nt.links.new(g.outputs[0], o.inputs["Surface"])
+    m.diffuse_color = (*lin("#7A6A9A")[:3], 0.4)
+    return m
 
 
 def spool_part(p, filament, cx, cy, cz, axis="x", r_out=0.100, width=0.065):
@@ -281,9 +299,22 @@ def bambu(w=0.392, d=0.406, h=0.478):
 
 
 def srm20(w=0.451, d=0.426, h=0.426):
+    """Roland SRM-20: white shell (base, sides, back, roof) + smoked violet see-through front cover;
+    inside: aluminium bed with a copper blank, spindle on its Z carriage."""
     p = Part()
-    p.box(M["white"], 0, w, 0.05, d, 0, h, bevel=0.015)
-    p.box(M["purple"], 0.02, w - 0.02, 0.0, 0.32, 0.06, h - 0.02, bevel=0.01)                  # tinted cover
+    p.box(M["white"], 0, w, 0.0, d, 0, 0.10, bevel=0.012)                                   # base
+    p.box(M["white"], 0, 0.045, 0.0, d, 0.10, h, bevel=0.01)                                # left side
+    p.box(M["white"], w - 0.045, w, 0.0, d, 0.10, h, bevel=0.01)                            # right side
+    p.box(M["white"], 0.045, w - 0.045, d - 0.06, d, 0.10, h, bevel=0.008)                  # back
+    p.box(M["white"], 0.0, w, 0.10, d, h - 0.03, h, bevel=0.01)                             # roof
+    p.box(M["srmcover"], 0.045, w - 0.045, 0.0, 0.006, 0.10, h - 0.03)                      # front cover (see-through)
+    p.box(M["srmcover"], 0.045, w - 0.045, 0.006, 0.10, h - 0.036, h - 0.03)                # cover top lip
+    p.box(M["alusatin"] if "alusatin" in M else M["chrome"], 0.08, w - 0.08, 0.10, d - 0.10, 0.10, 0.115)   # bed
+    p.box(M["gold"], 0.13, 0.27, 0.15, 0.27, 0.115, 0.117)                                  # copper blank
+    p.box(M["white"], w * 0.40, w * 0.62, d - 0.16, d - 0.06, 0.20, h - 0.03, bevel=0.006)  # Z carriage
+    p.cyl(M["dark"], (w * 0.51, d - 0.17, 0.17), (w * 0.51, d - 0.17, 0.30), 0.022, seg=24) # spindle motor
+    p.cyl(M["chrome"], (w * 0.51, d - 0.17, 0.13), (w * 0.51, d - 0.17, 0.17), 0.004, seg=8)  # end mill
+    p.box(M["lcd"], w - 0.04, w - 0.02, -0.001, 0.0, 0.05, 0.07)                            # status LED
     return p
 
 
