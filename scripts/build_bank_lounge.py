@@ -257,6 +257,25 @@ def put(part, name, col, loc, rot, local_xy, z, w, d):
     return part.emit(name, col, Vector((c.x, c.y, z)) + off, rot)
 
 
+def desk_niche(slot, loc, rot, col):
+    """Props on the standing-desk board of the A1 niche (local frame of the shelf run, front = y 0)."""
+    xa, xb, _, _, zt = slot
+    p = Part()
+    grey = mat("LabelPrinter", "#2B2D30", 0.4)
+    samla(p, xa + 0.05, 0.10, zt, 22)                                  # box being sorted
+    p.box(grey, xa + 0.48, xa + 0.64, 0.30, 0.47, zt, zt + 0.09, bevel=0.01)          # label printer
+    p.box(mat("Label_Tape", "#F2F1EC", 0.6), xa + 0.50, xa + 0.62, 0.27, 0.30, zt + 0.04, zt + 0.041)
+    lap = bpy.data.materials.get("Laptop_Body") or grey
+    p.box(lap, xa + 0.75, xa + 1.07, 0.08, 0.30, zt, zt + 0.012, bevel=0.003)         # laptop, open
+    p.box(lap, xa + 0.75, xa + 1.07, 0.30, 0.305, zt + 0.012, zt + 0.23, bevel=0.002)
+    p.box(mat("Tray_Grey", "#7C8085", 0.5), xa + 0.47, xa + 0.72, 0.06, 0.24, zt, zt + 0.03, bevel=0.003)
+    for k in range(4):
+        x = xa + 1.10 + (k % 2) * 0.06
+        p.box(MAT["bins"][k], x, x + 0.05, 0.08 + (k // 2) * 0.09, 0.15 + (k // 2) * 0.09, zt, zt + 0.02, bevel=0.002)
+    p.box(MAT["ply"], xa + 0.02, xb - 0.02, 0.585, 0.60, zt, zt + 0.48)               # ply back panel in the niche
+    p.emit("Bank_DeskNiche", col, loc, rot)
+
+
 def build():
     bank = clear_collection("EquipmentBank")
     lounge = clear_collection("Lounge")
@@ -264,11 +283,13 @@ def build():
 
     H = 2.42
     # A1: large-box bays at the NNE end of the back wall
-    lv_a1 = [0.12, 0.56, 1.00, 1.44, 1.88]
-    part, slots, L1 = lib["shelf_unit"]([1.25, 1.25, 1.25], 0.60, H, lv_a1)
+    lv_a1 = [0.12, 0.56, 0.95, 1.44, 1.88]
+    DESK = {(1, 0), (1, 1), (1, 3)}                                    # middle bay = standing desk niche (board at 0.95)
+    part, slots, L1 = lib["shelf_unit"]([1.25, 1.25, 1.25], 0.60, H, lv_a1, omit=DESK)
     loc, rot = lib["placement"](21.05 + L1 / 2, 38.33 - 0.30, L1, 0.60, "-y")
     part.emit("Bank_A1_Shelving", bank, loc, rot)
-    fill_unit(slots, lv_a1, H, 0.60).emit("Bank_A1_Boxes", bank, loc, rot)
+    fill_unit(slots, lv_a1, H, 0.60, skip=DESK | {(1, 2)}).emit("Bank_A1_Boxes", bank, loc, rot)
+    desk_niche(slots[(1, 2)], loc, rot, bank)
     # A2: more box bays along the rest of the back wall (no machinery in the bank - boxes only)
     bays = [1.20] * 6
     lv_a2 = lv_a1

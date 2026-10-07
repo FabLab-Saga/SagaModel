@@ -182,12 +182,13 @@ def bin_box(part, m, x0, y0, z0, w=0.40, d=0.30, h=0.20, t=0.004):
 
 
 # ---------------------------------------------------------------- units
-def shelf_unit(bays, depth, height, levels, post=0.04, rail=0.02, feet_h=0.035, power=False):
+def shelf_unit(bays, depth, height, levels, post=0.04, rail=0.02, feet_h=0.035, power=False, omit=()):
     """Wall shelving. bays: list of clear bay widths; levels: shelf-top heights.
 
     Uprights 40x40 at every bay boundary, front and back; 20x20 rails front/back
     and at the sides under every board; 40x40 frame at the top. Returns (part, slots)
     with slots[(bay, level)] = (x0, x1, y0, y1, ztop) of the board in local coords.
+    omit: {(bay, level)} boards (and their rails) left out, e.g. a desk niche in a run.
     """
     p = Part()
     xs = [0.0]
@@ -206,6 +207,8 @@ def shelf_unit(bays, depth, height, levels, post=0.04, rail=0.02, feet_h=0.035, 
         zr = zt - (0.018 if li < len(levels) else 0.0) - s
         for bi in range(len(bays)):
             xa, xb = xs[bi] + post, xs[bi + 1]
+            if (bi, li) in omit:
+                continue
             for y in (0.0, depth - s):                                 # front/back rails
                 p.profile(s, "x", xa, y, zr, xb - xa)
                 bracket(p, s, xa, y + (s if y == 0 else -s * 0.9), zr)
