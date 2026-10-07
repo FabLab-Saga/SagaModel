@@ -310,24 +310,34 @@ def glass_toolwall(m, col):
 
 def component_storage(m, col):
     """Electronics component storage on the NNE glass, micro side (y 30.25-34.15): low profile
-    counter (1.05 m) carrying stacked drawer cabinets, reel rack for SMD reels, ESD bins below."""
+    counter (1.05 m) of drawer units, carrying stacked drawer cabinets and a reel rack for SMD reels."""
     Y0, Y1, XB = 30.30, 34.10, 20.88
     L, D, H = Y1 - Y0, 0.50, 1.05
-    part, slots, Lu = lib["shelf_unit"]([1.20, 1.20, 1.20], D, H, [0.12, 0.55], power=False)
+    part, slots, Lu = lib["shelf_unit"]([1.20, 1.20, 1.20], D, H, [0.12], power=False)   # frame only; drawers fill it
     loc, rot = lib["placement"](XB + D / 2, Y0 + Lu / 2, Lu, D, "+x")
     part.emit("ComponentStorage", col, loc, rot)
     top = Part()                                                       # solid birch top for the cabinets
     top.box(MAT["ply"], XB - 0.005, XB + D + 0.01, Y0, Y0 + Lu, H, H + 0.025, bevel=0.002)
     top.emit("ComponentStorage_Top", col, Vector((0, 0, 0)))
-    esd = mat("ESD_Black", "#1A1A1C", 0.6)
-    pink = mat("ESD_Pink", "#D98AA0", 0.6)
-    fill = Part()
-    for (bi, li), (xa, xb, _, _, zt) in slots.items():
-        x = xa + 0.03
-        while x < xb - 0.30:
-            lib["bin_box"](fill, esd if (bi + li) % 2 else pink, x, 0.05, zt, w=0.27, d=0.40, h=0.16)
-            x += 0.30
-    fill.emit("ComponentStorage_Bins", col, loc, rot)
+    # drawers instead of open shelves: each bay filled with birch drawer fronts (4 rows, graded heights)
+    blk = mat("Handle_Black", "#151515", 0.4)
+    gap = mat("Drawer_Shadow", "#0E0E0E", 0.9)
+    dr = Part()
+    for bi in range(3):
+        xa, xb, _, _, _ = slots[(bi, 0)]
+        z0, z1 = 0.10, H - 0.045
+        heights = [0.30, 0.25, 0.20, 0.17]
+        tot = sum(heights)
+        z = z0
+        for k, hgt in enumerate(heights):
+            hh = (z1 - z0) * hgt / tot
+            dr.box(gap, xa, xb, 0.010, D - 0.01, z, z + hh)                                # carcass inside
+            dr.box(MAT["ply"], xa + 0.003, xb - 0.003, -0.002, 0.016, z + 0.003, z + hh - 0.003, bevel=0.0015)  # front
+            dr.box(blk, (xa + xb) / 2 - 0.08, (xa + xb) / 2 + 0.08, -0.020, -0.002, z + hh - 0.05, z + hh - 0.035, bevel=0.002)  # handle
+            dr.box(MAT["label"] if "label" in MAT else mat("Drawer_Label", "#F3F1EA", 0.6),
+                   xa + 0.04, xa + 0.14, -0.0025, -0.002, z + hh - 0.06, z + hh - 0.035)  # label card
+            z += hh
+    dr.emit("ComponentStorage_Drawers", col, loc, rot)
     # on top: three stacks of drawer cabinets + an SMD reel rack
     for i in range(3):
         for k in range(2):
