@@ -9,6 +9,7 @@ Craft zone (replaces placeholder Component_1489559 and friends), model frame +X 
 Spine (x 27.62-28.22, y 31.55-36.65): double-sided profile shelving, birch-ply spine;
   bank/workshop side (-x) = SAMLA boxes, lounge side (+x) = books, plants, display.
 """
+import math
 import random
 
 import bmesh
@@ -63,32 +64,99 @@ def vinyl_stand(w=0.95, d=0.50, h=0.82):
     return p
 
 
-def books_and_plants(part, x0, x1, depth, z, clear):
-    """Fill a lounge-side shelf: runs of books, a plant or a display object."""
+PLANT_SPOTS = []                                     # (placement, local x, local y, z, max height)
+
+COVERS = ["#2E3A4F", "#7A2E2A", "#C9B48A", "#3F5A45", "#1F1F1F", "#E8E2D2", "#8C6A3E", "#5B6E7F", "#A33B33",
+          "#D9C7A3", "#304B6B", "#6B5B4B", "#B8A27A", "#43403B", "#9AA3A8", "#E03A3F", "#1245DE"]
+PAGES = mat("Book_Pages", "#EDE6D3", 0.8)
+
+
+def cover_mat(h):
+    return mat("Book_" + h[1:], h, rng.uniform(0.45, 0.7))
+
+
+def book(part, x, y, z, t, h, d, tilt=0.0):
+    """Hard-cover book on its tail, spine to the front; tilt leans it towards +x."""
+    m = cover_mat(rng.choice(COVERS))
+    n0, p0 = len(part.bm(m).verts), len(part.bm(PAGES).verts)
+    part.box(m, x, x + t, y, y + d, z, z + h, bevel=0.0015)
+    part.box(PAGES, x + 0.002, x + t - 0.002, y + 0.004, y + d + 0.0008, z + 0.003, z + h + 0.0008)
+    if tilt:
+        for bmx, k in ((part.bm(m), n0), (part.bm(PAGES), p0)):
+            bmx.verts.ensure_lookup_table()
+            for v in list(bmx.verts)[k:]:
+                v.co.x += (v.co.z - z) * math.tan(tilt)
+
+
+def books_and_plants(part, x0, x1, depth, z, clear, place):
     x = x0 + 0.03
     while x < x1 - 0.12:
         r = rng.random()
-        if r < 0.22 and x + 0.26 < x1:                                  # plant
-            part.cyl(POT, (x + 0.12, depth / 2, z), (x + 0.12, depth / 2, z + 0.16), 0.08, seg=20)
-            bmesh.ops.create_icosphere(part.bm(LEAF), subdivisions=2, radius=min(0.15, clear * 0.35),
-                                       matrix=Matrix.Translation((x + 0.12, depth / 2, z + 0.16 + min(0.13, clear * 0.3))))
+        if r < 0.18 and x + 0.26 < x1 and clear > 0.30:
+            PLANT_SPOTS.append((place, x + 0.12, depth / 2, z, clear - 0.04))
             x += 0.28
-        elif r < 0.32 and x + 0.22 < x1:                                # display: a 3D-printed object on a block
-            part.box(MAT["ply"], x, x + 0.18, 0.04, 0.22, z, z + 0.05, bevel=0.003)
-            bmesh.ops.create_icosphere(part.bm(rng.choice(MAT["bins"])), subdivisions=1, radius=0.07,
-                                       matrix=Matrix.Translation((x + 0.09, 0.13, z + 0.12)))
-            x += 0.24
-        else:                                                           # run of books
-            n = rng.randint(5, 14)
-            for _ in range(n):
+        elif r < 0.30 and x + 0.26 < x1:
+            zz = z
+            for _ in range(rng.randint(3, 6)):
+                t = rng.uniform(0.02, 0.04); w = rng.uniform(0.17, 0.24); d = rng.uniform(0.15, 0.21)
+                part.box(cover_mat(rng.choice(COVERS)), x, x + w, 0.03, 0.03 + d, zz, zz + t, bevel=0.0015)
+                part.box(PAGES, x + 0.004, x + w + 0.0008, 0.034, 0.03 + d - 0.003, zz + 0.002, zz + t - 0.002)
+                zz += t
+            x += 0.30
+        else:
+            for _ in range(rng.randint(6, 16)):
                 t = rng.uniform(0.018, 0.045)
                 if x + t > x1 - 0.03:
                     break
-                h = min(clear - 0.03, rng.uniform(0.18, 0.30))
-                dd = rng.uniform(0.15, 0.22)
-                part.box(rng.choice(BOOKS), x, x + t, 0.02, 0.02 + dd, z, z + h, bevel=0.0015)
-                x += t + 0.001
+                book(part, x, 0.02, z, t, min(clear - 0.03, rng.uniform(0.19, 0.29)), rng.uniform(0.14, 0.21))
+                x += t + 0.0008
+            if x + 0.06 < x1 - 0.03 and rng.random() < 0.5:
+                book(part, x + 0.002, 0.02, z, 0.025, min(clear - 0.04, 0.24), 0.17, tilt=math.radians(rng.uniform(8, 16)))
+                x += 0.06
             x += 0.05
+
+
+def place_plants(col):
+    """Scanned CC0 potted plants (Poly Haven) at the recorded spots, scaled to the shelf."""
+    from mathutils import Matrix
+    lib_col = bpy.data.collections.get("AssetLibrary") or bpy.data.collections.new("AssetLibrary")
+    if lib_col.name not in bpy.context.scene.collection.children:
+        bpy.context.scene.collection.children.link(lib_col)
+    bpy.context.view_layer.layer_collection.children[lib_col.name].exclude = True
+    srcs = []
+    for a in ("potted_plant_01", "potted_plant_02", "potted_plant_04"):
+        root = bpy.data.objects.get("PH_" + a)
+        if root is None:
+            before = set(bpy.data.objects)
+            bpy.ops.import_scene.gltf(filepath=bpy.path.abspath(f"//assets/polyhaven/models/{a}/{a}.gltf"))
+            new = [o for o in bpy.data.objects if o not in before]
+            root = bpy.data.objects.new("PH_" + a, None)
+            lib_col.objects.link(root)
+            for o in new:
+                for c in list(o.users_collection):
+                    c.objects.unlink(o)
+                lib_col.objects.link(o)
+                if o.parent is None:
+                    o.parent = root
+        meshes = [o for o in root.children_recursive if o.type == "MESH"]
+        pts = [o.matrix_world @ Vector(c) for o in meshes for c in o.bound_box]
+        srcs.append((meshes, min(p.z for p in pts), max(p.z for p in pts),
+                     (min(p.x for p in pts) + max(p.x for p in pts)) / 2, (min(p.y for p in pts) + max(p.y for p in pts)) / 2))
+    for i, ((loc, rot), lx, ly, z, maxh) in enumerate(PLANT_SPOTS):
+        meshes, z0, z1, cx, cy = srcs[i % len(srcs)]
+        k = min(1.0, maxh / (z1 - z0))
+        w = lib["to_world"](loc, rot, (lx, ly, 0))
+        holder = bpy.data.objects.new(f"Plant_{i + 1:02d}", None)
+        col.objects.link(holder)
+        holder.location = (w.x, w.y, z)
+        holder.rotation_euler = (0, 0, rng.uniform(0, 6.28))
+        holder.scale = (k, k, k)
+        for m in meshes:
+            inst = bpy.data.objects.new(f"Plant_{i + 1:02d}_{m.name}", m.data)
+            col.objects.link(inst)
+            inst.parent = holder
+            inst.matrix_basis = Matrix.Translation((-cx, -cy, -z0)) @ m.matrix_world
+    PLANT_SPOTS.clear()
 
 
 def build():
@@ -150,8 +218,9 @@ def build():
         else:
             tops = lv + [2.42]
             for (bi, li), (xa, xb, _, _, zt) in slots.items():
-                books_and_plants(fill, xa, xb, 0.30, zt, tops[li + 1] - zt - 0.06)
+                books_and_plants(fill, xa, xb, 0.30, zt, tops[li + 1] - zt - 0.06, (loc, rot))
         fill.emit(f"Spine_{side}_Contents", sp, loc, rot)
+    place_plants(sp)
     spine = Part()
     spine.box(MAT["ply"], 27.913, 27.929, 31.57, 31.55 + 4 * 1.22 + 0.04 - 0.02, 0.05, 2.40)
     spine.emit("Spine_Panel", sp, Vector((0, 0, 0)))
