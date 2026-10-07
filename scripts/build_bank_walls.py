@@ -1,4 +1,4 @@
-"""Búnaðarbankinn (staff only) closed on all sides, full height to the slab, with a secret door
+"""Búnaðarbankinn (staff only) closed on all sides, 2.80 m high (open above), with a secret door
 facing the entrance hidden in a sculpture. Re-runnable ("BankWalls" collection).
 
 - South wall (workshop side): OSB-faced stud wall y 35.11-35.19, floor to soffit (replaces the
@@ -22,6 +22,7 @@ MAT = lib["materials"]()
 Part, mat, lin = lib["Part"], lib["simple_mat"], lib["lin"]
 
 SOFFIT = 3.93
+WALL_H = 2.80                       # stops short of the slab (user): light + air over the top
 XW0, XW1 = 27.49, 27.57            # east wall
 YS0, YS1 = 35.11, 35.19            # south wall
 YN = 38.35                          # back (exterior) wall line
@@ -73,11 +74,11 @@ def build():
 
     w = Part()
     # south wall: OSB faced both sides, floor to soffit
-    w.box(osb, 20.90, XW1, YS0, YS1, 0.0, SOFFIT)
+    w.box(osb, 20.90, XW1, YS0, YS1, 0.0, WALL_H)
     # east wall in three pieces around the door opening
-    w.box(paint, XW0, XW1, YS0, D0, 0.0, SOFFIT)
-    w.box(paint, XW0, XW1, D1, YN, 0.0, SOFFIT)
-    w.box(paint, XW0, XW1, D0, D1, DH, SOFFIT)
+    w.box(paint, XW0, XW1, YS0, D0, 0.0, WALL_H)
+    w.box(paint, XW0, XW1, D1, YN, 0.0, WALL_H)
+    w.box(paint, XW0, XW1, D0, D1, DH, WALL_H)
     # hairline seams around the leaf (visible only between fins)
     w.box(shadow, XW1, XW1 + 0.001, D0 - 0.003, D0, 0.0, DH)
     w.box(shadow, XW1, XW1 + 0.001, D1, D1 + 0.003, 0.0, DH)

@@ -433,7 +433,109 @@ def build():
 
     glass_toolwall(m, col)
     component_storage(m, col)
+    electronics_commons(m, col)
     print("microelectronics built; bench length %.2f m" % L)
+
+
+
+def electronics_commons(m, col):
+    """Open floor between the micro bench and the bank wall (x 21.6-27.4, y 31.5-35.1):
+    - on the bank wall (faces -y at y 35.11): a profile-framed board run: pin-up board with
+      schematics and project sheets, a whiteboard with circuit sketches, a pegboard with coiled
+      cables / jumper wires, and a shelf of kit boxes above;
+    - an electronics teaching table (two 1.6 x 0.8 tables pushed together) with 6 chairs,
+      laptops, breadboards, Arduino kit boxes and a USB hub."""
+    _t = open(HERE + "build_textile.py").read()
+    tex = {}
+    exec(_t[:_t.index("\ndef build():")], tex)
+    YW = 35.105                                                        # wall face
+    cork = mat("Cork", "#B98D5E", 0.85)
+    paper = mat("Paper", "#F4F2EC", 0.8)
+    wb = mat("Whiteboard", "#F7F7F5", 0.15, coat=0.6)
+    ink = [mat("Marker_Blue", "#1A3FB0", 0.4), mat("Marker_Black", "#151515", 0.4), mat("Marker_Red", "#C0262D", 0.4)]
+    peg = bpy.data.materials.get("Pegboard_Black") or pegboard_mat()
+    b = Part()
+    # frame rails (20x20) along the run
+    for z in (0.95, 2.25):
+        b.profile(0.02, "x", 21.80, YW - 0.02, z, 5.40)
+    # pin-up board x 21.85-23.75
+    b.box(cork, 21.85, 23.75, YW - 0.015, YW, 0.97, 2.25)
+    for k in range(14):
+        x0 = 21.92 + (k % 7) * 0.26 + rng.uniform(-0.02, 0.02)
+        z0 = 1.05 + (k // 7) * 0.58 + rng.uniform(-0.04, 0.04)
+        w, h = (0.21, 0.297) if k % 3 else (0.297, 0.21)
+        b.box(paper, x0, x0 + w, YW - 0.017, YW - 0.015, z0, z0 + h)
+        for line in range(6):                                          # schematic / text lines
+            lz = z0 + 0.03 + line * (h - 0.06) / 6
+            b.box(ink[1], x0 + 0.02, x0 + w * rng.uniform(0.5, 0.9), YW - 0.0172, YW - 0.017, lz, lz + 0.002)
+        b.cyl(rng.choice(MAT["bins"]), (x0 + w / 2, YW - 0.017, z0 + h - 0.015), (x0 + w / 2, YW - 0.025, z0 + h - 0.015), 0.006, seg=10)
+    # whiteboard x 23.85-25.65 with circuit sketches
+    b.box(MAT["profile"], 23.83, 25.67, YW - 0.03, YW, 0.97, 2.23)
+    b.box(wb, 23.86, 25.64, YW - 0.032, YW - 0.03, 1.00, 2.20)
+    for k in range(18):
+        c = ink[k % 3]
+        x0, z0 = rng.uniform(24.0, 25.4), rng.uniform(1.15, 2.05)
+        if k % 2:
+            b.box(c, x0, x0 + rng.uniform(0.08, 0.25), YW - 0.0322, YW - 0.032, z0, z0 + 0.004)
+        else:
+            b.box(c, x0, x0 + 0.004, YW - 0.0322, YW - 0.032, z0, z0 + rng.uniform(0.05, 0.15))
+    b.box(MAT["profile"], 23.95, 25.55, YW - 0.08, YW - 0.03, 0.96, 0.98)          # marker tray
+    for k, c in enumerate(ink):
+        b.cyl(c, (24.1 + k * 0.08, YW - 0.06, 0.985), (24.17 + k * 0.08, YW - 0.06, 0.985), 0.008, seg=10)
+    # pegboard x 25.75-27.20 with coiled cables + jumper wire bundles
+    b.box(peg, 25.75, 27.20, YW - 0.004, YW - 0.002, 0.97, 2.20)
+    for k in range(6):
+        cx, cz = 25.90 + k * 0.23, 1.80
+        col_k = (m["black"], m["blue"], m["red"], mat("Wire_White", "#EDEDE8", 0.4), m["yellow"], m["black"])[k]
+        for r in range(4):                                             # coil = a few stacked rings
+            bmesh.ops.create_cone(b.bm(col_k), cap_ends=False, segments=24, radius1=0.07 - r * 0.004, radius2=0.07 - r * 0.004,
+                                  depth=0.008, matrix=Matrix.Translation((cx, YW - 0.03 - r * 0.008, cz - r * 0.01)) @ Matrix.Rotation(math.pi / 2, 4, "X"))
+        b.box(m["steel"], cx - 0.004, cx + 0.004, YW - 0.06, YW, cz + 0.06, cz + 0.07)  # peg hook
+    for k in range(5):                                                 # jumper wire bundles
+        cx = 25.95 + k * 0.26
+        for j in range(8):
+            b.box(MAT["bins"][j % 6], cx + j * 0.006, cx + j * 0.006 + 0.002, YW - 0.02, YW - 0.018, 1.10, 1.40)
+    # kit shelf above the run
+    b.box(MAT["ply"], 21.85, 27.15, YW - 0.30, YW, 2.30, 2.318, bevel=0.002)
+    kits = [mat("Kit_Teal", "#0E8C8C", 0.5), mat("Kit_Blue", "#1245DE", 0.5), m["red"], mat("Kit_Grey", "#5E6266", 0.5)]
+    x = 21.90
+    while x < 27.0:
+        w = rng.uniform(0.18, 0.32)
+        hgt = rng.uniform(0.08, 0.20)
+        b.box(rng.choice(kits), x, x + w, YW - 0.27, YW - 0.03, 2.318, 2.318 + hgt, bevel=0.004)
+        x += w + 0.02
+    b.emit("Electronics_BoardRun", col, Vector((0, 0, 0)))
+
+    # teaching table with 6 chairs
+    TL, TD, TH = 3.20, 1.20, 0.75
+    tc = Vector((24.55, 33.05))
+    t, _ = lib["table_unit"](TL, TD, TH, [0.0, TL / 2 - 0.02, TL - 0.04], lower=())
+    loc, rot = lib["placement"](tc.x, tc.y, TL, TD, "-y")
+    t.emit("Electronics_Table", col, loc, rot)
+    stuff = Part()
+    bb_white = mat("Breadboard", "#EEEDE6", 0.5)
+    for k in range(6):
+        side = -1 if k < 3 else 1
+        x = tc.x - TL / 2 + 0.55 + (k % 3) * 1.05
+        y = tc.y + side * 0.30
+        stuff.box(bb_white, x - 0.085, x + 0.085, y - 0.028, y + 0.028, TH, TH + 0.009, bevel=0.0015)   # breadboard
+        stuff.box(m["blue"] if k % 2 else m["pcb"], x + 0.10, x + 0.17, y - 0.027, y + 0.027, TH, TH + 0.003)  # Arduino-ish board
+        for j in range(5):                                             # jumper wires on the breadboard
+            jx = x - 0.06 + j * 0.03
+            stuff.box(MAT["bins"][(j + k) % 6], jx, jx + 0.002, y - 0.015, y + 0.015, TH + 0.009, TH + 0.016)
+        if k % 2 == 0:                                                 # laptop
+            stuff.box(bpy.data.materials.get("Laptop_Body") or m["grey"], x - 0.16, x + 0.16, y + side * 0.12 - 0.11, y + side * 0.12 + 0.11, TH, TH + 0.012, bevel=0.003)
+    for k in range(3):                                                 # kit boxes on the table centre line
+        x = tc.x - 0.9 + k * 0.9
+        stuff.box(kits[k], x - 0.12, x + 0.12, tc.y - 0.08, tc.y + 0.08, TH, TH + 0.06, bevel=0.004)
+    stuff.emit("Electronics_Table_Stuff", col, Vector((0, 0, 0)))
+    for side, ry in ((-1, math.pi), (1, 0.0)):
+        for dx in (-1.05, 0.0, 1.05):
+            cx = tc.x + dx + rng.uniform(-0.05, 0.05)
+            cy = tc.y + side * (TD / 2 + rng.uniform(0.10, 0.28))
+            r = ry + rng.uniform(-0.15, 0.15)
+            off = Matrix.Rotation(r, 4, "Z") @ Vector((-0.22, -0.22, 0))
+            tex["chair"]().emit(f"Elec_Chair_{side}_{int(dx * 10)}", col, Vector((cx, cy, 0)) + off, r)
 
 
 build()
