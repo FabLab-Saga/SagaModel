@@ -13,6 +13,7 @@ from mathutils import Matrix, Vector
 
 SOFFIT = 3.93
 Y0, Y1 = 13.6, 42.2          # interior extent along the building
+PENDANT_W = 60.0             # watts per pendant (Cycles point light)
 COLUMNS = [(27.6, 30.2, 0.45), (27.6, 21.3, 0.45)]  # x, y, clearance radius
 
 
@@ -199,6 +200,14 @@ def pendants(col, mats, points, bottom=2.55, d=0.40):
         cyl(wr, (x, y, SOFFIT - 0.02), (x, y, SOFFIT), 0.045, seg=16)                # ceiling rose
     for p in inn.faces:                                       # inner shell faces inward
         p.normal_flip()
+    light = bpy.data.lights.get("Pendant_Light") or bpy.data.lights.new("Pendant_Light", "POINT")
+    light.energy = PENDANT_W
+    light.color = (1.0, 0.80, 0.60)                      # ~3000 K
+    light.shadow_soft_size = 0.04
+    for i, (x, y) in enumerate(points):                   # real light at each bulb; the dome shades it upward
+        lo = bpy.data.objects.new(f"Pendant_Light_{i + 1:02d}", light)
+        lo.location = (x, y, bottom + 0.08)
+        col.objects.link(lo)
     emit("Pendant_Shells", sh, shell, col, smooth=True)
     emit("Pendant_Inner", inn, inner, col, smooth=True)
     emit("Pendant_Bulbs", gl, glow, col, smooth=True)
@@ -233,10 +242,10 @@ def build():
     if col.name not in scene.collection.children:
         scene.collection.children.link(col)
     for o in list(col.objects):
-        me = o.data
+        data = o.data
         bpy.data.objects.remove(o)
-        if me and me.users == 0:
-            bpy.data.meshes.remove(me)
+        if isinstance(data, bpy.types.Mesh) and data.users == 0:
+            bpy.data.meshes.remove(data)
     galv = material("Galvanised", galvanised)
     mats = (material("Enamel_Black", enamel_black), material("Enamel_White", enamel_white),
             material("Bulb_Warm", bulb), material("Cable_Black", cable))
