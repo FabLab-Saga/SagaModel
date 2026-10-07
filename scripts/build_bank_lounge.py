@@ -292,9 +292,6 @@ def build():
 
     # ---------------- lounge / entryway along the SSW glass
     XB = 32.40                                                            # sofa backs against the glass zone
-    rug = Part()
-    rug.box(RUG, 29.70, 31.95, 27.45, 30.15, 0.0, 0.008, bevel=0.004)
-    rug.emit("Lounge_Rug", lounge, Vector((0, 0, 0)))
     sofa(2.08).emit("Sofa_Cleveland3_A", lounge, *lib["placement"](XB - 0.43 - 0.05, 28.80, 2.08, 0.86, "-x"))
     sofa(2.08).emit("Sofa_Cleveland3_B", lounge, *lib["placement"](29.10 + 0.43, 28.80, 2.08, 0.86, "+x"))
     part, _ = lib["table_unit"](1.20, 0.60, 0.42, [0.0, 1.16], lower=())

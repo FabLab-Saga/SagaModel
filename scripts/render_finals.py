@@ -31,15 +31,21 @@ sc.render.resolution_x, sc.render.resolution_y, sc.render.resolution_percentage 
 sc.render.image_settings.file_format = "PNG"
 cut_hide = [bpy.data.objects["Ceiling_Slab"]] + list(bpy.data.collections["Services"].objects) + \
            [o for o in bpy.data.collections["Signs"].objects if o.name.endswith("_Cables")]
+ground = [bpy.data.objects[n] for n in ("Ground_Paving", "Ground_Grass") if n in bpy.data.objects]
+base_exposure = sc.view_settings.exposure
 for name, cam in SHOTS:
     if want and name not in want and cam not in want:
         continue
     t = time.time()
     for o in cut_hide:
         o.hide_render = name.startswith("01_")
+    for o in ground:                                  # real ground only from above; the HDRI ground reads better through windows
+        o.hide_render = not name.startswith("01_")
     sc.camera = bpy.data.objects[cam]
+    sc.view_settings.exposure = base_exposure + sc.camera.get("exposure_offset", 0.0)
     sc.render.filepath = bpy.path.abspath(f"//renders/final/{name}.png")
     bpy.ops.render.render(write_still=True)
     print(f"RENDERED {name} in {time.time() - t:.0f} s", flush=True)
 for o in cut_hide:
     o.hide_render = False
+sc.view_settings.exposure = base_exposure

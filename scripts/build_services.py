@@ -13,7 +13,7 @@ from mathutils import Matrix, Vector
 
 SOFFIT = 3.93
 Y0, Y1 = 13.6, 42.2          # interior extent along the building
-PENDANT_W = 60.0             # watts per pendant (Cycles point light)
+PENDANT_W = 180.0            # watts per pendant (Cycles point light)
 COLUMNS = [(27.6, 30.2, 0.45), (27.6, 21.3, 0.45)]  # x, y, clearance radius
 
 

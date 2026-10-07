@@ -407,7 +407,8 @@ def build():
         loc, rot = unit_on((L, T_D), 32.45 - T_D / 2, cy, "-x")
         part.emit(name, fcol, loc, rot)
         tloc[name] = (loc, rot, L)
-        st = sheets(14, L - 0.20, T_D - 0.08, [lib["MAT"]["ply"], *lib["MAT"]["bins"]])  # ply + coloured acrylic
+        P, B = lib["MAT"]["ply"], lib["MAT"]["bins"]                    # mostly ply, a few acrylic sheets, ply on top
+        st = sheets(7, L - 0.20, T_D - 0.08, [P])
         put(st, f"{name}_Sheets", loc, rot, (L / 2, T_D / 2), 0.16, L - 0.20, T_D - 0.08)
     gx = 32.45 - 0.03                                                   # back edge of the laser tables
     for i, y in enumerate((20.85, 22.00)):

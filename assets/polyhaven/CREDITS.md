@@ -17,3 +17,6 @@ free for any use, no attribution required. Credited here as a courtesy.
 | potted_plant_02 (model) | Rico Cilliers (All) | https://polyhaven.com/a/potted_plant_02 |
 | potted_plant_04 (model) | James Ray Cock (All) | https://polyhaven.com/a/potted_plant_04 |
 | poly_wool_herringbone | (see source) | https://polyhaven.com/a/poly_wool_herringbone |
+| concrete_pavers | Amal Kumar | https://polyhaven.com/a/concrete_pavers |
+| grass_path_2 | (see source) | https://polyhaven.com/a/grass_path_2 |
+| leafy_grass | Charlotte Baglioni | https://polyhaven.com/a/leafy_grass |
