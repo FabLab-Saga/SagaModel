@@ -1,0 +1,134 @@
+"""Photoreal pass 1: scanned PBR materials (Poly Haven CC0), render-time bevels, smooth columns.
+
+Materials keep their names (so every object assignment stays), only their node trees are
+rebuilt. Textures are box-projected in world space at the scan's real-world size, so no UVs
+are needed. Brand-colour materials (felt, mural, signs, bins) are left untouched.
+Run inside Blender: exec(open(path).read()).
+"""
+import json
+import math
+
+import bpy
+
+PH = bpy.path.abspath("//assets/polyhaven/")
+
+
+def lin(h):
+    c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+    return tuple(v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4 for v in c) + (1,)
+
+
+def size_m(asset):
+    d = json.load(open(PH + asset + "/info.json")).get("dimensions_mm") or [2000, 2000]
+    return max(d[0], d[1]) / 1000.0
+
+
+def img(asset, mapname, noncolor):
+    path = PH + f"{asset}/{mapname}.jpg"
+    im = next((i for i in bpy.data.images if bpy.path.abspath(i.filepath) == path), None) or bpy.data.images.load(path)
+    im.colorspace_settings.name = "Non-Color" if noncolor else "sRGB"
+    return im
+
+
+def pbr(mat_name, asset, rot_z=0.0, scale=1.0, tint=None, tint_mix=0.0, rough_mul=1.0, normal=1.0, bevel=0.004,
+        blend=0.2, coat=0.0):
+    m = bpy.data.materials.get(mat_name) or bpy.data.materials.new(mat_name)
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    N, L = nt.nodes.new, nt.links.new
+    out = N("ShaderNodeOutputMaterial")
+    b = N("ShaderNodeBsdfPrincipled")
+    geo = N("ShaderNodeNewGeometry")
+    mp = N("ShaderNodeMapping")
+    s = 1.0 / (size_m(asset) * scale)
+    mp.inputs["Scale"].default_value = (s, s, s)
+    mp.inputs["Rotation"].default_value = (0, 0, rot_z)
+    L(geo.outputs["Position"], mp.inputs["Vector"])
+
+    def tex(mapname, noncolor):
+        t = N("ShaderNodeTexImage")
+        t.image = img(asset, mapname, noncolor)
+        t.projection = "BOX"
+        t.projection_blend = blend
+        L(mp.outputs["Vector"], t.inputs["Vector"])
+        return t
+
+    diff = tex("diff", False)
+    col = diff.outputs["Color"]
+    if tint:
+        mix = N("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["Factor"].default_value = tint_mix
+        L(col, mix.inputs["A"])
+        mix.inputs["B"].default_value = lin(tint)
+        col = mix.outputs["Result"]
+    L(col, b.inputs["Base Color"])
+    rough = tex("rough", True)
+    if rough_mul != 1.0:
+        mm = N("ShaderNodeMath")
+        mm.operation = "MULTIPLY"
+        mm.inputs[1].default_value = rough_mul
+        L(rough.outputs["Color"], mm.inputs[0])
+        L(mm.outputs["Value"], b.inputs["Roughness"])
+    else:
+        L(rough.outputs["Color"], b.inputs["Roughness"])
+    nrm = N("ShaderNodeNormalMap")
+    nrm.inputs["Strength"].default_value = normal
+    L(tex("nor_gl", True).outputs["Color"], nrm.inputs["Color"])
+    if bevel:
+        bv = N("ShaderNodeBevel")
+        bv.samples = 6
+        bv.inputs["Radius"].default_value = bevel
+        L(nrm.outputs["Normal"], bv.inputs["Normal"])
+        L(bv.outputs["Normal"], b.inputs["Normal"])
+    else:
+        L(nrm.outputs["Normal"], b.inputs["Normal"])
+    b.inputs["Coat Weight"].default_value = coat
+    L(b.outputs["BSDF"], out.inputs["Surface"])
+    m.diffuse_color = lin(tint) if tint else (0.6, 0.5, 0.4, 1)
+    return m
+
+
+def add_bevel(mat_name, radius=0.002):
+    """Render-time rounded edges on an existing (non-PBR) material."""
+    m = bpy.data.materials.get(mat_name)
+    if not m or not m.use_nodes:
+        return
+    nt = m.node_tree
+    b = next((n for n in nt.nodes if n.type == "BSDF_PRINCIPLED"), None)
+    if not b or any(n.type == "BEVEL" for n in nt.nodes):
+        return
+    bv = nt.nodes.new("ShaderNodeBevel")
+    bv.samples = 6
+    bv.inputs["Radius"].default_value = radius
+    old = next((l for l in nt.links if l.to_socket == b.inputs["Normal"]), None)
+    if old:
+        nt.links.new(old.from_socket, bv.inputs["Normal"])
+        nt.links.remove(old)
+    nt.links.new(bv.outputs["Normal"], b.inputs["Normal"])
+
+
+def run():
+    pbr("Parquet", "wood_floor_worn", rot_z=math.radians(90), coat=0.15, bevel=0)
+    pbr("Concrete_Exposed", "concrete_slab_wall", rot_z=math.radians(90), normal=0.8)
+    pbr("Paint_White", "painted_plaster_wall", tint="#EEECE7", tint_mix=0.82, normal=0.35, rough_mul=1.0)
+    pbr("OSB", "oriented_strand_board", rot_z=math.radians(90), normal=0.8)
+    for mname in ("Plywood_Birch", "Material_27"):
+        pbr(mname, "plywood", normal=0.6, coat=0.1, bevel=0.0015)
+    pbr("Sofa_LightGrey", "rough_linen", scale=0.6, tint="#C9C8C3", tint_mix=0.7, normal=1.0, bevel=0.02)
+    for mname in ("Alu_Black_Anodized", "Alu_Frame_Dark", "Mach_White", "Mach_Grey", "Mach_DarkGrey", "Mach_Black",
+                  "Desk_Black", "Cart_Black", "Galvanised", "Enamel_Black"):
+        add_bevel(mname, 0.0015)
+    # smooth the SketchUp columns (shade smooth by angle on the shell and the column claddings)
+    for name in ("ROOT.geo0", "Component_286302.geo0"):
+        o = bpy.data.objects.get(name)
+        if o is None:
+            continue
+        for p in o.data.polygons:
+            p.use_smooth = True
+        o.data.set_sharp_from_angle(angle=math.radians(35))
+    print("pbr pass done")
+
+
+run()

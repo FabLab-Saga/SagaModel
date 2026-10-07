@@ -1,0 +1,10 @@
+{
+ "id": "oriented_strand_board",
+ "name": "Oriented Strand Board",
+ "dimensions_mm": [
+  2509.999990463257,
+  2509.999990463257
+ ],
+ "license": "CC0",
+ "source": "https://polyhaven.com/a/oriented_strand_board"
+}

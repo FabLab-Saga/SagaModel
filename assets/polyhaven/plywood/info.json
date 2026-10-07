@@ -1,0 +1,10 @@
+{
+ "id": "plywood",
+ "name": "Plywood",
+ "dimensions_mm": [
+  499.999940395355,
+  499.999940395355
+ ],
+ "license": "CC0",
+ "source": "https://polyhaven.com/a/plywood"
+}

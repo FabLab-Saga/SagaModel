@@ -1,0 +1,10 @@
+{
+ "id": "concrete_slab_wall",
+ "name": "Concrete Slab Wall",
+ "dimensions_mm": [
+  2299.999952316284,
+  2299.999952316284
+ ],
+ "license": "CC0",
+ "source": "https://polyhaven.com/a/concrete_slab_wall"
+}
