@@ -1,0 +1,5 @@
+.venv/
+*.blend1
+*.blend@
+__pycache__/
+renders/tmp/
