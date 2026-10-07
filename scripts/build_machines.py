@@ -61,8 +61,11 @@ def materials():
         orange=mat("Mach_PrusaOrange", "#FA6831", 0.45),
         chrome=mat("Mach_Chrome", "#D8DADC", 0.12, metal=1.0),
         alu=mat("Mach_AluFrame", "#151515", 0.3, metal=0.6),
-        pei=mat("Mach_PEI", "#2B2622", 0.6),
-        lcd=mat("Mach_LCD", "#3D7BD9", 0.2, emit=1.5),
+        pei=mat("Mach_PEI", "#1E1C1A", 0.75),
+        lcd=mat("Mach_LCD", "#3D7BD9", 0.2, emit=0.35),
+        gold=mat("Mach_Gold", "#C9A24A", 0.3, metal=1.0),
+        brass=mat("Mach_Brass", "#B58B4A", 0.3, metal=1.0),
+        spoolflange=mat("Spool_Flange", "#202020", 0.35),
         desk=mat("Desk_Black", "#141414", 0.45),
         rubber=mat("Mach_Rubber", "#0E0E0E", 0.8),
         galv=bpy.data.materials.get("Galvanised") or mat("Galvanised", "#B9BEC2", 0.35, metal=1.0),
@@ -163,31 +166,84 @@ def xtool(w=0.493, d=0.253, h=0.373):
     return p
 
 
+PRINT_RNG = __import__('random').Random(5)
+
+
+def spool_part(p, filament, cx, cy, cz, axis="x", r_out=0.100, width=0.065):
+    """Real filament spool: two thin flanges, cardboard/plastic hub, wound filament, axis along x."""
+    ax = Vector((1, 0, 0)) if axis == "x" else Vector((0, 1, 0))
+    c = Vector((cx, cy, cz))
+    for side in (-1, 1):
+        a0 = c + ax * side * (width / 2)
+        p.cyl(M["spoolflange"], a0 - ax * 0.002, a0 + ax * 0.002, r_out, seg=48)
+    p.cyl(filament, c - ax * (width / 2 - 0.003), c + ax * (width / 2 - 0.003), r_out * 0.82, seg=48)
+    p.cyl(M["dark"], c - ax * (width / 2 + 0.003), c + ax * (width / 2 + 0.003), 0.027, seg=24)
+
+
 def prusa(spool):
-    """Prusa MK3S+ (500 x 550 x 400): black frame, orange parts, PEI bed, spool on top."""
+    """Prusa MK3S+ (~500 x 550 x 400): frame plate, rods, motors, PEI bed, orange parts, LCD, spool on top."""
     p = Part()
     w, d = 0.50, 0.55
-    for x in (0.13, w - 0.13):                                                                   # Y rails
-        p.box(M["alu"], x - 0.01, x + 0.01, 0.04, d - 0.04, 0.0, 0.04)
-    p.box(M["orange"], 0.10, w - 0.10, 0.03, 0.05, 0.0, 0.07, bevel=0.004)                      # front/back plates
-    p.box(M["orange"], 0.10, w - 0.10, d - 0.05, d - 0.03, 0.0, 0.07, bevel=0.004)
-    p.box(M["pei"], 0.125, 0.375, 0.17, 0.38, 0.075, 0.08, bevel=0.002)                         # bed
-    p.box(M["alu"], 0.11, 0.39, 0.16, 0.39, 0.065, 0.075)
-    fy = 0.30                                                                                     # main frame plane
-    p.box(M["alu"], 0.03, 0.06, fy - 0.015, fy + 0.015, 0.0, 0.38)
-    p.box(M["alu"], w - 0.06, w - 0.03, fy - 0.015, fy + 0.015, 0.0, 0.38)
-    p.box(M["alu"], 0.03, w - 0.03, fy - 0.015, fy + 0.015, 0.36, 0.40)
-    p.box(M["alu"], 0.03, w - 0.03, fy - 0.015, fy + 0.015, 0.0, 0.05)
-    for zz in (0.215, 0.26):                                                                     # X rods
-        p.cyl(M["chrome"], (0.07, fy - 0.03, zz), (w - 0.07, fy - 0.03, zz), 0.004, seg=8)
-    p.box(M["orange"], 0.05, 0.10, fy - 0.06, fy + 0.0, 0.18, 0.30, bevel=0.004)                # X ends
-    p.box(M["orange"], w - 0.10, w - 0.05, fy - 0.06, fy + 0.0, 0.18, 0.30, bevel=0.004)
-    p.box(M["orange"], 0.21, 0.29, fy - 0.10, fy - 0.03, 0.17, 0.30, bevel=0.005)               # extruder
-    p.box(M["black"], 0.225, 0.275, fy - 0.12, fy - 0.10, 0.20, 0.28, bevel=0.003)              # fan
-    p.box(M["orange"], 0.14, 0.36, -0.01, 0.03, 0.02, 0.09, bevel=0.005)                        # LCD box
-    p.box(M["lcd"], 0.17, 0.30, -0.012, -0.009, 0.035, 0.075)
-    p.cyl(spool, (w / 2 - 0.035, fy + 0.04, 0.47), (w / 2 + 0.035, fy + 0.04, 0.47), 0.085, seg=24)  # spool
-    p.box(M["alu"], w / 2 - 0.01, w / 2 + 0.01, fy - 0.01, fy + 0.01, 0.40, 0.44)
+    fy = 0.31                                                                                    # frame plane (y)
+    # --- base: Y frame (aluminium extrusions + printed corners) and the PSU at the back
+    for x in (0.10, w - 0.12):
+        p.box(M["alu"], x, x + 0.02, 0.03, d - 0.03, 0.0, 0.03, bevel=0.002)
+    for y in (0.03, d - 0.06):
+        p.box(M["orange"], 0.07, w - 0.07, y, y + 0.03, 0.0, 0.05, bevel=0.004)
+    p.box(M["black"], w - 0.11, w - 0.02, fy + 0.02, d - 0.05, 0.0, 0.07, bevel=0.003)          # PSU
+    # --- Y axis: smooth rods + carriage + heatbed
+    for x in (0.16, w - 0.16):
+        p.cyl(M["chrome"], (x, 0.06, 0.035), (x, d - 0.06, 0.035), 0.004, seg=10)
+    bed_y = 0.12
+    p.box(M["alu"], 0.12, w - 0.12, bed_y, bed_y + 0.25, 0.048, 0.054)                          # Y carriage
+    p.box(M["pei"], 0.125, w - 0.125, bed_y - 0.005, bed_y + 0.255, 0.060, 0.064, bevel=0.002)  # PEI sheet
+    p.box(M["gold"], 0.124, w - 0.124, bed_y - 0.006, bed_y + 0.256, 0.058, 0.0605)             # sheet edge
+    # --- main frame plate (black aluminium) with its big window: four bars
+    t = 0.006
+    p.box(M["alu"], 0.02, 0.08, fy, fy + t, 0.0, 0.40, bevel=0.002)                              # left post
+    p.box(M["alu"], w - 0.08, w - 0.02, fy, fy + t, 0.0, 0.40, bevel=0.002)                      # right post
+    p.box(M["alu"], 0.02, w - 0.02, fy, fy + t, 0.35, 0.40, bevel=0.002)                         # top bar
+    p.box(M["alu"], 0.02, w - 0.02, fy, fy + t, 0.0, 0.07, bevel=0.002)                          # bottom bar
+    # --- Z axis: motors at the bottom, threaded + smooth rods, top bracket
+    for x in (0.05, w - 0.05):
+        p.box(M["black"], x - 0.021, x + 0.021, fy - 0.045, fy - 0.003, 0.0, 0.042, bevel=0.003)  # NEMA17
+        p.box(M["chrome"], x - 0.021, x + 0.021, fy - 0.045, fy - 0.003, 0.042, 0.046)
+        p.cyl(M["brass"], (x, fy - 0.024, 0.046), (x, fy - 0.024, 0.37), 0.004, seg=10)          # leadscrew
+        p.cyl(M["chrome"], (x + 0.03 * (1 if x < w / 2 else -1), fy - 0.024, 0.07),
+              (x + 0.03 * (1 if x < w / 2 else -1), fy - 0.024, 0.38), 0.004, seg=10)
+        p.box(M["orange"], x - 0.03, x + 0.04 if x < w / 2 else x + 0.03, fy - 0.05, fy, 0.37, 0.40, bevel=0.004)
+    # --- X axis at print height: two rods, X-ends, extruder + fan + nozzle
+    zx = 0.20
+    for dz in (0.0, 0.045):
+        p.cyl(M["chrome"], (0.07, fy - 0.035, zx + dz), (w - 0.07, fy - 0.035, zx + dz), 0.004, seg=10)
+    for x0 in (0.035, w - 0.095):
+        p.box(M["orange"], x0, x0 + 0.06, fy - 0.06, fy - 0.004, zx - 0.025, zx + 0.07, bevel=0.005)
+    p.box(M["black"], 0.025, 0.07, fy - 0.10, fy - 0.06, zx - 0.02, zx + 0.025, bevel=0.003)      # X motor
+    ex = w * 0.42
+    p.box(M["orange"], ex, ex + 0.07, fy - 0.10, fy - 0.03, zx - 0.03, zx + 0.10, bevel=0.006)    # extruder body
+    p.box(M["black"], ex + 0.012, ex + 0.058, fy - 0.112, fy - 0.10, zx + 0.0, zx + 0.05, bevel=0.003)  # hotend fan
+    p.box(M["black"], ex + 0.015, ex + 0.055, fy - 0.07, fy - 0.03, zx + 0.10, zx + 0.14, bevel=0.003)  # extruder motor
+    p.cyl(M["brass"], (ex + 0.035, fy - 0.07, zx - 0.03), (ex + 0.035, fy - 0.07, zx - 0.05), 0.004, seg=10)  # nozzle
+    p.cyl(M["dark"], (ex + 0.035, fy - 0.07, zx + 0.14), (ex + 0.035, fy + 0.04, 0.47), 0.003, seg=8)   # PTFE/filament path
+    # --- LCD box at the front left
+    p.box(M["orange"], 0.10, 0.36, -0.035, 0.03, 0.01, 0.085, bevel=0.006)
+    p.box(M["lcd"], 0.13, 0.27, -0.0365, -0.034, 0.03, 0.07)
+    p.cyl(M["dark"], (0.31, -0.045, 0.05), (0.31, -0.035, 0.05), 0.011, seg=20)                  # knob
+    # --- spool holder on the top bar + spool
+    p.box(M["orange"], w / 2 - 0.012, w / 2 + 0.012, fy - 0.01, fy + 0.03, 0.40, 0.46, bevel=0.003)
+    spool_part(p, spool, w / 2, fy + 0.045, 0.47)
+    if PRINT_RNG.random() < 0.55:                                                               # a print in progress
+        kind = PRINT_RNG.choice(("box", "vase", "bracket"))
+        bx, by = w / 2 + PRINT_RNG.uniform(-0.06, 0.06), bed_y + 0.12 + PRINT_RNG.uniform(-0.04, 0.04)
+        hgt = PRINT_RNG.uniform(0.015, 0.09)
+        if kind == "vase":
+            p.cyl(spool, (bx, by, 0.064), (bx, by, 0.064 + hgt), PRINT_RNG.uniform(0.025, 0.045), seg=40)
+        elif kind == "box":
+            sx, sy = PRINT_RNG.uniform(0.03, 0.09), PRINT_RNG.uniform(0.03, 0.09)
+            p.box(spool, bx - sx / 2, bx + sx / 2, by - sy / 2, by + sy / 2, 0.064, 0.064 + hgt, bevel=0.002)
+        else:
+            p.box(spool, bx - 0.05, bx + 0.05, by - 0.015, by + 0.015, 0.064, 0.072, bevel=0.0015)
+            p.box(spool, bx - 0.05, bx - 0.04, by - 0.015, by + 0.015, 0.072, 0.064 + hgt, bevel=0.0015)
     return p
 
 
@@ -315,11 +371,10 @@ def sheets(n, w, d, colors):
 
 
 def spool_stack(n):
+    """Spare spools standing on edge in a row, facing the front."""
     p = Part()
     for i in range(n):
-        x = 0.10 + (i % 4) * 0.21
-        z = 0.09 + (i // 4) * 0.075
-        p.cyl(M["spools"][i % len(M["spools"])], (x, 0.03, z), (x, 0.10, z), 0.09, seg=24)
+        spool_part(p, M["spools"][i % len(M["spools"])], 0.05 + i * 0.072, 0.06, 0.10, axis="x", width=0.062)
     return p
 
 
@@ -453,6 +508,9 @@ def build():
         xa, xb, _, _, zt = slots[(bi, 0)]
         for i in range(3):
             lib["bin_box"](bins, lib["MAT"]["bins"][(bi * 3 + i) % 6], xa + 0.05 + i * 0.52, 0.12, zt, w=0.46, d=0.42, h=0.30)
+            for j in range(3):                                         # spare spools standing in each bin
+                spool_part(bins, M["spools"][(bi * 7 + i * 3 + j) % len(M["spools"])],
+                           xa + 0.05 + i * 0.52 + 0.23, 0.17 + j * 0.105, zt + 0.21, axis="y", width=0.06)
     bins.emit("PrintFarm_Bins", fcol, loc, rot)
 
     # ---- mill table in the CNC corner (between the WNW tool wall and the ShopBot): 2x Roland SRM-20
