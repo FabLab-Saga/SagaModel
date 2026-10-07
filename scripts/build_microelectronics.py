@@ -171,6 +171,143 @@ def toolbox(p, m, c, x, y, z, w=0.45, d=0.25, h=0.22):
     p.box(m["black"], x + w * 0.3, x + w * 0.7, y + d * 0.4, y + d * 0.6, z + h, z + h + 0.03, bevel=0.005)
 
 
+# ---------------------------------------------------------------- glass tool wall
+def pegboard_mat():
+    """Black powder-coated perforated steel: 10 mm holes on a 25 mm grid (world Y/Z, panel faces +x)."""
+    m = bpy.data.materials.get("Pegboard_Black")
+    if m:
+        return m
+    m = bpy.data.materials.new("Pegboard_Black")
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    N, L = nt.nodes.new, nt.links.new
+    out, b, tr, mix = N("ShaderNodeOutputMaterial"), N("ShaderNodeBsdfPrincipled"), N("ShaderNodeBsdfTransparent"), N("ShaderNodeMixShader")
+    b.inputs["Base Color"].default_value = (0.02, 0.02, 0.022, 1)
+    b.inputs["Roughness"].default_value = 0.45
+    geo, sep = N("ShaderNodeNewGeometry"), N("ShaderNodeSeparateXYZ")
+    L(geo.outputs["Position"], sep.inputs["Vector"])
+    d = None
+    for comp in ("Y", "Z"):
+        mu = N("ShaderNodeMath"); mu.operation = "MULTIPLY"; mu.inputs[1].default_value = 40.0
+        L(sep.outputs[comp], mu.inputs[0])
+        fr = N("ShaderNodeMath"); fr.operation = "FRACT"; L(mu.outputs[0], fr.inputs[0])
+        sb = N("ShaderNodeMath"); sb.operation = "SUBTRACT"; sb.inputs[1].default_value = 0.5; L(fr.outputs[0], sb.inputs[0])
+        sq = N("ShaderNodeMath"); sq.operation = "MULTIPLY"; L(sb.outputs[0], sq.inputs[0]); L(sb.outputs[0], sq.inputs[1])
+        if d is None:
+            d = sq
+        else:
+            ad = N("ShaderNodeMath"); L(d.outputs[0], ad.inputs[0]); L(sq.outputs[0], ad.inputs[1]); d = ad
+    hole = N("ShaderNodeMath"); hole.operation = "LESS_THAN"; hole.inputs[1].default_value = 0.04   # r = 0.2 of pitch
+    L(d.outputs[0], hole.inputs[0])
+    L(hole.outputs[0], mix.inputs["Fac"]); L(b.outputs[0], mix.inputs[1]); L(tr.outputs[0], mix.inputs[2])
+    L(mix.outputs[0], out.inputs["Surface"])
+    m.diffuse_color = (0.02, 0.02, 0.022, 1)
+    return m
+
+
+def glass_toolwall(m, col):
+    """Along the NNE glass (x ~20.85, y 23.25-26.40): profile frame with a work counter (0.90 m),
+    under-counter drawer cabinets + toolbox, and above: perforated pegboard with hung tools,
+    an open shelf with bins and a small-parts cabinet, a clamp rack, a cable reel - varied, not a
+    plain shelf. Faces +x (into the room)."""
+    Y0, Y1, XB = 23.25, 26.40, 20.88                                   # XB = back (glass side)
+    L = Y1 - Y0
+    D, H, TOP = 0.65, 0.90, 2.25
+    peg = pegboard_mat()
+    ply = MAT["ply"]
+    p = Part()                                                          # build in world coords directly
+    def prof(size, axis, x, y, z, length):
+        p.profile(size, axis, x, y, z, length)
+    # frame: 4 posts front + back to 2.25 m (back posts) / counter height (front posts)
+    for y in (Y0, Y0 + L / 2 - 0.02, Y1 - 0.04):
+        prof(0.04, "z", XB, y, 0.035, TOP - 0.035)
+        prof(0.04, "z", XB + D - 0.04, y, 0.035, H - 0.025 - 0.035)
+        lib["foot"](p, XB + 0.02, y + 0.02); lib["foot"](p, XB + D - 0.02, y + 0.02)
+        prof(0.04, "x", XB + 0.04, y, H - 0.065, D - 0.08)               # counter bearers
+        prof(0.02, "x", XB + 0.04, y + 0.01, 0.16, D - 0.08)
+    for x in (XB, XB + D - 0.04):                                        # long rails
+        prof(0.04, "y", x, Y0 + 0.04, H - 0.065, L - 0.08)
+        prof(0.02, "y", x + 0.01, Y0 + 0.04, 0.14, L - 0.08)
+    prof(0.04, "y", XB, Y0 + 0.04, TOP - 0.04, L - 0.08)                 # top rail
+    prof(0.02, "y", XB + 0.01, Y0 + 0.04, 1.62, L - 0.08)                # mid rail behind pegboard/shelf split
+    p.box(ply, XB - 0.01, XB + D + 0.01, Y0, Y1, H - 0.025, H, bevel=0.002)     # counter top (25 mm birch)
+    p.box(ply, XB + 0.04, XB + D - 0.04, Y0 + 0.04, Y1 - 0.80, 0.16, 0.178)     # lower shelf (gap for the tool chest)
+    # upper zone (back plane x = XB + 0.04): pegboard left 1.9 m, open shelves right
+    PX = XB + 0.045
+    p.box(peg, PX, PX + 0.002, Y0 + 0.06, Y0 + 1.95, H + 0.10, 1.60)
+    # shelf block right: two shelves 0.30 deep with bins + a parts cabinet
+    for z in (1.25, 1.62, 1.98):
+        p.box(ply, PX, PX + 0.30, Y0 + 2.00, Y1 - 0.06, z - 0.018, z, bevel=0.0015)
+    shelf_bins = Part()
+    for i in range(3):
+        lib["bin_box"](shelf_bins, MAT["bins"][(i + 2) % 6], 0.0, 0.0, 0.0, w=0.32, d=0.24, h=0.15)
+        shelf_bins.emit(f"GlassTW_Bin_{i}", col, Vector((PX + 0.27, Y0 + 2.04 + i * 0.36, 1.62)), math.pi / 2)
+        shelf_bins = Part()
+    cab, cw, ch = drawer_cabinet(m, cols=5, rows=6)
+    cab.emit("GlassTW_PartsCab", col, Vector((PX + 0.142, Y0 + 2.08, 1.25)), math.pi / 2)
+    tbx = Part()
+    toolbox(tbx, m, m["red"], 0, 0, 0, w=0.42, d=0.24, h=0.18)
+    tbx.emit("GlassTW_Toolbox_top", col, Vector((PX + 0.27, Y1 - 0.48, 1.98)), math.pi / 2)
+    # pegboard tools (local frame of the hanging helpers: x along board, -y = out of board -> rotate to face +x)
+    hung = Part()
+    x = 0.08
+    kinds = ["pliers", "screw", "screw", "pliers", "tweez", "screw", "pliers", "screw", "pliers", "screw"]
+    for k in kinds:
+        g = rng.choice((m["red"], m["blue"], m["yellow"], m["black"]))
+        if k == "pliers": pliers(hung, m, x, 1.38, g)
+        elif k == "screw": screwdriver(hung, m, x, 1.30, g)
+        else: tweezers(hung, m, x, 1.42)
+        x += 0.075
+    # spanners in a row, a hammer, a saw, a square
+    for i in range(6):
+        sx = 0.90 + i * 0.05
+        hung.box(m["steel"], sx - 0.007, sx + 0.007, -0.008, -0.003, 1.08, 1.08 + 0.10 + i * 0.02, bevel=0.002)
+        hung.cyl(m["steel"], (sx, -0.006, 1.08 + 0.10 + i * 0.02), (sx, -0.002, 1.08 + 0.10 + i * 0.02), 0.012 + i * 0.001, seg=12)
+    hung.box(m["black"], 1.30, 1.33, -0.02, -0.004, 1.05, 1.36, bevel=0.006)          # hammer handle
+    hung.box(m["steel"], 1.27, 1.36, -0.022, -0.004, 1.36, 1.40, bevel=0.004)          # hammer head
+    hung.box(m["steel"], 1.42, 1.48, -0.004, -0.002, 1.02, 1.42)                        # try square blade
+    hung.box(m["black"], 1.42, 1.62, -0.012, -0.002, 1.40, 1.44, bevel=0.002)           # square stock
+    multimeter(hung, m, 1.68, 1.22)
+    # clamp rack: rail + 5 F-clamps hanging below the pegboard top edge
+    hung.box(m["steel"], 0.10, 0.80, -0.03, 0.0, 1.57, 1.59)
+    for i in range(5):
+        cx = 0.15 + i * 0.13
+        hung.box(m["steel"], cx - 0.006, cx + 0.006, -0.03, -0.018, 1.30, 1.58)        # bar
+        hung.box(m["red"], cx - 0.010, cx + 0.06, -0.034, -0.014, 1.52, 1.56, bevel=0.004)   # top jaw
+        hung.box(m["red"], cx - 0.010, cx + 0.06, -0.034, -0.014, 1.33, 1.37, bevel=0.004)   # sliding jaw
+        hung.cyl(m["black"], (cx + 0.05, -0.024, 1.33), (cx + 0.05, -0.024, 1.25), 0.011, seg=12)  # handle
+    # place: local x -> world +y from Y0, local -y -> world +x (out of board)
+    hung.emit("GlassTW_Tools", col, Vector((PX + 0.002, Y0 + 0.06, 0.0)), math.pi / 2)
+    # under counter: two drawer cabinets on the lower shelf + a rolling tool chest
+    for i, yy in enumerate((Y0 + 0.10, Y0 + 0.60)):
+        c2, cw2, ch2 = drawer_cabinet(m, cols=6, rows=6)
+        c2.emit(f"GlassTW_UnderCab_{i}", col, Vector((XB + 0.20, yy, 0.178)), math.pi / 2)
+    chest = Part()
+    chest.box(m["red"], 0, 0.55, 0, 0.40, 0.08, 0.62, bevel=0.01)
+    for j in range(5):
+        z = 0.12 + j * 0.095
+        chest.box(m["steel"], 0.04, 0.51, -0.006, 0.0, z + 0.06, z + 0.07)                # drawer pulls
+        chest.box(m["black"], 0.0, 0.55, -0.002, 0.0, z, z + 0.004)                      # drawer gaps
+    for xx in (0.05, 0.50):
+        for yy in (0.05, 0.35):
+            chest.cyl(m["black"], (xx - 0.01, yy, 0.04), (xx + 0.01, yy, 0.04), 0.04, seg=16)
+    chest.emit("GlassTW_ToolChest", col, Vector((XB + 0.58, Y1 - 0.75, 0.0)), math.pi / 2)
+    # on the counter: a vice, a cordless driver case, a parts tray, a cable reel
+    on = Part()
+    on.box(m["grey"], XB + 0.35, XB + 0.55, Y0 + 2.30, Y0 + 2.45, H, H + 0.06, bevel=0.005)          # vice body
+    on.box(m["steel"], XB + 0.53, XB + 0.56, Y0 + 2.28, Y0 + 2.47, H + 0.03, H + 0.11, bevel=0.003)
+    on.cyl(m["steel"], (XB + 0.56, Y0 + 2.375, H + 0.05), (XB + 0.68, Y0 + 2.375, H + 0.05), 0.008, seg=10)
+    toolbox(on, m, m["blue"], XB + 0.12, Y0 + 1.25, H, w=0.40, d=0.32, h=0.10)
+    on.box(m["grey"], XB + 0.15, XB + 0.40, Y0 + 0.40, Y0 + 0.62, H, H + 0.03, bevel=0.003)
+    on.cyl(m["yellow"], (XB + 0.45, Y0 + 0.85, H + 0.13), (XB + 0.45, Y0 + 0.99, H + 0.13), 0.13, seg=32)   # cable reel
+    on.cyl(m["black"], (XB + 0.45, Y0 + 0.85, H + 0.13), (XB + 0.45, Y0 + 0.99, H + 0.13), 0.06, seg=24)
+    on.emit("GlassTW_Counter", col, Vector((0, 0, 0)))
+    # a stool at the counter
+    craft["stool"](0.68).emit("GlassTW_Stool", col, Vector((XB + D + 0.10, Y0 + 1.6, 0.0)), 0.2)
+    p.emit("GlassToolWall_Frame", col, Vector((0, 0, 0)))
+
+
 # ---------------------------------------------------------------- build
 def build():
     m = mats()
@@ -230,12 +367,14 @@ def build():
     def on_bench(part, name, wx, wy, w, d, facing=math.pi):
         part.emit(name, col, Vector((wx + w, wy + d, top)), facing)
     by = yf + 0.25                                                   # bench back edge (against the tool wall)
-    on_bench(mdx20(m), "Roland_MDX20", 22.05, by + 0.05, 0.362, 0.300)
-    for i, sx in enumerate((23.2, 24.6, 26.0)):
+    on_bench(mdx20(m), "Roland_MDX20", 21.85, by + 0.05, 0.362, 0.300)
+    for i, sx in enumerate((22.30, 22.82)):                          # the two Roland SRM-20 mills
+        on_bench(mach["srm20"](), f"Roland_SRM20_{i + 1}", sx, by + 0.03, 0.451, 0.426)
+    for i, sx in enumerate((23.50, 24.70, 25.90)):
         on_bench(soldering_station(m), f"Solder_{i}", sx, by + 0.12, 0.25, 0.16)
         on_bench(fume_extractor(m), f"Fume_{i}", sx + 0.30, by + 0.05, 0.20, 0.08)
-    on_bench(scope_and_psu(m), "ScopePSU", 26.45, by + 0.04, 0.56, 0.25)
-    on_bench(magnifier_lamp(m), "Magnifier", 24.15, by + 0.02, 0.06, 0.06)
+    on_bench(scope_and_psu(m), "ScopePSU", 26.56, by + 0.04, 0.56, 0.25)
+    on_bench(magnifier_lamp(m), "Magnifier", 24.35, by + 0.02, 0.06, 0.06)
     pc = Part()                                                      # PCBs + parts tray + solder spool on the bench
     for i in range(5):
         x, y = 22.6 + i * 0.9 + rng.uniform(-0.1, 0.1), by + 0.42 + rng.uniform(-0.05, 0.08)
@@ -246,25 +385,7 @@ def build():
     for i, sx in enumerate((22.3, 23.4, 24.8, 26.2)):                 # stools on the open side
         craft["stool"](0.68).emit(f"MicroStool_{i}", col, Vector((sx, by + D + 0.12, 0.0)), rng.uniform(-0.2, 0.2))
 
-    # ---- low tool shelving along the NNE glass in the work-table area
-    lv = [0.10, 0.48, 0.86]
-    part, slots, Ls = lib["shelf_unit"]([1.00, 1.00, 1.00], 0.45, 1.05, lv)
-    sloc, srot = lib["placement"](20.95 + 0.225, 23.25 + Ls / 2, Ls, 0.45, "+x")
-    part.emit("GlassShelving_NNE", col, sloc, srot)
-    stuff = Part()
-    for (bi, li), (xa, xb, _, _, zt) in slots.items():
-        x = xa + 0.03
-        while x < xb - 0.30:
-            r = rng.random()
-            if r < 0.4:
-                c = rng.choice((m["red"], m["yellow"], m["blue"], m["black"]))
-                w = rng.uniform(0.35, 0.45)
-                toolbox(stuff, m, c, x, 0.06, zt, w=w, d=0.30, h=rng.uniform(0.12, 0.25))
-                x += w + 0.04
-            else:
-                lib["bin_box"](stuff, rng.choice(MAT["bins"]), x, 0.06, zt, w=0.30, d=0.32, h=0.18)
-                x += 0.34
-    stuff.emit("GlassShelving_Contents", col, sloc, srot)
+    glass_toolwall(m, col)
     print("microelectronics built; bench length %.2f m" % L)
 
 
