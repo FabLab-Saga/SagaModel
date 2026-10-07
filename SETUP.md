@@ -1,5 +1,13 @@
 # Setting up on a new machine
 
+**Fast path:** unpack the bundle, `cd SagaModel && ./setup.sh`. It installs/configures everything below
+(Blender 5.2.2 sha256-verified, uv, MCP add-on + Claude Code MCP server, openskp venv, Node tools,
+transcript + memory restore, HDRI + texture-path check). Needs sudo only for apt packages.
+The manual steps below describe exactly what the script does.
+
+Requirements on the new machine: Linux x86-64, Claude Code (`claude`), Node >= 18 and Google Chrome
+(only for `tools/`), a GPU with current drivers for fast Cycles (NVIDIA: OptiX/CUDA; AMD: HIP).
+
 ## 1. Project
 Unpack the bundle so the project lands at the **same path** as before if you can:
 `/home/gnus/Documents/Reposepos/SagaModel` (needed for step 4 to resume the exact conversation).
@@ -41,3 +49,13 @@ SAGA_OUT=final3 SAGA_SPP=256 blender -b SagaV2_work.blend --python scripts/rende
 ```
 The script picks the GPU automatically (OptiX > CUDA > HIP > oneAPI > Metal; `SAGA_DEVICE=CPU` forces CPU)
 and prints `RENDER DEVICE:` at start. Output: `renders/<SAGA_OUT>/NN_<shot>.png`, 1920x1080.
+
+## 6. Helper tools (`tools/`, Node + headless Chrome; `cd tools && npm install`)
+- `sketchup_capture.mjs '<share-url>' <outdir>` — re-capture the colleague's model from a SketchUp share
+  link (no SketchUp licence). Join parts: first 10 MiB of part 0 + part 1; md5 must match the parts JSON
+  "checksum". Then convert: `.venv/bin/python` + openskp `instanced_glb.export(skp, out, textures=True)`
+  and `blender -b --factory-startup --python scripts/import_glb.py -- export/SagaV2.glb export/SagaV2_metadata.json SagaV2_import.blend preview.png`.
+- `rasterize_svg.mjs <abs.svg> <out.png>` — mural: `python3 scripts/mural.py assets/mural/mural.svg` then rasterise.
+- `extract_logo_icon.mjs`, `page_screenshot.mjs` — logo icon extraction, JS-page capture.
+- `reykjavik_drawing_download.sh <rendition-href> <out.pdf>` — Reykjavík building-drawing archive
+  (skjalasafn.reykjavik.is FotoWeb; search API in CLAUDE.md history).

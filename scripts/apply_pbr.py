@@ -26,6 +26,7 @@ def size_m(asset):
 def img(asset, mapname, noncolor):
     path = PH + f"{asset}/{mapname}.jpg"
     im = next((i for i in bpy.data.images if bpy.path.abspath(i.filepath) == path), None) or bpy.data.images.load(path)
+    im.filepath = bpy.path.relpath(path)                      # keep the .blend portable
     im.colorspace_settings.name = "Non-Color" if noncolor else "sRGB"
     return im
 

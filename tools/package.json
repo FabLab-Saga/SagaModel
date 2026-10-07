@@ -1,0 +1,14 @@
+{
+  "name": "sagamodel-tools",
+  "version": "1.0.0",
+  "description": "Headless-Chrome helpers for the Fab Lab SAGA model",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "puppeteer-core": "^24"
+  },
+  "private": true
+}
