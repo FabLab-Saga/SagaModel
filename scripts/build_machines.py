@@ -66,6 +66,7 @@ def materials():
         gold=mat("Mach_Gold", "#C9A24A", 0.3, metal=1.0),
         brass=mat("Mach_Brass", "#B58B4A", 0.3, metal=1.0),
         spoolflange=mat("Spool_Flange", "#202020", 0.35),
+        mat_blue=mat("Cricut_Mat", "#6E8FB0", 0.6),
         desk=mat("Desk_Black", "#141414", 0.45),
         rubber=mat("Mach_Rubber", "#0E0E0E", 0.8),
         galv=bpy.data.materials.get("Galvanised") or mat("Galvanised", "#B9BEC2", 0.35, metal=1.0),
@@ -263,10 +264,17 @@ def srm20(w=0.451, d=0.426, h=0.426):
 
 
 def vinyl(w=0.851, d=0.310, h=0.235):
+    """Roland desktop vinyl cutter: grey body, black end caps, pinch-roller slot, vinyl roll behind."""
     p = Part()
-    p.box(M["grey"], 0, w, 0.04, d, 0, h, bevel=0.03)
-    p.box(M["dark"], 0.05, w - 0.05, 0.0, 0.06, 0.09, 0.13, bevel=0.005)                       # feed slot lip
-    p.box(M["dark"], w - 0.16, w - 0.03, 0.08, 0.20, h, h + 0.008, bevel=0.003)                # panel
+    p.box(M["grey"], 0.07, w - 0.07, 0.05, d - 0.02, 0.03, h, bevel=0.025)
+    for x0 in (0.0, w - 0.07):
+        p.box(M["black"], x0, x0 + 0.07, 0.02, d, 0.0, h + 0.01, bevel=0.02)
+    p.box(M["dark"], 0.07, w - 0.07, 0.035, 0.07, 0.10, 0.125, bevel=0.003)                   # media slot
+    p.box(M["white"], 0.10, w - 0.10, 0.02, 0.05, 0.106, 0.110)                               # vinyl coming out
+    p.box(M["black"], w - 0.16, w - 0.08, 0.16, 0.26, h - 0.002, h + 0.006, bevel=0.003)      # control panel
+    p.box(M["lcd"], w - 0.15, w - 0.11, 0.18, 0.21, h + 0.006, h + 0.007)
+    p.cyl(M["spools"][2], (0.12, d + 0.07, 0.07), (w - 0.12, d + 0.07, 0.07), 0.04, seg=32)   # roll on stand
+    p.cyl(M["chrome"], (0.08, d + 0.07, 0.07), (w - 0.08, d + 0.07, 0.07), 0.008, seg=12)
     return p
 
 
@@ -279,20 +287,30 @@ def mayku(w=0.274, d=0.466, h=0.315):
 
 
 def sewing(w=0.42, d=0.20, h=0.30):
+    """Domestic sewing machine: bed, pillar, arm, needle head, hand wheel, thread spool, screen."""
     p = Part()
-    p.box(M["white"], 0, w, 0, d, 0, 0.09, bevel=0.015)                                        # bed
-    p.box(M["white"], w - 0.11, w - 0.01, 0.02, d - 0.02, 0.09, h, bevel=0.02)                 # pillar
-    p.box(M["white"], 0.03, w - 0.01, 0.02, d - 0.02, h - 0.09, h, bevel=0.02)                 # arm
-    p.box(M["dark"], 0.05, 0.13, 0.03, d - 0.03, 0.10, h - 0.09)                                # needle head
-    p.box(M["lcd"], w - 0.10, w - 0.04, -0.002, 0.0, 0.15, 0.22)
+    p.box(M["white"], 0, w, 0, d, 0, 0.085, bevel=0.018)                                  # bed
+    p.box(M["white"], w - 0.12, w - 0.01, 0.015, d - 0.015, 0.06, h, bevel=0.025)          # pillar
+    p.box(M["white"], 0.02, w - 0.01, 0.025, d - 0.025, h - 0.085, h, bevel=0.025)         # arm
+    p.box(M["white"], 0.02, 0.10, 0.03, d - 0.03, 0.12, h - 0.06, bevel=0.012)            # needle head
+    p.cyl(M["chrome"], (0.06, 0.07, 0.09), (0.06, 0.07, 0.125), 0.003, seg=8)            # needle
+    p.box(M["chrome"], 0.045, 0.085, 0.05, 0.09, 0.085, 0.09)                             # presser foot
+    p.cyl(M["white"], (w - 0.005, d / 2, h - 0.06), (w + 0.025, d / 2, h - 0.06), 0.045, seg=32)  # hand wheel
+    p.cyl(M["chrome"], (w - 0.06, d / 2, h), (w - 0.06, d / 2, h + 0.05), 0.003, seg=8)  # spool pin
+    p.cyl(M["spools"][0], (w - 0.06, d / 2, h + 0.005), (w - 0.06, d / 2, h + 0.045), 0.016, seg=20)
+    p.box(M["lcd"], w - 0.10, w - 0.04, -0.001, 0.0, 0.15, 0.22)
+    p.box(M["dark"], 0.11, w - 0.13, -0.001, 0.0, h - 0.07, h - 0.04)                     # front decal strip
     return p
 
 
-# ---------------------------------------------------------------- more models
 def cricut(w=0.60, d=0.179, h=0.158):
+    """Cricut Maker: rounded white body, lid open, grey mat feeding through the front."""
     p = Part()
-    p.box(M["white"], 0, w, 0, d, 0, h, bevel=0.03)
-    p.box(M["grey"], 0.04, w - 0.04, -0.003, 0.02, 0.05, 0.09, bevel=0.004)
+    p.box(M["white"], 0, w, 0.03, d, 0, h * 0.75, bevel=0.035)
+    p.box(M["grey"], 0.06, w - 0.06, 0.05, d - 0.03, h * 0.75 - 0.01, h * 0.75 + 0.005, bevel=0.004)   # carriage bay
+    p.box(M["dark"], w * 0.35, w * 0.48, 0.07, 0.13, h * 0.75, h * 0.75 + 0.05, bevel=0.006)          # tool carriage
+    p.box(M["white"], 0.0, w, -0.11, -0.10, h * 0.75 - 0.005, h * 0.75 + 0.12, bevel=0.01)          # open lid
+    p.box(M["mat_blue"], 0.03, w - 0.03, -0.22, d + 0.08, 0.035, 0.037)                               # cutting mat
     return p
 
 

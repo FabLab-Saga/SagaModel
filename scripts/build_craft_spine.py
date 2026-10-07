@@ -187,6 +187,18 @@ def build():
         b = Part()
         for j in range(4):
             lib["bin_box"](b, MAT["bins"][(j + (0 if H > 0.8 else 3)) % 6], 0.06 + j * 0.46, 0.08, 0.16, w=0.42, d=0.40, h=0.24)
+            bx = 0.06 + j * 0.46
+            if (j + int(H * 10)) % 2:                                   # vinyl rolls lying in the bin
+                for r in range(4):
+                    p_col = rng.choice(MAT["bins"] + [mat("Vinyl_White", "#F2F2EE", 0.3), mat("Vinyl_Black", "#151515", 0.3)])
+                    b.cyl(p_col, (bx + 0.02, 0.13 + r * 0.085, 0.215), (bx + 0.40, 0.13 + r * 0.085, 0.215), 0.04, seg=24)
+            else:                                                       # folded fabric stacked
+                zz = 0.165
+                for r in range(rng.randint(4, 7)):
+                    fm = rng.choice([bpy.data.materials["Sofa_LightGrey"], mat("Fabric_Navy", "#2B3550", 0.9),
+                                     mat("Fabric_Mustard", "#C99A2E", 0.9), mat("Fabric_Rust", "#9B4A2C", 0.9)])
+                    b.box(fm, bx + 0.03, bx + 0.39, 0.10, 0.46, zz, zz + 0.035, bevel=0.012)
+                    zz += 0.036
         b.emit(name + "_Bins", col, loc, rot)
         if H > 0.8:
             put(mach["cricut"](), "Cricut_Maker_1", col, loc, rot, (0.42, 0.25), H, 0.60, 0.179)
