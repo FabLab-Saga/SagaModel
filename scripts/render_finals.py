@@ -19,11 +19,13 @@ SHOTS = [  # (file name, camera)
     ("08_equipment_bank", "Cam_Bank"),
     ("09_craft_zone", "Cam_Craft"),
 ]
+SHOTS += sorted(((f"{int(o['shot_order']):02d}_{o.name[4:].lower()}", o.name) for o in bpy.data.objects
+                 if o.type == "CAMERA" and "shot_order" in o), key=lambda s: s[0])
 want = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 sc = bpy.context.scene
 sc.render.engine = "CYCLES"
 sc.cycles.device = "CPU"
-sc.cycles.samples = 192
+sc.cycles.samples = int(__import__("os").environ.get("SAGA_SPP", "40"))
 sc.cycles.use_adaptive_sampling = True
 sc.cycles.adaptive_threshold = 0.015
 sc.cycles.use_denoising = True
@@ -39,11 +41,11 @@ for name, cam in SHOTS:
     t = time.time()
     for o in cut_hide:
         o.hide_render = name.startswith("01_")
-    for o in ground:                                  # real ground only from above; the HDRI ground reads better through windows
-        o.hide_render = not name.startswith("01_")
+    for o in ground:                                  # real ground only from above / outside
+        o.hide_render = not (name.startswith("01_") or bpy.data.objects[cam].get("show_ground", False))
     sc.camera = bpy.data.objects[cam]
     sc.view_settings.exposure = base_exposure + sc.camera.get("exposure_offset", 0.0)
-    sc.render.filepath = bpy.path.abspath(f"//renders/final/{name}.png")
+    sc.render.filepath = bpy.path.abspath(f"//renders/{__import__('os').environ.get('SAGA_OUT', 'final')}/{name}.png")
     bpy.ops.render.render(write_still=True)
     print(f"RENDERED {name} in {time.time() - t:.0f} s", flush=True)
 for o in cut_hide:
