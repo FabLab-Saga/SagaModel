@@ -87,7 +87,7 @@ def cutter(name, x0, x1, y0, y1, z0=-0.05, z1=3.94):
     mod.operation, mod.solver, mod.object = "DIFFERENCE", "EXACT", ob
 
 
-def manifestation_mat(pitch=0.10, radius=0.032):
+def manifestation_mat(pitch=0.20, pitch_z=0.10, radius=0.032):
     """Sandblasted dot manifestation (safety marking on glass): satin-white frosted dots in a square grid, procedural in
     world space (dots run along x on this wall, rows in z), everything between the dots fully clear."""
     m = bpy.data.materials.get("Glass_Manifestation_Dots") or bpy.data.materials.new("Glass_Manifestation_Dots")
@@ -111,11 +111,11 @@ def manifestation_mat(pitch=0.10, radius=0.032):
                 L(v, n.inputs[i])
         return n.outputs[0]
 
-    def centred(c):                                                  # fract(c / pitch) - 0.5
-        return math("SUBTRACT", math("FRACT", math("DIVIDE", c, pitch)), 0.5)
-    u, v = centred(sep.outputs["X"]), centred(sep.outputs["Z"])
+    def centred(c, pt):                                              # (fract(c / pt) - 0.5) * pt, metres
+        return math("MULTIPLY", math("SUBTRACT", math("FRACT", math("DIVIDE", c, pt)), 0.5), pt)
+    u, v = centred(sep.outputs["X"], pitch), centred(sep.outputs["Z"], pitch_z)
     d = math("SQRT", math("ADD", math("MULTIPLY", u, u), math("MULTIPLY", v, v)))
-    mask = math("LESS_THAN", d, radius / pitch)
+    mask = math("LESS_THAN", d, radius)
     frost = N("ShaderNodeBsdfPrincipled")
     frost.inputs["Base Color"].default_value = (0.93, 0.95, 0.96, 1)
     frost.inputs["Roughness"].default_value = 0.55
@@ -170,14 +170,14 @@ def glazed_front(col):
         p.cyl(alu, (hx, yc + sgn * 0.055, 0.75), (hx, yc + sgn * 0.055, 1.35), 0.0125, seg=20)
     p.emit("CNC_GlassWall_Fittings", col, Vector((0, 0, 0)))
     # manifestation (user: make the glass read as a divider without hiding the ShopBot): two narrow sandblasted dot
-    # bands across every pane incl. the door, on the main-room face - big 64 mm dots at 100 mm pitch (user: "way
-    # bigger"): one row at 0.95 m, two rows at 1.45/1.55 m; the rest of the glass stays clear. Gap on the door round
-    # the pull handle.
+    # bands across every pane incl. the door, on the main-room face - big 64 mm dots 200 mm apart (user: "way bigger",
+    # then every other dot dropped): one row at 0.95 m, one at 1.55 m; the rest of the glass stays clear. Gap on the
+    # door round the pull handle.
     dots = manifestation_mat()
     md = Part()
     ym = yc + 0.0015
     hx0 = lx1 - 0.17                                                 # handle zone on the door leaf
-    for z0, z1 in ((0.90, 1.00), (1.40, 1.60)):                    # rows centred at 0.95 / 1.45 + 1.55
+    for z0, z1 in ((0.90, 1.00), (1.50, 1.60)):                    # single rows centred at 0.95 / 1.55
         for xa, xb in ((x0, d0 - J), (d0 + 0.06, hx0), *zip([v for v in xs[:-1]], [v - J for v in xs[1:]])):
             if xb - xa > 0.02:
                 md.box(dots, xa, xb, ym, ym + 0.0002, z0, z1)
