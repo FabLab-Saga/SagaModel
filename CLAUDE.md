@@ -32,7 +32,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
   `build_services` → `build_machines` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
   `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
-  `build_signs` → `apply_pbr` → `detail_materials` → `add_cameras`.
+  `build_cupboard` → `build_signs` → `apply_pbr` → `detail_materials` → `add_cameras`.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
@@ -81,6 +81,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   high (NOT to the slab); south wall moved to y 34.32–34.40; only entry = SECRET DOOR hidden in the
   birch-fin relief sculpture facing the entrance (y 36.62–37.58). Standing desk = a niche/gap in the
   back-wall shelving (no chairs). Nothing from the bank accessible outside it.
+- **Mural-wall cupboard** (`build_cupboard.py`, x 24.32–25.70 against the mural wall): replaced the
+  colleague's sink (hidden). Low 40x40 profile cupboard, birch top 0.905 m, door bay + 3 drawers.
 - Accent wall: generated brand mural (`scripts/mural.py`) on the partition by the small rooms; red arch
   portal around its door; logo "FAB LAB SAGA". Signs from the manual placed per zone (`build_signs.py`).
 
