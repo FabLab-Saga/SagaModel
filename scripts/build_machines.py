@@ -6,8 +6,9 @@ Furniture comes from scripts/profile_furniture.py (black 20x20/40x40 profile + b
 Placement (model frame: +X = SSW, +Y = ESE; main entrance = SSW door at y 35.1-36.2):
   Laser room (glazed room x 29.67-32.53, y 20.14-26.92): Epilog Fusion Edge 24 against
   the NNE partition; 2x Glowforge Pro HD, Glowforge Aura, xTool F1 Ultra on profile laser
-  tables (sheet storage below) along the SSW glass; 100/80 mm exhausts straight out through
-  the facade edge beam (Epilog run > 2.5 m gets an inline fan, per the spec).
+  tables (sheet storage below) along the SSW glass. ONE central exhaust: the lasers plug into a low
+  manifold on the back edge of the tables, one riser, a ceiling collector (Epilog branch joins), one inline
+  fan, then up through the slab to the building's dedicated vent higher up.
   Print farm: profile shelving outside the laser room (2 bays x 4 levels, 0.58 m pitch):
   12x Prusa MK3S+, Bambu Lab P2S, filament bins.
   Mill table in the CNC corner: 2x Roland SRM-20. Craft machines (vinyl cutters, Cricut, Mayku,
@@ -538,25 +539,51 @@ def build():
         P, B = lib["MAT"]["ply"], lib["MAT"]["bins"]                    # mostly ply, a few acrylic sheets, ply on top
         st = sheets(7, L - 0.20, T_D - 0.08, [P])
         put(st, f"{name}_Sheets", loc, rot, (L / 2, T_D / 2), 0.16, L - 0.20, T_D - 0.08)
-    gx = 32.45 - 0.03                                                   # back edge of the laser tables
+    gx = 32.45 - 0.06                                                   # machine backs (room for the manifold)
     for i, y in enumerate((20.85, 22.00)):
         place(glowforge(0.965, 0.527, 0.211, M["smoke"]), f"Glowforge_ProHD_{i + 1}", col, gx - 0.527 / 2, y, T_H, 0.965, 0.527, "-x")
     place(glowforge(0.556, 0.521, 0.127, M["grey"]), "Glowforge_Aura", col, gx - 0.521 / 2, 23.25, T_H, 0.556, 0.521, "-x")
     place(xtool(), "xTool_F1_Ultra", col, gx - 0.02 - 0.253 / 2, 24.05, T_H, 0.493, 0.253, "-x")
     place(epilog(), "Epilog_FusionEdge24", col, 29.70 + 0.834 / 2, 20.30 + 1.055 / 2 + 0.05, 0, 1.055, 0.834, "+x")
-    ZE, XOUT = 3.75, 32.85
-    for name, y, z0, r in (("Glowforge_ProHD_1", 20.85, T_H + 0.10, 0.05), ("Glowforge_ProHD_2", 22.00, T_H + 0.10, 0.05),
-                           ("Glowforge_Aura", 23.25, T_H + 0.08, 0.05), ("xTool_F1_Ultra", 24.05, T_H + 0.25, 0.04)):
-        exhaust(col, f"Exhaust_{name}", [(gx - 0.01, y, z0), (gx - 0.01, y, ZE), (XOUT, y, ZE)], r)
-    ye = 20.30 + 1.055 / 2 + 0.05
-    exhaust(col, "Exhaust_Epilog", [(29.75, ye, 0.85), (29.75, ye, ZE), (XOUT, ye, ZE)], 0.05)
-    fan = Part()
-    fan.cyl(M["galv"], (30.9, ye, ZE), (31.25, ye, ZE), 0.13, seg=28)
-    fan.emit("Exhaust_Epilog_InlineFan", col, Vector((0, 0, 0)), 0.0)
-    hoods = Part()
-    for y in (20.85, 22.00, 23.25, 24.05, ye):
-        hoods.box(M["galv"], XOUT, XOUT + 0.06, y - 0.09, y + 0.09, ZE - 0.09, ZE + 0.09, bevel=0.01)
-    hoods.emit("Exhaust_Hoods", col, Vector((0, 0, 0)), 0.0)
+    # ---- one central exhaust: every laser plugs into a low manifold on the back edge of the tables (behind the
+    #      machines, below their lids), one riser at the end of the tables, a ceiling collector to the interior
+    #      side where the Epilog branch joins, ONE inline fan, then up through the slab to the building's vent.
+    flex = mat("Flex_Alu", "#B9BDC1", 0.35, metal=1.0)
+    XM, ZM, RM = 32.465, T_H + 0.09, 0.065                              # manifold (Ø130) along the glass
+    YR, ZC, RC = 25.05, 3.55, 0.09                                       # riser + collector (Ø180)
+    XO, XJ = 29.95, 30.90                                                # exit through the slab, Epilog junction
+    ex = Part()
+    ex.cyl(M["galv"], (XM, 20.45, ZM), (XM, YR, ZM), RM, seg=24)
+    ex.cyl(M["galv"], (XM, 20.44, ZM), (XM, 20.45, ZM), RM + 0.004, seg=24)                     # end cap
+    for y in (20.95, 22.35, 23.70, 24.75):                                                        # saddle brackets
+        ex.box(M["galv"], XM - 0.07, 32.45, y - 0.015, y + 0.015, T_H + 0.025, T_H + 0.03)
+    for y, z in ((20.85 - 0.25, T_H + 0.08), (22.00 - 0.25, T_H + 0.08), (23.25, T_H + 0.06), (24.05, T_H + 0.10)):
+        ex.cyl(flex, (gx - 0.01, y, z), (XM - RM + 0.01, y, z), 0.045, seg=20)                  # port -> manifold
+        for xr in (gx + 0.004, XM - RM - 0.002):                                                 # hose clamps
+            ex.cyl(M["galv"], (xr - 0.004, y, z), (xr + 0.004, y, z), 0.048, seg=20)
+    bmesh.ops.create_uvsphere(ex.bm(M["galv"]), u_segments=24, v_segments=12, radius=RC, matrix=Matrix.Translation((XM, YR, ZM)))
+    ex.cyl(M["galv"], (XM, YR, ZM), (XM, YR, ZC), RC, seg=24)                                    # riser
+    bmesh.ops.create_uvsphere(ex.bm(M["galv"]), u_segments=24, v_segments=12, radius=RC, matrix=Matrix.Translation((XM, YR, ZC)))
+    ex.cyl(M["galv"], (XM, YR, ZC), (XO, YR, ZC), RC, seg=24)                                    # collector
+    bmesh.ops.create_uvsphere(ex.bm(M["galv"]), u_segments=24, v_segments=12, radius=RC, matrix=Matrix.Translation((XO, YR, ZC)))
+    ex.cyl(M["galv"], (XO, YR, ZC), (XO, YR, 3.93), RC, seg=24)                                  # up through the slab
+    ex.cyl(M["galv"], (XO, YR, 3.90), (XO, YR, 3.93), RC + 0.04, seg=24)                         # fire collar
+    ex.cyl(M["galv"], (30.22, YR, ZC), (30.62, YR, ZC), 0.16, seg=32)                            # inline fan
+    for xr in (30.22, 30.62):
+        ex.cyl(M["dark"], (xr - 0.01, YR, ZC), (xr + 0.01, YR, ZC), 0.165, seg=32)
+    ex.box(M["dark"], 30.36, 30.48, YR - 0.16, YR - 0.10, ZC - 0.06, ZC + 0.06, bevel=0.005)     # fan controller
+    ye = 20.30 + 1.055 / 2 + 0.05                                                                 # Epilog branch (Ø150)
+    ep = [(29.70 - 0.01, ye + 0.25, 0.80), (29.76, ye + 0.25, 0.80), (29.76, ye + 0.25, ZC), (29.76, 24.70, ZC),
+          (XJ, 24.70, ZC), (XJ, YR, ZC)]
+    for a, b in zip(ep, ep[1:]):
+        ex.cyl(M["galv"], a, b, 0.075, seg=20)
+    for q in ep[1:-1]:
+        bmesh.ops.create_uvsphere(ex.bm(M["galv"]), u_segments=20, v_segments=10, radius=0.075, matrix=Matrix.Translation(q))
+    for z in (1.6, 2.6):                                                                          # wall clips on the riser
+        ex.box(M["galv"], 29.672, 29.70, ye + 0.20, ye + 0.30, z, z + 0.03)
+    for xh, yh in ((31.6, YR), (XJ + 0.4, 24.70), (29.76, 22.8), (29.76, 24.2)):                 # ceiling hangers
+        ex.cyl(M["galv"], (xh, yh, ZC + 0.08), (xh, yh, 3.93), 0.004, seg=8)
+    ex.emit("Exhaust_Central", col, Vector((0, 0, 0)), 0.0)
 
     # ---- print farm outside the laser room (against its NNE partition, x 28.90-29.50)
     PF_D, levels = 0.60, [0.15, 0.73, 1.31, 1.89]

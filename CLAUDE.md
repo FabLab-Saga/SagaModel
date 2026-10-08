@@ -54,8 +54,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 
 ## Zones (current layout, user-approved)
 - **Laser room** (glazed room by SSW façade, x 29.67–32.53, y 20.14–26.92): Epilog Fusion Edge 24,
-  2× Glowforge Pro HD, Glowforge Aura, xTool F1 Ultra on profile laser tables; exhausts out through the
-  façade beam, inline fan on the long Epilog run.
+  2× Glowforge Pro HD, Glowforge Aura, xTool F1 Ultra on profile laser tables. ONE central exhaust
+  (`Exhaust_Central`): rear ports → low manifold on the table backs → one riser (y 25.05) → ceiling collector
+  (Epilog branch joins) → one inline fan → up through the slab to the building's dedicated vent higher up.
 - **Print farm** outside the laser room: profile shelving, 12 Prusa MK3S+ (0.58 m shelf pitch), Bambu P2S.
 - **CNC room**: ShopBot PRS Alpha 120 against the INTERIOR wall; ACword FT100 dust collector out by the
   far glass corner; flexible hose overhead. (Clearance ignored per user.) No SRM-20s here.
