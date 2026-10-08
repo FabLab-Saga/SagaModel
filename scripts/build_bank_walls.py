@@ -8,6 +8,10 @@ facing the entrance hidden in a sculpture. Re-runnable ("BankWalls" collection).
 - Secret door: a parametric "fin wall" relief of 18 mm birch-ply fins (CNC-cut, 55 mm pitch)
   spanning y 36.50-37.70, rippling in depth; the fins over the opening ride on the door leaf, so the
   door seam disappears between two fins. Front edges of the fins carry a brand-colour sweep.
+- Privacy backs (user): shelf-high (2.42 m) birch-ply panels on the backs of the bank shelving wherever
+  outsiders could look in - along the NNE glass (behind run C and across the gaps either side of it) and
+  along the ESE back wall (behind runs A1/A2, which has an opening at x 25.7-26.5). The south run B
+  already backs onto the 2.80 m south wall.
 """
 import math
 
@@ -84,6 +88,16 @@ def build():
     w.box(shadow, XW1, XW1 + 0.001, D1, D1 + 0.003, 0.0, DH)
     w.box(shadow, XW1, XW1 + 0.001, D0, D1, DH, DH + 0.003)
     w.emit("Bank_Walls", col, Vector((0, 0, 0)))
+    # privacy backs on the shelving, shelf-high, held by 40x40 posts at the ends and every ~1.25 m
+    SH = 2.42
+    pb = Part()
+    pb.box(ply, 21.022, 21.040, YS1, YN - 0.02, 0.0, SH, bevel=0.001)                 # NNE glass side
+    pb.box(ply, 21.040, XW0, 38.331, 38.349, 0.0, SH, bevel=0.001)                    # ESE back wall side
+    for y in (YS1, 35.62, 37.70):                                                       # posts in the gaps by the glass
+        pb.profile(0.04, "z", 20.982, min(y, YN - 0.06), 0.0, SH)
+    pb.box(MAT["profile"], 20.982, 21.040, YS1, YN - 0.02, SH, SH + 0.02)              # top capping
+    pb.box(MAT["profile"], 21.040, XW0, 38.331, 38.349, SH, SH + 0.02)
+    pb.emit("Bank_PrivacyBacks", col, Vector((0, 0, 0)))
     # hide the colleague's OSB sheet (now inside the new wall)
     o = bpy.data.objects.get("osb st2.001")
     if o:
