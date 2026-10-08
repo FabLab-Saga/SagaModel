@@ -132,13 +132,15 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   bench on the SSW glass (x 31.65–32.45, y 28.18–30.08) with the red industrial clam press (Secabo TC7-based),
   Eazao Zero clay printer (stand-in, lab unsure; microwave + clay below) and
   Creality CR-10 Max. Main circulation x 28.0–29.5 stays clear.
-- **Lounge** (by the SSW glass; `conversation_pit()` in build_bank_lounge.py): CONVERSATION PIT - two straight
-  2-seat sofas (1.45 x 0.78, charcoal linen on black profile legs, a felt cushion each) FACING EACH OTHER across a low
-  birch coffee table (1.00 x 0.55, profile frame, shelf), at right angles to the glass (orientation was my choice)
-  so both get side light; the glass closes one end, two felt poufs the open lab end -> a ring of 6 (people sit in a circle; idea = force
-  interaction). Footprint x 30.32–32.42, y 30.13–33.24, pushed to the glass. No literal round sofa (user), no TV, no machines; RULE: the route from the entrance
-  into the lab passes between the on-call desk corner (29.92, 33.87) and the pit: keep >= 1.2 m there (now 1.22). `Cam_LoungeLow` looks down the pit axis.
-  `build_sofas.py` is a no-op (no Cleveland sofas left); the old `nook()` is unused.
+- **Lounge** (by the SSW glass; `conversation_pit()` + `gullvalla()` in build_bank_lounge.py): CONVERSATION PIT - two
+  IKEA GULLVALLA 2-seat sofas, Silkeryd grey-green (user's choice; real size 142 x 83 x 78, seat 42; rolled arms, two
+  seat + two loose back cushions, black turned legs; modelled from IKEA photos) FACING EACH OTHER across a low birch
+  coffee table (1.00 x 0.55, profile frame, shelf), at right angles to the glass (orientation was my choice); the
+  glass closes one end, two felt poufs the open lab end -> a ring of 6 (idea = force interaction). Footprint
+  x 30.39–32.40, y 30.11–33.29, pushed to the glass. No literal round sofa (user), no TV, no machines. RULE: the
+  route from the entrance into the lab passes between the on-call desk corner (29.92, 33.87) and the pit: keep
+  >= 1.2 m there (now 1.21). Real furniture uses real catalogue dimensions. `Cam_LoungeLow` looks down the pit axis.
+  `build_sofas.py` is a no-op; the old `nook()` is unused.
 - **Entrance / on-call desk** (`build_welcome.py`, collection Welcome): the on-call desk is NOT a reception desk -
   one person's sitting desk (1.6 x 0.7, 0.75 m) with its BACK TO THE SPINE BOOKCASE at x 28.93–29.92, y 33.87–35.77,
   FACING THE DOOR (straight ahead) with the lounge + corridor to the lab in view; the monitor sits on the corridor

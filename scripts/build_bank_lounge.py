@@ -252,12 +252,49 @@ def soften(root, names, width=0.03):
                 f.use_smooth = True
 
 
+def gullvalla(fab, leg, cushion=None, cushion_left=True):
+    """IKEA GULLVALLA 2-seat sofa, Silkeryd grey-green (142 x 83 x 78 incl. back cushions, backrest 70, seat height
+    42, seat depth 48, seat width 120, free height under 15; modelled from the IKEA product photos): softly rolled
+    arms that sweep down a little towards the front, two seat cushions, two plump loose back cushions leaning back,
+    black stepped/turned tapered legs. Local frame: x = width, front at y = 0, back at y = 0.83."""
+    W, D, SH = 1.42, 0.83, 0.42
+    p = Part()
+    zl, aw = 0.15, 0.11                                               # underside of the body, arm thickness
+    p.box(fab, aw - 0.01, W - aw + 0.01, 0.02, D - 0.02, zl, SH - 0.10, bevel=0.03)              # base frame
+    for i in range(2):                                                # two seat cushions
+        x0 = aw + i * (W - 2 * aw) / 2
+        p.box(fab, x0 + 0.004, x0 + (W - 2 * aw) / 2 - 0.004, 0.0, D - 0.16, SH - 0.10, SH, bevel=0.035)
+    p.box(fab, aw - 0.01, W - aw + 0.01, D - 0.16, D, zl, 0.70, bevel=0.05)                      # back frame
+    for i in range(2):                                                # two loose back cushions, leaning back
+        cx = aw + (i + 0.5) * (W - 2 * aw) / 2
+        mtx = Matrix.Translation((cx, D - 0.26, SH + 0.18)) @ Matrix.Rotation(math.radians(-11), 4, "X") \
+            @ Matrix.Diagonal(((W - 2 * aw) / 2 - 0.02, 0.19, 0.38, 1))
+        bmesh.ops.create_cube(p.bm(fab), size=1.0, matrix=mtx)
+    # rolled arms: one solid arm each + a rolled top (cylinder along the depth), front of the roll set back a little
+    for x0 in (0.0, W - aw):
+        p.box(fab, x0, x0 + aw, 0.01, D, zl, 0.57, bevel=0.03)
+        p.cyl(fab, (x0 + aw / 2, 0.02, 0.575), (x0 + aw / 2, D, 0.585), aw / 2 + 0.008, seg=24)
+    # black stepped, turned legs
+    for x in (0.06, W - 0.06):
+        for y in (0.07, D - 0.07):
+            for z0, z1, r0, r1 in ((0.0, 0.07, 0.016, 0.019), (0.07, 0.075, 0.021, 0.021), (0.075, 0.13, 0.020, 0.023),
+                                   (0.13, 0.15, 0.026, 0.026)):
+                bmesh.ops.create_cone(p.bm(leg), cap_ends=True, segments=20, radius1=r0, radius2=r1, depth=z1 - z0,
+                                      matrix=Matrix.Translation((x, y, (z0 + z1) / 2)))
+    if cushion is not None:                                          # one loose felt cushion
+        cxx = aw + 0.24 if cushion_left else W - aw - 0.24
+        mtx = Matrix.Translation((cxx, D - 0.40, SH + 0.16)) @ Matrix.Rotation(math.radians(-16), 4, "X") \
+            @ Matrix.Diagonal((0.40, 0.11, 0.36, 1))
+        bmesh.ops.create_cube(p.bm(cushion), size=1.0, matrix=mtx)
+    return p, W, D
+
+
 def conversation_pit(col):
     """Lounge by the SSW glass (user choice 2026-10-08): two straight 2-seat sofas FACING EACH OTHER across a low
     birch coffee table, set at right angles to the glass so both sides get the window light, two felt poufs closing
     the open (lab-side) end; the glass closes the other end - people sit in a ring of 6 and face each other.
-    Sofas 1.45 x 0.78 (charcoal linen, black 40x40 profile legs, felt cushions), table 1.00 x 0.55 x 0.40.
-    Pushed against the glass (x 30.32-32.42, y 30.13-33.24) so the route from the entrance into the lab stays open:
+    Sofas = IKEA GULLVALLA 2-seat, Silkeryd grey-green (142 x 83 x 78, user choice), table 1.00 x 0.55 x 0.40.
+    Pushed against the glass (x 30.39-32.40, y 30.11-33.29) so the route from the entrance into the lab stays open:
     >= 1.2 m between the on-call desk corner (29.92, 33.87) and the pit, ~2 m between pit and spine further on."""
     char = bpy.data.materials.get("Sofa_Charcoal")
     if char is None:
@@ -272,31 +309,20 @@ def conversation_pit(col):
         bsdf.inputs["Sheen Weight"].default_value = 0.3
         bsdf.inputs["Sheen Tint"].default_value = (0.35, 0.36, 0.38, 1)
     felts = [bpy.data.materials[n] for n in ("Floff_Orange", "Floff_Green", "Floff_Blue")]
-    L, D, X0, CY = 1.45, 0.78, 30.97, 31.685
-    for k, (y_front, facing) in enumerate(((30.91, "+y"), (32.46, "-y"))):
-        p = Part()
-        arm, zs = 0.14, 0.18                                             # raised on legs: lighter, lab-like
-        for x in (0.05, L - 0.09):
-            for y in (0.05, D - 0.09):
-                p.profile(0.04, "z", x, y, 0.0, zs)                      # black profile legs
-        p.box(char, 0, L, 0, D, zs, zs + 0.16, bevel=0.02)               # base
-        p.box(char, 0, arm, 0, D, zs, 0.62, bevel=0.04)                  # arms
-        p.box(char, L - arm, L, 0, D, zs, 0.62, bevel=0.04)
-        p.box(char, arm, L - arm, D - 0.18, D, zs + 0.16, 0.80, bevel=0.05)        # back
-        cw = (L - 2 * arm) / 2
-        for i in range(2):
-            x = arm + i * cw
-            p.box(char, x + 0.006, x + cw - 0.006, 0.0, D - 0.18, zs + 0.16, 0.45, bevel=0.04)   # seats
-            p.box(char, x + 0.01, x + cw - 0.01, D - 0.34, D - 0.16, 0.45, 0.77, bevel=0.06)     # back cushions
-        cu = felts[(k * 2) % 3]                                          # one loose felt cushion each
-        mtx = Matrix.Translation(((0.42 if k else L - 0.42), D - 0.36, 0.62)) @ Matrix.Rotation(math.radians(-12), 4, "X") \
-            @ Matrix.Diagonal((0.40, 0.11, 0.36, 1))
-        bmesh.ops.create_cube(p.bm(cu), size=1.0, matrix=mtx)
-        cx = X0 + L / 2
+    green = fabric("Silkeryd_GreyGreen", "#3E5530")                   # GULLVALLA, Silkeryd grey-green
+    gb = next(n for n in green.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+    gb.inputs["Sheen Weight"].default_value = 0.25                   # strong white sheen washed the green out
+    gb.inputs["Sheen Tint"].default_value = (0.45, 0.55, 0.40, 1)
+    leg = mat("Leg_BlackStained", "#141414", 0.45)
+    X1, CY = 32.40, 31.70                                            # glass end, pit axis
+    L = 1.42
+    X0 = X1 - L
+    for k, (y_front, facing) in enumerate(((30.94, "+y"), (32.46, "-y"))):
+        p, L, D = gullvalla(green, leg, felts[(k * 2) % 3], cushion_left=bool(k))
         cy = y_front - D / 2 if facing == "+y" else y_front + D / 2
-        loc, rot = lib["placement"](cx, cy, L, D, facing)
+        loc, rot = lib["placement"](X0 + L / 2, cy, L, D, facing)
         root = p.emit(f"Lounge_Sofa_{k + 1}", col, loc, rot)
-        soften(root, ("Sofa_Charcoal",) + tuple(f.name for f in felts), 0.03)
+        soften(root, ("Silkeryd_GreyGreen",) + tuple(f.name for f in felts), 0.025)
     t = Part()                                                           # low birch coffee table, profile frame
     TL, TD, TH = 1.00, 0.55, 0.40
     tx0, ty0 = X0 + L / 2 - TL / 2, CY - TD / 2
@@ -314,7 +340,7 @@ def conversation_pit(col):
         t.cyl(mat("Mug_White", "#F4F3EF", 0.3, coat=0.3), (tx0 + dx, ty0 + dy, TH), (tx0 + dx, ty0 + dy, TH + 0.09), 0.04, seg=24)
     t.emit("Lounge_Table", col, Vector((0, 0, 0)))
     for k, dy in enumerate((-0.33, 0.33)):                               # two poufs close the open (lab) end
-        pouf(felts[(k + 1) % 3]).emit(f"Pouf_{k + 1}", col, Vector((30.60 - 0.23, CY + dy - 0.23, 0)))
+        pouf(felts[(k + 1) % 3]).emit(f"Pouf_{k + 1}", col, Vector((30.62 - 0.23, CY + dy - 0.23, 0)))
 
 
 def nook(col, c, R=1.42, opening=math.radians(190), arc=math.radians(240)):
