@@ -1,6 +1,8 @@
 # Fab Lab SAGA — Blender model (project brief for Claude)
 
-Authoritative project state as of 2026-10-08 (MPDESKTOP; PLAN.md G1–G11 done). Read this first; then `git log --oneline` for history,
+Authoritative project state as of 2026-10-08 evening (MPDESKTOP; PLAN.md G1–G11 done; since then: hidden leftovers
+deleted, work tables, print-farm cabins, every listed machine modelled - see MACHINES.md). `AGENTS.md` is a symlink to
+this file (Hermes/Codex/Claude Code all read it). Read this first; then `git log --oneline` for history,
 `LICENSES.md` for asset rules, `SETUP.md` for machine setup. The previous session's full transcript
 may also be available (see SETUP.md) — this file is the summary of record.
 
@@ -24,6 +26,11 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Verify visually: `scripts/render_cams.py -- <CamNames>` (review renders, ~5 s each on the GPU) and
   `scripts/peek.py -- eye target out.png lens` (ad-hoc viewpoint); read the PNGs before reporting.
 - Real products (machines, furniture) are modelled from PHOTOS (manufacturer pages), never from memory.
+  `MACHINES.md` is the machine register: equipment list (PDF) vs model, exact model, image + product links, dims.
+  Keep it in sync whenever a machine is added, moved or removed (one Blender object per listed unit).
+- Colleague SketchUp objects: builders hide what they replace; `purge_hidden.py` then DELETES every render-hidden
+  object (keeps the façade boolean cutters + per-camera ground, and any datablock a builder looks up by name, e.g.
+  the `Profile_2020/4040` template meshes). Never delete a template mesh profile_furniture needs.
 - Push after each commit (remote: github.com/MagnusPetursson/SagaModel, private).
 - Everything scripted and re-runnable; commit after each step (attribution lines per system prompt).
 - **Licensing:** only CC0 (Poly Haven) or the Fab Lab's own material in renders; record every new asset
@@ -37,13 +44,17 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - `SagaV2_import.blend` — raw import (regenerate with `scripts/import_glb.py`); never overwrite the work file.
 - `scripts/` — builders. Each rebuilds its own collection when exec'd inside Blender
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
-  `build_services` → `build_lighting` → `build_machines` → `build_laser_room` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
-  `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
-  `build_cupboard` → `cleanup_leftovers` → `build_material_storage` → `build_hall_entrance` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
+  `build_services` → `build_lighting` → `build_machines` → `build_print_farm` → `build_laser_room` → `build_bank_lounge` →
+  `build_sofas` (ALWAYS after bank_lounge) → `build_craft_spine` → `build_worktables` → `build_life` (needs WorkTables) →
+  `build_microelectronics` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
+  `build_material_storage` → `build_hall_entrance` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
+  `add_cameras` → `purge_hidden`.
   Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
   exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
   (hides colleague leftovers), `build_material_storage` (CNC room stock), `build_hall_entrance` (hall signage),
-  `fix_glass` (thin-glass shader).
+  `fix_glass` (thin-glass shader), `build_worktables` (2x2 work tables + chairs), `build_print_farm` (printer wall with
+  cabins), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
+  EinScan, Secabo, EasyPress, Mug Press, BEKANT cart) are functions in build_machines.py; zone builders place them.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
@@ -56,9 +67,11 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `tools/publish.sh`, Blender 5.2.2 headless on GitHub Actions) and deploys it to GitHub Pages. Needs the repo secret
   `SAGA_WEB_DEPLOY_KEY`. Manual run: Actions tab → Web preview → Run workflow. Script-only commits don't trigger it.
 - `PLAN.md` — the review-fix goals G1–G11 (all done). New multi-step work: write a similar plan.
+- `MACHINES.md` — machine register (see above).
 - `refs/` — branding (Fab Lab Ísland brand manual 2021, signs, logos, Roboto fonts), equipment list PDF
   (the machinery list given to the architects for electrical load + airflow), user photos.
-- `renders/final3/` — 29 stills at 1920x1080 (GPU OptiX, 128 spp) after the PLAN.md goals G1–G11 (2026-10-08).
+- `renders/final3/` — 29 stills at 1920x1080 (GPU OptiX, 128 spp) after G1–G11. OUTDATED (pre laser-room remodel,
+  tables, print farm, craft corner): don't judge the current model from them; render fresh reviews.
   `renders/final2/` — older set (pre-G1, CPU 32 spp). `renders/tmp/` — scratch previews.
 
 ## Geometry & site facts (verified)
@@ -82,7 +95,11 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   under the interior window; safety station + 3 offcut bins on the WNW wall. ONE central exhaust (`Exhaust_Central`):
   rear ports → manifold behind the bench → riser (y 25.17) → ceiling collector (Epilog branch joins) → inline fan →
   up through the slab to the building's vent. Keep both doors and a ≥1.0 m aisle clear.
-- **Print farm** outside the laser room: profile shelving, 12 Prusa MK3S+ (0.58 m shelf pitch), Bambu P2S.
+- **Print farm** (`build_print_farm.py`, collection PrintFarm) against the laser room's NNE partition, x 28.78–29.50,
+  y 21.95–25.31: one 3.36 m profile wall, 5 bays x 3 rows of birch cells (decks 0.12/0.80/1.48/2.16) + open spool top.
+  7 Prusa MK3S+ (user decision), EACH IN ITS OWN CABIN: birch sides/back, clear acrylic door hinged on the left post
+  (bar handle, magnet catch), LED strip + power strip inside; one door shown open. Open cells: 3x Creality CR-200B
+  (top row), Bambu P2S + Flashforge AD5M Pro (bottom row); 3 doored filament dry cells.
 - **CNC room**: ShopBot PRS Alpha 120 against the INTERIOR wall; ACword FT100 dust collector out by the
   far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`), brush skirt on the spindle.
   (Clearance ignored per user.) No SRM-20s here.
@@ -99,10 +116,18 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Felt wall**: Flöff-style recycled-textile felt panels (manual orange/green/blue) on the WNW (bench)
   side of the tool walls; arched tops on the manual's 6x6 grid. NEVER a single raised rounded peak
   between lower shoulders.
-- **Work tables** (colleague's benches) with stools, cutting mats, laptops etc.; vinyl cutters on rolling
-  stands by the NNE glass.
-- **Textile area** (WNW side of the felt, x 26.1–28.9, y 26.6–29.6): sewing table with sewing /
-  embroidery / overlock + 4 profile chairs; cutter counter (Cricut, Mayku) against the felt.
+- **Work tables** (`build_worktables.py`, collection WorkTables): 2x2 grid of 1.8x0.9x0.75 m profile tables (centres
+  x 23.50/26.80, y 24.75/27.45), 4 profile chairs each (16), no low shelf (chairs tuck in); 1.5 m central aisle, 1.8 m
+  between rows, ~1 m to the glass tool wall, 1.2 m to the print farm. Props (mats, laptops, drills) by build_life.
+  The colleague's six benches + stools are gone (too dense, chairs overlapped).
+- **Cutter corner** on the NNE glass: 2 Roland vinyl cutters on rolling stands (y 26.5–28.5), Cricut Maker + Mayku
+  FormBox counter (y 28.55–29.55), two IKEA BEKANT carts (birch top) against felt panel 1 with the Cricut Maker 3 and
+  the EinScan SE scanner.
+- **Craft & large-format corner** (`build_textile.py`, collection Textile) between the laser room's glazed ESE
+  partition (y 26.94) and the nook: 2.6 m wall bench along the partition (sit facing it, 3 chairs) with EasyPress 3
+  (+1 on the shelf), Mug Press, overlocker, Brother embroidery + sewing; 1.9x0.8 m bench on the SSW glass
+  (x 31.65–32.45, y 28.18–30.08) with Secabo TC7 heat press, Eazao Zero clay printer (microwave + clay below) and
+  Creality CR-10 Max. Main circulation x 28.0–29.5 stays clear.
 - **Lounge** (by the SSW glass): ONE small circular conversation nook (`nook()` in build_bank_lounge.py, centre
   30.95/31.60, 2.85 m): 240° curved charcoal sofa (back to the glass, open towards the spine path), felt cushions,
   round birch table, 2 felt poufs. No TV, no machines. Keep walkways clear (spine path ≥1.2 m, entrance zone,
@@ -151,3 +176,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   model — ask the user: loading door, glazing, or wall?
 - Animated walkthrough (stills done on MPDESKTOP: RTX 4070 Ti SUPER, OptiX; ~10-25 s per 1080p still).
 - Spine has no camera on its workshop face (tool library); add one if it should be in the finals.
+- Stand-in machine models to confirm with the lab (list gives no model): Flashforge (AD5M Pro used), clay printer
+  (Eazao Zero), 3D scanner (EinScan SE V2), large heat press (Secabo TC7), Brother sewing/embroidery, overlocker,
+  EasyPress generation; Roland vinyl GS-24 vs GS2-24; Epilog wattage (list 80 W, Epilog sells 50/60 W).
+- Prusa count: 7 now; list says 5, its power notes 10, "probably 15 printers in total".
+- Finals (renders/final3) are outdated; re-render when the layout settles. Non-final cameras (Counter, Craft,
+  Interior_01, Mural, ...) were not reframed after the layout changes.

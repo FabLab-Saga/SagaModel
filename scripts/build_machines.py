@@ -9,8 +9,7 @@ Placement (model frame: +X = SSW, +Y = ESE). Laser models are defined here; the 
   tables (sheet storage below) along the SSW glass. ONE central exhaust: the lasers plug into a low
   manifold on the back edge of the tables, one riser, a ceiling collector (Epilog branch joins), one inline
   fan, then up through the slab to the building's dedicated vent higher up.
-  Print farm: profile shelving outside the laser room (2 bays x 4 levels, 0.58 m pitch):
-  12x Prusa MK3S+, Bambu Lab P2S, filament bins.
+  Print farm: built by build_print_farm.py (models of all printers live here).
   Mill table in the CNC corner: 2x Roland SRM-20. Craft machines (vinyl cutters, Cricut, Mayku,
   sewing) live in the equipment bank (scripts/build_bank_lounge.py); the SSW glass by the
   entrance is the lounge/entryway.
@@ -494,13 +493,15 @@ def sewing(w=0.42, d=0.20, h=0.30):
     return p
 
 
-def cricut(w=0.60, d=0.179, h=0.158):
-    """Cricut Maker: rounded white body, lid open, grey mat feeding through the front."""
+def cricut(w=0.60, d=0.179, h=0.158, body=None):
+    """Cricut Maker: rounded white body, lid open, grey mat feeding through the front.
+    body: shell material (Maker 3 = pale blue, 538 x 178 x 151)."""
     p = Part()
-    p.box(M["white"], 0, w, 0.03, d, 0, h * 0.75, bevel=0.035)
+    body = body or M["white"]
+    p.box(body, 0, w, 0.03, d, 0, h * 0.75, bevel=0.035)
     p.box(M["grey"], 0.06, w - 0.06, 0.05, d - 0.03, h * 0.75 - 0.01, h * 0.75 + 0.005, bevel=0.004)   # carriage bay
     p.box(M["dark"], w * 0.35, w * 0.48, 0.07, 0.13, h * 0.75, h * 0.75 + 0.05, bevel=0.006)          # tool carriage
-    p.box(M["white"], 0.0, w, -0.11, -0.10, h * 0.75 - 0.005, h * 0.75 + 0.12, bevel=0.01)          # open lid
+    p.box(body, 0.0, w, -0.11, -0.10, h * 0.75 - 0.005, h * 0.75 + 0.12, bevel=0.01)                # open lid
     p.box(M["mat_blue"], 0.03, w - 0.03, -0.22, d + 0.08, 0.035, 0.037)                               # cutting mat
     return p
 
@@ -584,6 +585,385 @@ def spool_stack(n):
     p = Part()
     for i in range(n):
         spool_part(p, M["spools"][i % len(M["spools"])], 0.05 + i * 0.072, 0.06, 0.10, axis="x", width=0.062)
+    return p
+
+
+# ---------------------------------------------------------------- equipment-list machines added 2026-10-08
+# (modelled from manufacturer/retailer photos listed in MACHINES.md; same simplified-but-recognisable style)
+def _obox(p, m, center, size, rot):
+    """Oriented box: size (sx, sy, sz) centred at `center`, rotated by the 3x3 matrix `rot`."""
+    bmesh.ops.create_cube(p.bm(m), size=1.0, matrix=Matrix.Translation(center) @ rot.to_4x4()
+                          @ Matrix.Diagonal((size[0], size[1], size[2], 1.0)))
+
+
+def _tube(p, m, pts, r, seg=12, step=0.01):
+    """Smooth round tube along a Catmull-Rom path through pts (cables, feed tubes)."""
+    def cr(p0, p1, p2, p3, t):
+        return 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3)
+    pts = [Vector(q) for q in pts]
+    P = [pts[0]] + pts + [pts[-1]]
+    dense = [cr(P[i - 1], P[i], P[i + 1], P[i + 2], k / 16) for i in range(1, len(P) - 2) for k in range(16)] + [pts[-1]]
+    samples, acc, last = [dense[0]], 0.0, dense[0]
+    for q in dense[1:]:
+        acc += (q - last).length
+        last = q
+        if acc >= step:
+            samples.append(q)
+            acc = 0.0
+    if (samples[-1] - pts[-1]).length > 1e-4:
+        samples.append(pts[-1])
+    bm, prev_n, rings = p.bm(m), None, []
+    for i, c in enumerate(samples):
+        t = (samples[min(i + 1, len(samples) - 1)] - samples[max(i - 1, 0)]).normalized()
+        n = prev_n if prev_n is not None else (Vector((0, 0, 1)) if abs(t.z) < 0.9 else Vector((1, 0, 0)))
+        n = (n - t * n.dot(t)).normalized()
+        prev_n = n
+        b = t.cross(n)
+        rings.append([bm.verts.new(c + (n * math.cos(a) + b * math.sin(a)) * r) for a in (2 * math.pi * k / seg for k in range(seg))])
+    for r0, r1 in zip(rings, rings[1:]):
+        for k in range(seg):
+            bm.faces.new((r0[k], r0[(k + 1) % seg], r1[(k + 1) % seg], r1[k]))
+
+
+def creality_cr200b(w=0.411, d=0.435, h=0.503):
+    """Creality CR-200B (411 x 435 x 503, enclosed; checked against Creality/All3DP photos): white body with a gloss
+    black front bezel framing a big tinted door window, black lower front band with the CREALITY strip and the small
+    touchscreen bottom right, rounded black-framed tinted windows in both white sides, clear acrylic top hood with a
+    grey T-handle, small feet."""
+    p = Part()
+    gloss = mat("CR200_GlossBlack", "#0F1012", 0.12, coat=0.6)
+    tint = _acrylic("CR200_Tint", "#1A1C1E", 0.05, 0.78)
+    hood = _acrylic("Hood_Clear", "#DCE6EA", 0.05, 0.22)
+    hb = 0.405                                                           # body height under the hood
+    for x in (0.04, w - 0.04):
+        for y in (0.04, d - 0.04):
+            p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.010), 0.014, seg=12)
+    p.box(M["white"], 0.0, w, 0.015, d, 0.010, hb, bevel=0.014)                      # white shell
+    p.box(gloss, 0.0, w, 0.0, 0.022, 0.010, hb, bevel=0.012)                         # black front bezel
+    p.box(tint, 0.030, w - 0.030, -0.002, 0.0, 0.105, hb - 0.030, bevel=0.002)       # door window
+    p.box(M["dark"], 0.030, w - 0.030, 0.10, d - 0.03, 0.098, 0.104)                 # bed level inside (dark)
+    p.box(M["chrome"], 0.035, 0.095, -0.0015, 0.0, 0.088, 0.092)                     # CREALITY strip
+    p.box(M["lcd"], w - 0.115, w - 0.050, -0.0025, -0.0005, 0.030, 0.080)            # touchscreen
+    for x in (-0.002, w):                                                            # side windows, black surround
+        p.box(gloss, x, x + 0.002, 0.075, d - 0.050, 0.110, hb - 0.040, bevel=0.0008)
+        p.box(tint, x - 0.0005 if x < 0 else x + 0.0005, x + 0.0015 if x < 0 else x + 0.0025, 0.085, d - 0.060,
+              0.120, hb - 0.050)
+    p.box(M["black"], w - 0.002, w + 0.004, 0.10, 0.13, 0.035, 0.050)               # USB/SD on the right side
+    p.box(hood, 0.050, w - 0.050, 0.030, d - 0.060, hb, h - 0.004, bevel=0.010)      # clear top hood
+    p.box(M["grey"], w * 0.5 - 0.004, w * 0.5 + 0.004, 0.026, 0.030, hb + 0.020, h - 0.020)   # T-handle stem
+    p.box(M["grey"], w * 0.5 - 0.045, w * 0.5 + 0.045, 0.026, 0.030, h - 0.026, h - 0.016)    # T-handle bar
+    p.cyl(M["dark"], (w + 0.0, d * 0.75, 0.30), (w + 0.03, d * 0.75, 0.30), 0.008, seg=10)  # spool-holder stub
+    return p
+
+
+def flashforge_ad5m_pro(w=0.380, d=0.400, h=0.453):
+    """Flashforge Adventurer 5M Pro (380 x 400 x 453; checked against Flashforge photos): charcoal enclosure with
+    rounded vertical edges, top band with the 4.3" touchscreen and power knob (top right), thin silver line under the
+    band, full-width tinted glass door, white FLASHFORGE mark low on the door, smoked glass top."""
+    p = Part()
+    body = mat("FF_Charcoal", "#26282B", 0.42, coat=0.15)
+    tint = _acrylic("FF_DoorTint", "#202326", 0.05, 0.80)
+    zb = h - 0.080
+    p.box(body, 0.0, w, 0.0, d, 0.008, h, bevel=0.022)
+    p.box(tint, 0.022, w - 0.022, -0.002, 0.0, 0.030, zb - 0.006, bevel=0.002)       # door glass
+    p.box(M["chrome"], 0.015, w - 0.015, -0.0015, 0.0, zb - 0.004, zb - 0.002)       # silver line
+    p.box(M["lcd"], w - 0.165, w - 0.075, -0.0025, -0.0005, zb + 0.012, zb + 0.066)  # touchscreen
+    p.cyl(M["black"], (w - 0.040, -0.004, zb + 0.050), (w - 0.040, 0.0, zb + 0.050), 0.011, seg=20)   # knob
+    p.box(M["white"], w * 0.30, w * 0.70, -0.0025, -0.0015, 0.050, 0.060)            # FLASHFORGE mark
+    p.box(M["pei"], 0.06, w - 0.06, 0.06, d - 0.08, 0.10, 0.106)                     # build plate behind glass
+    p.box(M["smoke"], 0.03, w - 0.03, 0.03, d - 0.03, h, h + 0.003)                  # smoked top glass
+    for x in (0.04, w - 0.04):
+        for y in (0.04, d - 0.04):
+            p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.008), 0.014, seg=12)
+    return p
+
+
+def creality_cr10_max(w=0.65, d=0.785, h=0.735):
+    """Creality CR-10 Max (650 x 785 x 735; checked against product photos): black 2040 extrusion base, big
+    450 x 450 bed with a black coated plate, black control box front right with the touchscreen, twin 2040 uprights
+    and top bar, X gantry with RED aluminium brackets, red/black hotend carriage with fan, diagonal support rods from
+    the top of the uprights to the rear of the base, spool on the top bar."""
+    p = Part()
+    red = mat("CR10_Red", "#C41E2A", 0.35, metal=0.4)
+    alu = M["alu"]
+    for x in (0.02, w - 0.06):                                                        # base rails (y)
+        p.box(alu, x, x + 0.04, 0.04, d - 0.03, 0.035, 0.075, bevel=0.002)
+    for y in (0.04, d - 0.07):                                                        # base cross members
+        p.box(alu, 0.02, w - 0.02, y, y + 0.04, 0.035, 0.055, bevel=0.002)
+    for x in (0.04, w - 0.04):
+        for y in (0.06, d - 0.05):
+            p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.035), 0.022, seg=16)            # feet
+    yb = 0.07                                                                         # bed front
+    p.box(alu, 0.11, w - 0.11, yb + 0.05, yb + 0.42, 0.080, 0.090)                    # Y carriage
+    p.box(M["alusatin"] if "alusatin" in M else M["chrome"], 0.095, w - 0.095, yb, yb + 0.47, 0.100, 0.108)  # bed
+    p.box(M["pei"], 0.100, w - 0.100, yb + 0.005, yb + 0.465, 0.108, 0.110)          # coated plate
+    p.box(M["white"], w * 0.40, w * 0.60, yb + 0.43, yb + 0.45, 0.1101, 0.1103)      # CREALITY print on the plate
+    p.box(M["black"], w - 0.33, w - 0.03, -0.04, 0.17, 0.035, 0.105, bevel=0.006)    # control box
+    p.box(M["lcd"], w - 0.25, w - 0.12, -0.0415, -0.0395, 0.050, 0.095)              # touchscreen
+    p.box(M["white"], w - 0.32, w - 0.27, -0.0415, -0.0395, 0.068, 0.076)            # CREALITY label
+    yu = 0.52                                                                          # upright plane
+    for x in (0.02, w - 0.06):
+        p.box(alu, x, x + 0.04, yu, yu + 0.02, 0.075, h - 0.04, bevel=0.002)          # 2040 uprights
+        p.box(M["black"], x - 0.005, x + 0.045, yu + 0.02, yu + 0.065, 0.075, 0.12, bevel=0.003)   # Z motors
+        rod_top, rod_bot = Vector((x + 0.02, yu + 0.02, h - 0.06)), Vector((x + 0.02, d - 0.04, 0.075))
+        p.cyl(alu, rod_top, rod_bot, 0.009, seg=12)                                   # support rod to the rear
+        p.cyl(M["brass"], (x + 0.02, yu - 0.015, 0.12), (x + 0.02, yu - 0.015, h - 0.06), 0.004, seg=8)   # leadscrew
+    p.box(alu, 0.02, w - 0.02, yu, yu + 0.02, h - 0.04, h, bevel=0.002)               # top bar
+    zx = 0.47                                                                          # gantry height
+    p.box(alu, 0.06, w - 0.06, yu - 0.035, yu - 0.015, zx, zx + 0.04, bevel=0.002)   # X extrusion
+    for x0 in (0.0, w - 0.09):                                                         # red gantry brackets
+        p.box(red, x0, x0 + 0.09, yu - 0.045, yu - 0.035, zx - 0.05, zx + 0.08, bevel=0.003)
+    p.box(M["black"], 0.0, 0.05, yu - 0.10, yu - 0.045, zx - 0.02, zx + 0.035, bevel=0.003)   # X motor
+    hx = w * 0.42
+    p.box(red, hx, hx + 0.08, yu - 0.050, yu - 0.040, zx - 0.04, zx + 0.07, bevel=0.003)   # carriage plate
+    p.box(M["black"], hx + 0.005, hx + 0.075, yu - 0.110, yu - 0.050, zx - 0.05, zx + 0.05, bevel=0.006)  # hotend shroud
+    for k in range(3):                                                                 # fan grille
+        p.cyl(M["dark"], (hx + 0.04, yu - 0.1105, zx), (hx + 0.04, yu - 0.1101, zx), 0.008 + k * 0.007, seg=20)
+    p.box(M["black"], hx + 0.015, hx + 0.065, yu - 0.09, yu - 0.05, zx + 0.07, zx + 0.11, bevel=0.003)   # extruder
+    p.cyl(M["brass"], (hx + 0.04, yu - 0.08, zx - 0.05), (hx + 0.04, yu - 0.08, zx - 0.07), 0.004, seg=10)
+    _tube(p, M["black"], [(hx + 0.04, yu - 0.07, zx + 0.11), (hx + 0.06, yu - 0.03, zx + 0.20), (w * 0.5, yu + 0.01, h + 0.02)], 0.009)
+    p.box(M["black"], w * 0.5 - 0.012, w * 0.5 + 0.012, yu - 0.005, yu + 0.05, h, h + 0.06, bevel=0.003)  # spool arm
+    spool_part(p, M["spools"][7], w * 0.5, yu + 0.06, h + 0.105)
+    return p
+
+
+def eazao_zero(w=0.35, d=0.30, h=0.50):
+    """Eazao Zero clay printer (350 x 300 x 500 frame; checked against Eazao photos): white base with the screen
+    front right, white tower on the right carrying the white X arm, square white bed, extruder = stepper on a clear
+    auger barrel with a dark-green nozzle, aluminium push-rod clay cartridge with its stepper on the left, clear
+    feed tube arching from the cartridge up to the extruder, a twisted clay vase on the bed."""
+    p = Part()
+    wh = M["white"]
+    clay = mat("Clay_Raw", "#D8CBB6", 0.92)
+    tube = _acrylic("Feed_Tube", "#E8EEF0", 0.05, 0.35)
+    for x in (0.08, w - 0.03):
+        for y in (0.03, d - 0.03):
+            p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.010), 0.012, seg=12)
+    p.box(wh, 0.05, w, 0.0, d, 0.010, 0.125, bevel=0.010)                           # base
+    p.box(mat("Eazao_Screen", "#141A1E", 0.15, emit=0.3), w - 0.115, w - 0.035, -0.0015, 0.0, 0.035, 0.095)
+    p.box(wh, w - 0.085, w, 0.06, d, 0.125, h, bevel=0.008)                         # tower
+    p.box(M["dark"], w - 0.086, w - 0.084, 0.10, d - 0.03, 0.20, h - 0.05)          # Z slot (tower face)
+    p.box(M["black"], w - 0.082, w - 0.080, 0.08, 0.16, h - 0.10, h - 0.085)        # "eazao" mark
+    p.box(M["dark"], 0.10, 0.27, 0.06, 0.24, 0.125, 0.135)                          # Y carriage
+    p.box(wh, 0.085, 0.285, 0.050, 0.250, 0.135, 0.150, bevel=0.004)                # bed
+    za = 0.335                                                                        # X arm
+    p.box(wh, 0.12, w - 0.085, 0.10, 0.16, za, za + 0.045, bevel=0.006)
+    ex, ey = 0.185, 0.105
+    p.box(wh, ex - 0.03, ex + 0.03, ey - 0.035, ey + 0.035, za - 0.010, za + 0.050, bevel=0.004)   # carriage
+    p.cyl(tube, (ex, ey - 0.045, za - 0.06), (ex, ey - 0.045, za + 0.07), 0.016, seg=20)           # auger barrel
+    p.cyl(M["gold"], (ex, ey - 0.045, za - 0.05), (ex, ey - 0.045, za + 0.06), 0.006, seg=12)      # auger
+    p.box(M["black"], ex - 0.021, ex + 0.021, ey - 0.066, ey - 0.024, za + 0.07, za + 0.112, bevel=0.003)  # stepper
+    p.cyl(mat("Eazao_Nozzle", "#2F5B3B", 0.45), (ex, ey - 0.045, za - 0.06), (ex, ey - 0.045, za - 0.095), 0.006, seg=12)
+    p.cyl(M["dark"], (ex + 0.02, ey - 0.045, za + 0.03), (ex + 0.03, ey - 0.045, za + 0.03), 0.006, seg=10)  # blue fitting
+    # clay cartridge (push rod) on the left, rising to the rear motor
+    a, b = Vector((-0.17, 0.035, 0.06)), Vector((0.03, 0.12, 0.10))
+    p.cyl(M["alusatin"] if "alusatin" in M else M["chrome"], a, b, 0.032, seg=24)
+    p.box(M["black"], 0.02, 0.07, 0.09, 0.15, 0.070, 0.135, bevel=0.003)             # cartridge stepper/gearbox
+    p.box(M["grey"], -0.20, -0.165, 0.015, 0.055, 0.0, 0.10, bevel=0.003)           # front bracket on the bench
+    p.cyl(mat("Fitting_Blue", "#2C6FD1", 0.4), a - Vector((0.012, 0, 0)), a + Vector((0.004, 0, 0)), 0.014, seg=14)
+    _tube(p, tube, [a - Vector((0.02, 0.0, 0.0)), Vector((-0.10, 0.02, 0.32)), Vector((0.03, 0.04, 0.44)),
+                    Vector((ex + 0.03, ey - 0.045, za + 0.03))], 0.006)
+    # twisted clay vase (stacked rotated squares)
+    vx, vy, z = 0.185, 0.150, 0.150
+    for k in range(18):
+        s = 0.045 + 0.018 * math.sin(k / 17 * math.pi)
+        _obox(p, clay, Vector((vx, vy, z + 0.0035)), (s, s, 0.0072), Matrix.Rotation(k * 0.09, 3, "Z"))
+        z += 0.0072
+    return p
+
+
+def einscan_se():
+    """Shining 3D EinScan SE V2 (570 x 210 x 210 assembled; checked against Shining 3D photos): black turntable on a
+    flat black arm, angled black stand at the far end carrying the dark-grey scanner head (projector between two
+    cameras) aimed at the turntable; a printed figure on the turntable."""
+    p = Part()
+    blk = mat("Scanner_Black", "#16171A", 0.35)
+    head = mat("Scanner_Grey", "#3E4246", 0.35, metal=0.3)
+    tc = Vector((0.105, 0.105, 0.0))
+    p.cyl(blk, tc, tc + Vector((0, 0, 0.055)), 0.100, seg=40)                      # turntable base
+    p.cyl(M["dark"], tc + Vector((0, 0, 0.055)), tc + Vector((0, 0, 0.060)), 0.090, seg=40)   # rotating disc
+    p.box(blk, 0.10, 0.50, 0.075, 0.135, 0.0, 0.018, bevel=0.004)                  # flat arm
+    _obox(p, blk, Vector((0.505, 0.105, 0.135)), (0.035, 0.055, 0.27), Matrix.Rotation(-0.22, 3, "Y"))  # stand
+    rot = Matrix.Rotation(0.42, 3, "Y")                                            # head tilted down to the table
+    hc = Vector((0.49, 0.105, 0.285))
+    _obox(p, head, hc, (0.075, 0.250, 0.065), rot)
+    face = hc + rot @ Vector((-0.0385, 0.0, 0.0))
+    for dy, r in ((-0.085, 0.011), (0.0, 0.016), (0.085, 0.011)):                 # cameras + projector lens
+        c = face + Vector((0, dy, 0))
+        p.cyl(M["black"], c, c + rot @ Vector((-0.006, 0, 0)), r, seg=20)
+        p.cyl(M["lcd"] if dy == 0 else M["smoke"], c + rot @ Vector((-0.006, 0, 0)), c + rot @ Vector((-0.007, 0, 0)), r * 0.7, seg=20)
+    fig = M["spools"][3]                                                            # orange printed figure
+    p.cyl(fig, tc + Vector((0, 0, 0.060)), tc + Vector((0, 0, 0.075)), 0.035, seg=24)
+    p.cyl(fig, tc + Vector((0, 0, 0.075)), tc + Vector((0, 0, 0.150)), 0.018, seg=20)
+    bmesh.ops.create_uvsphere(p.bm(fig), u_segments=20, v_segments=10, radius=0.028,
+                              matrix=Matrix.Translation(tc + Vector((0, 0, 0.170))))
+    return p
+
+
+def secabo_tc7(w=0.43, d=0.57, open_deg=24):
+    """Secabo TC7 40 x 50 cm clam heat press (43 x 57 x 75 closed; checked against Secabo photos), shown open:
+    black steel base on levelling feet, galvanised lower platen frame with the black silicone pad, red vented heat
+    hood on a black heat plate hinged at the back, black lever arms up to the foam handle, red controller with LCD
+    and buttons on the rear right."""
+    p = Part()
+    red = mat("Secabo_Red", "#E2361F", 0.40, coat=0.2)
+    blk = mat("Secabo_Black", "#141414", 0.45, metal=0.3)
+    pad = mat("Silicone_Pad", "#1E1E1F", 0.85)
+    for x in (0.05, w - 0.05):                                                       # base runners + feet
+        p.box(blk, x - 0.02, x + 0.02, 0.06, d - 0.02, 0.020, 0.045, bevel=0.003)
+        for y in (0.08, d - 0.05):
+            p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.020), 0.018, seg=12)
+    p.box(blk, w / 2 - 0.12, w / 2 + 0.12, 0.10, 0.40, 0.045, 0.075)               # cross plate
+    p.box(M["galv"], 0.0, w, 0.0, 0.50, 0.075, 0.105, bevel=0.003)                  # lower platen frame
+    p.box(pad, 0.012, w - 0.012, 0.012, 0.488, 0.105, 0.118, bevel=0.003)           # silicone pad
+    p.box(blk, w / 2 - 0.07, w / 2 + 0.07, 0.47, d, 0.045, 0.40, bevel=0.004)       # rear column
+    hinge = Vector((w / 2, 0.50, 0.33))
+    R = Matrix.Rotation(-math.radians(open_deg), 3, "X")                             # opens upward at the front
+    def hp(loc):                                                                     # hood point (closed frame -> open)
+        return hinge + R @ (Vector(loc) - hinge)
+    _obox(p, blk, hp((w / 2, 0.25, 0.135)), (0.42, 0.50, 0.012), R)                # heat plate
+    _obox(p, red, hp((w / 2, 0.25, 0.168)), (0.43, 0.51, 0.055), R)                # red vented hood
+    for k in range(26):                                                             # vent slots, front + sides
+        x = 0.025 + k * (w - 0.05) / 25
+        _obox(p, M["black"], hp((x, -0.0055, 0.168)), (0.006, 0.002, 0.034), R)
+    for k in range(18):
+        y = 0.03 + k * 0.44 / 17
+        for x in (-0.0055, w + 0.0055):
+            _obox(p, M["black"], hp((x, y, 0.168)), (0.002, 0.006, 0.034), R)
+    _obox(p, mat("Safety_Yellow", "#F2C200", 0.4), hp((w - 0.05, -0.006, 0.170)), (0.03, 0.002, 0.026), R)
+    _obox(p, blk, hp((w / 2, 0.47, 0.215)), (0.10, 0.08, 0.06), R)                 # hood mount block
+    for x in (w / 2 - 0.06, w / 2 + 0.06):                                          # lever arms + handle
+        p.cyl(blk, (x, 0.50, 0.30), (x, 0.40, 0.80), 0.012, seg=10)
+    p.cyl(blk, (w / 2 - 0.06, 0.40, 0.80), (w / 2 + 0.06, 0.40, 0.80), 0.012, seg=10)
+    p.cyl(mat("Foam_Grip", "#202020", 0.9), (w / 2 - 0.09, 0.39, 0.83), (w / 2 + 0.09, 0.39, 0.83), 0.022, seg=16)
+    p.cyl(blk, (w / 2 - 0.06, 0.40, 0.80), (w / 2 - 0.06, 0.39, 0.83), 0.010, seg=8)
+    p.cyl(blk, (w / 2 + 0.06, 0.40, 0.80), (w / 2 + 0.06, 0.39, 0.83), 0.010, seg=8)
+    p.box(red, w - 0.17, w - 0.01, 0.50, 0.56, 0.36, 0.53, bevel=0.006)            # controller
+    p.box(mat("Secabo_LCD", "#0E1A24", 0.15, emit=0.6), w - 0.155, w - 0.025, 0.4985, 0.50, 0.44, 0.515)
+    for i in range(4):
+        p.box(M["dark"], w - 0.155 + i * 0.035, w - 0.13 + i * 0.035, 0.4985, 0.50, 0.385, 0.40)
+    _tube(p, M["black"], [(w - 0.03, 0.56, 0.40), (w + 0.02, 0.60, 0.30), (w - 0.02, 0.56, 0.20)], 0.006)
+    return p
+
+
+def cricut_easypress3(w=0.305, d=0.254, on_base=True):
+    """Cricut EasyPress 3, 12 x 10" (checked against Cricut photos): pale blue-grey shell with the integrated arch
+    handle, small display on top, black heat-plate skirt; resting on its grey safety base."""
+    p = Part()
+    blue = mat("Cricut_PaleBlue", "#B9C9D8", 0.35, coat=0.2)
+    z0 = 0.0
+    if on_base:
+        p.box(mat("Cricut_SafetyBase", "#8E979F", 0.5), -0.02, w + 0.02, -0.02, d + 0.02, 0.0, 0.014, bevel=0.006)
+        z0 = 0.014
+    p.box(M["black"], -0.004, w + 0.004, -0.004, d + 0.004, z0, z0 + 0.016, bevel=0.006)   # plate skirt
+    p.box(blue, 0.0, w, 0.0, d, z0 + 0.016, z0 + 0.055, bevel=0.020)                       # shell
+    p.box(blue, 0.055, w - 0.055, 0.045, d - 0.045, z0 + 0.055, z0 + 0.105, bevel=0.022)   # arch handle
+    p.box(M["dark"], 0.075, w - 0.075, -0.001, d * 0.62, z0 + 0.058, z0 + 0.082)            # finger opening
+    p.box(M["black"], w * 0.38, w * 0.62, d - 0.06, d - 0.03, z0 + 0.0551, z0 + 0.0557)     # display
+    p.box(M["lcd"], w * 0.42, w * 0.58, d - 0.055, d - 0.035, z0 + 0.0557, z0 + 0.0560)
+    return p
+
+
+def cricut_mug_press(w=0.275, d=0.157, h=0.165):
+    """Cricut Mug Press (275 x 157 x 165; checked against Cricut photos): white rounded body, mint-green translucent
+    heating-sleeve window on the left, mug slot in the top; a sublimated mug stands beside it."""
+    p = Part()
+    mint = _acrylic("Mug_Mint", "#9FD9C6", 0.1, 0.75)
+    p.box(M["white"], 0.0, w, 0.0, d, 0.0, h, bevel=0.028)
+    p.box(mint, 0.030, 0.115, -0.002, 0.0, 0.020, h - 0.010, bevel=0.004)          # sleeve window
+    p.box(M["dark"], 0.030, 0.115, 0.025, d - 0.025, h - 0.0005, h + 0.0005)        # mug slot (top)
+    p.box(M["grey"], w - 0.10, w - 0.04, -0.001, 0.0, h * 0.45, h * 0.52)           # cricut wordmark
+    mc = Vector((w + 0.06, d * 0.5, 0.0))                                            # mug beside it
+    p.cyl(M["white"], mc, mc + Vector((0, 0, 0.096)), 0.041, seg=32)
+    p.cyl(M["spools"][2], mc + Vector((0, 0, 0.02)), mc + Vector((0, 0, 0.08)), 0.0415, seg=32)  # printed band
+    p.cyl(M["dark"], mc + Vector((0, 0, 0.0955)), mc + Vector((0, 0, 0.0962)), 0.036, seg=24)
+    p.box(M["white"], mc.x + 0.040, mc.x + 0.058, mc.y - 0.005, mc.y + 0.005, 0.025, 0.075, bevel=0.004)  # handle
+    return p
+
+
+def bekant_cart(w=0.61, d=0.45, h=1.01):
+    """IKEA BEKANT storage unit on castors, mesh black (61 x 45 x 101; checked against IKEA photos) - the lab's
+    rolling carts, hacked with a birch-ply top as the equipment list suggests: perforated black steel sides and back,
+    black poles, black-stained shelves, bottom drawer with a top grip, castors."""
+    p = Part()
+    mesh = _perforated("Bekant_Mesh")
+    ash = mat("Bekant_BlackAsh", "#1C1B1A", 0.55)
+    zb = 0.085                                                                      # body bottom above castors
+    for x in (0.0, w - 0.025):
+        for y in (0.0, d - 0.025):
+            p.box(M["black"], x, x + 0.025, y, y + 0.025, zb, h - 0.02, bevel=0.008)     # poles
+    for x in (0.0, w - 0.002):
+        p.box(mesh, x, x + 0.002, 0.025, d - 0.025, zb + 0.01, h - 0.025)        # mesh sides
+    p.box(mesh, 0.025, w - 0.025, d - 0.003, d - 0.001, zb + 0.01, h - 0.025)    # mesh back
+    p.box(ash, 0.0, w, 0.0, d, h - 0.02, h, bevel=0.004)                           # top
+    p.box(ash, 0.004, w - 0.004, 0.004, d - 0.004, zb, zb + 0.02)                  # bottom
+    for zs in (0.43, 0.68):
+        p.box(ash, 0.004, w - 0.004, 0.01, d - 0.01, zs, zs + 0.018)               # shelves
+    p.box(ash, 0.006, w - 0.006, -0.004, 0.012, zb + 0.02, 0.41, bevel=0.003)      # drawer front
+    p.box(M["black"], 0.03, w - 0.03, -0.012, 0.0, 0.385, 0.398, bevel=0.004)      # grip lip
+    p.box(M["black"], w * 0.5 - 0.004, w * 0.5 + 0.004, 0.04, d - 0.04, h * 0.5, h * 0.62)   # inner divider pole
+    for x in (0.05, w - 0.05):
+        for y in (0.05, d - 0.05):
+            p.cyl(M["black"], (x, y, zb), (x, y, 0.07), 0.008, seg=10)
+            p.cyl(M["rubber"], (x - 0.012, y, 0.035), (x + 0.012, y, 0.035), 0.035, seg=20)
+    p.box(lib_ply(), -0.01, w + 0.01, -0.01, d + 0.01, h, h + 0.018, bevel=0.002)  # birch-ply top (the "hack")
+    return p
+
+
+def lib_ply():
+    return bpy.data.materials.get("Plywood_Birch") or mat("Plywood_Birch", "#E0C9A2", 0.5)
+
+
+def _perforated(name, pitch=0.008, hole=0.0042, hexcol="#141414"):
+    """Black perforated steel (round holes on a square grid, cut out with alpha), mapped on the face plane."""
+    m = bpy.data.materials.get(name)
+    if m:
+        return m
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    N, L = nt.nodes.new, nt.links.new
+    b = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
+    b.inputs["Base Color"].default_value = lin(hexcol)
+    b.inputs["Roughness"].default_value = 0.5
+    b.inputs["Metallic"].default_value = 0.4
+    geo = N("ShaderNodeNewGeometry")
+    tc = N("ShaderNodeTexCoord")
+    sep = N("ShaderNodeSeparateXYZ"); L(tc.outputs["Object"], sep.inputs[0])
+    sn = N("ShaderNodeSeparateXYZ"); L(geo.outputs["Normal"], sn.inputs[0])
+    ax = N("ShaderNodeMath"); ax.operation = "ABSOLUTE"; L(sn.outputs["X"], ax.inputs[0])
+    sel = N("ShaderNodeMath"); sel.operation = "GREATER_THAN"; sel.inputs[1].default_value = 0.5; L(ax.outputs[0], sel.inputs[0])
+    mixu = N("ShaderNodeMix"); mixu.data_type = "FLOAT"                    # u = y on x-facing panels, else x
+    L(sel.outputs[0], mixu.inputs["Factor"]); L(sep.outputs["X"], mixu.inputs["A"]); L(sep.outputs["Y"], mixu.inputs["B"])
+    def cell(src):
+        mu = N("ShaderNodeMath"); mu.operation = "MULTIPLY"; mu.inputs[1].default_value = 1.0 / pitch; L(src, mu.inputs[0])
+        fr = N("ShaderNodeMath"); fr.operation = "FRACT"; L(mu.outputs[0], fr.inputs[0])
+        sb = N("ShaderNodeMath"); sb.operation = "SUBTRACT"; sb.inputs[1].default_value = 0.5; L(fr.outputs[0], sb.inputs[0])
+        sq = N("ShaderNodeMath"); sq.operation = "MULTIPLY"; L(sb.outputs[0], sq.inputs[0]); L(sb.outputs[0], sq.inputs[1])
+        return sq
+    a, c = cell(mixu.outputs["Result"]), cell(sep.outputs["Z"])
+    add = N("ShaderNodeMath"); add.operation = "ADD"; L(a.outputs[0], add.inputs[0]); L(c.outputs[0], add.inputs[1])
+    gt = N("ShaderNodeMath"); gt.operation = "GREATER_THAN"; gt.inputs[1].default_value = (hole / pitch / 2) ** 2
+    L(add.outputs[0], gt.inputs[0])
+    L(gt.outputs[0], b.inputs["Alpha"])
+    m.diffuse_color = lin(hexcol)
+    return m
+
+
+def microwave(w=0.45, d=0.35, h=0.26):
+    """Compact white microwave (clay prep, per the equipment list): door with dark window, control strip right."""
+    p = Part()
+    p.box(M["white"], 0.0, w, 0.0, d, 0.0, h, bevel=0.012)
+    p.box(M["smoke"], 0.03, w - 0.13, -0.002, 0.0, 0.04, h - 0.04, bevel=0.004)
+    p.box(M["grey"], w - 0.11, w - 0.02, -0.002, 0.0, 0.03, h - 0.03, bevel=0.003)
+    p.box(M["lcd"], w - 0.095, w - 0.035, -0.0035, -0.002, h - 0.075, h - 0.05)
+    return p
+
+
+def clay_bucket(r=0.14, h=0.24):
+    p = Part()
+    p.cyl(M["white"], (0, 0, 0), (0, 0, h), r, seg=32)
+    p.cyl(M["grey"], (0, 0, h), (0, 0, h + 0.015), r + 0.008, seg=32)
     return p
 
 
@@ -697,33 +1077,8 @@ def build():
 
     # ---- laser room: machines, benches, storage and the central exhaust live in build_laser_room.py
 
-    # ---- print farm outside the laser room (against its NNE partition, x 28.90-29.50)
-    PF_D, levels = 0.60, [0.15, 0.73, 1.31, 1.89]
-    part, slots, L = lib["shelf_unit"]([1.62, 1.62], PF_D, 2.42, levels, power=True)
-    loc, rot = unit_on((L, PF_D), 29.50 - PF_D / 2, 21.95 + L / 2, "-x")
-    part.emit("PrintFarm_Shelving", fcol, loc, rot)
+    # ---- print farm: build_print_farm.py (run it after this script)
     k = 0
-    for li in (1, 2):
-        for bi in (0, 1):
-            xa, xb, _, _, zt = slots[(bi, li)]
-            for i in range(3):
-                spool = M["spools"][k % len(M["spools"])]
-                put(prusa(spool), f"Prusa_MK3S_{k + 1:02d}", loc, rot, (xa + 0.03 + 0.25 + i * 0.52, PF_D / 2), zt, 0.50, 0.55)
-                k += 1
-    xa, xb, _, _, zt = slots[(0, 3)]
-    put(bambu(), "Bambu_P2S", loc, rot, (xa + 0.35, PF_D / 2), zt, 0.392, 0.406)
-    put(spool_stack(8), "Spare_Spools", loc, rot, ((xa + xb) / 2 + 0.35, PF_D / 2), zt, 0.85, 0.12)
-    xa, xb, _, _, zt = slots[(1, 3)]
-    put(spool_stack(12), "Spare_Spools_2", loc, rot, ((xa + xb) / 2, PF_D / 2), zt, 0.85, 0.12)
-    bins = Part()
-    for bi in (0, 1):                                                  # filament dry bins on the bottom level
-        xa, xb, _, _, zt = slots[(bi, 0)]
-        for i in range(3):
-            lib["bin_box"](bins, lib["MAT"]["bins"][(bi * 3 + i) % 6], xa + 0.05 + i * 0.52, 0.12, zt, w=0.46, d=0.42, h=0.30)
-            for j in range(3):                                         # spare spools standing in each bin
-                spool_part(bins, M["spools"][(bi * 7 + i * 3 + j) % len(M["spools"])],
-                           xa + 0.05 + i * 0.52 + 0.23, 0.17 + j * 0.105, zt + 0.21, axis="y", width=0.06)
-    bins.emit("PrintFarm_Bins", fcol, loc, rot)
 
     # ---- CNC room: ShopBot PRS Alpha 120 against the interior wall (x 24.15), collector out by the far glass
     #      corner, control box on the glass side (user layout, 2026-10-07)

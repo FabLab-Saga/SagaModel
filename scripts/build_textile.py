@@ -1,7 +1,10 @@
-"""Textile area by the SSW glass, on the open floor between the laser room's NNE partition (y 26.94) and the
-lounge nook (x 29.7-31.7, y 27.5-29.6; daylight, ~1.5 m path to the spine side kept clear). Re-runnable ("Textile").
-- Sewing table 2.0 x 1.0 m (profile + birch) with Brother sewing + embroidery + overlocker,
-  fabric, scissors, pin cushion, cutting mat; four profile chairs with birch seat and back.
+"""Craft & large-format corner by the SSW glass, between the laser room's glazed ESE partition (y 26.94) and the
+lounge nook; the main circulation x 28.0-29.5 stays clear. Re-runnable ("Textile" collection).
+- Sewing/heat-transfer wall bench 2.6 x 0.75 m against the partition (sit facing it, 3 profile chairs): Cricut
+  EasyPress 3 (+ a second on the shelf), Cricut Mug Press, overlocker, Brother embroidery + sewing machine.
+- Large-format/clay bench 1.9 x 0.8 m on the SSW glass (x 31.65-32.45, y 28.18-30.08): Secabo TC7 heat press,
+  Eazao Zero clay printer (microwave + clay buckets on the shelf), Creality CR-10 Max.
+- Two IKEA BEKANT rolling carts (birch-ply top) against felt panel 1 by the cutter corner: Cricut Maker 3, EinScan SE.
 - Cutter counter (Cricut Maker + Mayku FormBox, 1.0 x 0.55 m, standing height) on the NNE glass next to the
   vinyl cutters (y 28.55-29.55): all the cutters in one corner.
 """
@@ -55,41 +58,81 @@ def build():
         name, col, lib["to_world"](loc, rot, (lx, ly, 0)) + Vector((0, 0, z)) +
         __import__("mathutils").Matrix.Rotation(rot, 4, "Z") @ Vector((-w / 2, -d / 2, 0)), rot)
 
-    # ---- sewing table, long side along x, chairs on both long sides
-    TL, TD, TH = 2.00, 1.00, 0.76
-    tc = Vector((30.70, 28.55))
-    part, _ = lib["table_unit"](TL, TD, TH, [0.0, TL - 0.04], lower=())
-    loc, rot = lib["placement"](tc.x, tc.y, TL, TD, "-y")
-    part.emit("SewingTable", col, loc, rot)
-    put(mach["sewing"](), "Brother_Sewing", loc, rot, 0.45, 0.30, TH, 0.42, 0.20)
-    put(mach["sewing"](0.50, 0.24, 0.32), "Brother_Embroidery", loc, rot, 1.20, 0.30, TH, 0.50, 0.24)
-    put(mach["overlock"](), "Overlock", loc, rot, 1.75, 0.72, TH, 0.33, 0.28)
+    # ---- sewing + heat-transfer wall bench along the laser room's glazed ESE partition (y 26.94), sit facing it
+    BL, BD, BH = 2.60, 0.75, 0.76
+    part, _ = lib["table_unit"](BL, BD, BH, [0.0, BL / 2 - 0.02, BL - 0.04], lower=(0.16,))
+    loc, rot = lib["placement"](32.35 - BL / 2, 26.96 + BD / 2, BL, BD, "+y")    # local x=0 at the glass end
+    part.emit("SewingBench", col, loc, rot)
+    put(mach["cricut_easypress3"](), "Cricut_EasyPress3_1", loc, rot, 0.21, 0.30, BH, 0.305, 0.254)
+    put(mach["cricut_easypress3"](on_base=False), "Cricut_EasyPress3_2", loc, rot, 0.25, 0.32, 0.16, 0.305, 0.254)
+    put(mach["cricut_mug_press"](), "Cricut_MugPress", loc, rot, 0.58, 0.25, BH, 0.275, 0.157)
+    put(mach["overlock"](), "Overlock", loc, rot, 1.02, 0.30, BH, 0.33, 0.28)
+    put(mach["sewing"](0.50, 0.24, 0.32), "Brother_Embroidery", loc, rot, 1.62, 0.26, BH, 0.50, 0.24)
+    put(mach["sewing"](), "Brother_Sewing", loc, rot, 2.30, 0.26, BH, 0.42, 0.20)
     props = Part()
     fab = [bpy.data.materials["Sofa_LightGrey"], mat("Fabric_Navy", "#2B3550", 0.9),
            mat("Fabric_Mustard", "#C99A2E", 0.9), mat("Fabric_Rust", "#9B4A2C", 0.9)]
     cm = bpy.data.materials.get("CuttingMat") or MAT["ply"]
-    props.box(cm, 0.15, 0.95, 0.52, 0.95, TH, TH + 0.003)                               # A1 cutting mat
-    props.box(fab[2], 0.25, 0.80, 0.58, 0.90, TH + 0.003, TH + 0.008, bevel=0.002)      # fabric laid out
-    props.box(fab[1], 0.20, 0.55, 0.62, 0.88, TH + 0.008, TH + 0.011, bevel=0.002)
-    zz = TH
+    props.box(cm, 1.95, 2.55, 0.48, 0.72, BH, BH + 0.003)                               # cutting mat by the sewing
+    props.box(fab[2], 2.00, 2.45, 0.52, 0.70, BH + 0.003, BH + 0.008, bevel=0.002)      # fabric laid out
+    zz = BH
     for k in range(4):                                                                  # folded stack
-        props.box(fab[k % 4], 1.55, 1.90, 0.10, 0.40, zz, zz + 0.03, bevel=0.01)
+        props.box(fab[k % 4], 1.30, 1.55, 0.50, 0.70, zz, zz + 0.03, bevel=0.01)
         zz += 0.031
-    props.box(M["steel"] if "steel" in M else M["chrome"], 0.90, 1.08, 0.70, 0.72, TH + 0.012, TH + 0.016)   # shears blades
-    props.box(mat("Shears_Orange", "#E2631C", 0.5), 0.80, 0.90, 0.69, 0.73, TH + 0.011, TH + 0.022, bevel=0.004)
-    props.cyl(mat("Pincushion_Red", "#C0262D", 0.8), (0.70, 0.30, TH), (0.70, 0.30, TH + 0.05), 0.04, seg=24)
+    props.box(M["chrome"], 2.10, 2.28, 0.10, 0.12, BH + 0.012, BH + 0.016)              # shears
+    props.box(mat("Shears_Orange", "#E2631C", 0.5), 2.00, 2.10, 0.09, 0.13, BH + 0.011, BH + 0.022, bevel=0.004)
+    props.cyl(mat("Pincushion_Red", "#C0262D", 0.8), (1.92, 0.62, BH), (1.92, 0.62, BH + 0.05), 0.04, seg=24)
     for k in range(6):                                                                  # thread spools
-        x = 0.10 + k * 0.035
-        props.cyl(MAT["bins"][k % 6], (x, 0.12, TH), (x, 0.12, TH + 0.055), 0.013, seg=14)
-    props.emit("SewingTable_Props", col, loc, rot)
-    # four chairs, two per long side, pulled out a little at random
-    for side, ry in ((-1, math.pi), (1, 0.0)):                         # chairs face the table
-        for dx in (-0.55, 0.45):
-            cx = tc.x + dx + rng.uniform(-0.06, 0.06)
-            cy = tc.y + side * (TD / 2 + rng.uniform(0.12, 0.32))
-            r = ry + rng.uniform(-0.18, 0.18)
-            off = __import__("mathutils").Matrix.Rotation(r, 4, "Z") @ Vector((-0.22, -0.22, 0))
-            chair().emit(f"Chair_{side}_{int(dx > 0)}", col, Vector((cx, cy, 0)) + off, r)
+        x = 2.20 + k * 0.035
+        props.cyl(MAT["bins"][k % 6], (x, 0.66, BH), (x, 0.66, BH + 0.055), 0.013, seg=14)
+    tee = mat("Tee_White", "#F1F0EC", 0.9)                                             # T-shirt + HTV on the press
+    props.box(tee, 0.05, 0.40, 0.48, 0.70, BH, BH + 0.012, bevel=0.004)
+    props.box(MAT["bins"][2], 0.14, 0.30, 0.55, 0.64, BH + 0.012, BH + 0.0135)
+    for k in range(3):                                                                  # HTV rolls
+        props.cyl(MAT["bins"][(k * 2) % 6], (0.75, 0.55 + k * 0.07, BH + 0.032), (0.95, 0.55 + k * 0.07, BH + 0.032), 0.032, seg=20)
+    props.emit("SewingBench_Props", col, loc, rot)
+    for i, lx in enumerate((2.30, 1.62, 1.02)):                         # three chairs facing the bench
+        c = lib["to_world"](loc, rot, (lx, 0, 0))
+        cx = c.x + rng.uniform(-0.05, 0.05)
+        cy = 26.96 + BD + rng.uniform(0.10, 0.24) + 0.22
+        r = rng.uniform(-0.15, 0.15)
+        off = __import__("mathutils").Matrix.Rotation(r, 4, "Z") @ Vector((-0.22, -0.22, 0))
+        chair().emit(f"Chair_{i}", col, Vector((cx, cy, 0)) + off, r)
+
+    # ---- large-format / clay bench on the SSW glass (x 31.65-32.45, y 28.18-30.08), front faces -x
+    GL, GD, GH = 1.90, 0.80, 0.75
+    part, _ = lib["table_unit"](GL, GD, GH, [0.0, GL / 2 - 0.02, GL - 0.04], lower=(0.16,))
+    gloc, grot = lib["placement"](32.45 - GD / 2, 28.18 + GL / 2, GL, GD, "-x")     # local x=0 at the nook end
+    part.emit("GlassBench", col, gloc, grot)
+    put(mach["secabo_tc7"](), "Secabo_TC7", gloc, grot, 0.30, 0.37, GH, 0.43, 0.57)
+    put(mach["eazao_zero"](), "Eazao_Zero", gloc, grot, 0.98, 0.30, GH, 0.35, 0.30)
+    put(mach["creality_cr10_max"](), "Creality_CR10_Max", gloc, grot, 1.52, 0.4125, GH, 0.65, 0.785)
+    put(mach["microwave"](), "Clay_Microwave", gloc, grot, 0.98, 0.30, 0.16, 0.45, 0.35)
+    for i, lx in enumerate((0.20, 0.47)):
+        put(mach["clay_bucket"](0.12, 0.22), f"Clay_Bucket_{i}", gloc, grot, lx, 0.40, 0.16, 0.0, 0.0)
+    sp = mach["Part"]()
+    for j in range(4):
+        mach["spool_part"](sp, M["spools"][(j * 3 + 1) % len(M["spools"])], 0.06 + j * 0.10, 0.12, 0.10, axis="x", width=0.07)
+    put(sp, "GlassBench_Spools", gloc, grot, 1.52, 0.40, 0.16, 0.40, 0.24)
+
+    # ---- two BEKANT rolling carts (from the equipment list, birch-ply top) parked against felt panel 1
+    for i, (cx, what) in enumerate(((21.805, "cricut3"), (22.465, "scanner"))):
+        cloc_, crot_ = lib["placement"](cx, 29.62 - 0.225, 0.61, 0.45, "-y")       # tool-wall base starts at y 29.64
+        put(mach["bekant_cart"](), f"Bekant_Cart_{i + 1}", cloc_, crot_, 0.305, 0.225, 0.0, 0.61, 0.45)
+        zt = 1.01 + 0.018
+        if what == "cricut3":
+            blue = mat("Cricut3_Blue", "#C7D5E2", 0.35, coat=0.2)
+            put(mach["cricut"](0.538, 0.178, 0.151, body=blue), "Cricut_Maker_3", cloc_, crot_, 0.305, 0.20, zt, 0.538, 0.178)
+        else:
+            put(mach["einscan_se"](), "EinScan_SE", cloc_, crot_, 0.30, 0.24, zt, 0.60, 0.21)
+        stuff = Part()                                                  # kit boxes on the cart shelves
+        for zs in (0.448, 0.698):
+            x = 0.02
+            while x < 0.52:
+                bw = rng.uniform(0.12, 0.22)
+                stuff.box(MAT["bins"][rng.randrange(6)], x, min(x + bw, 0.58), 0.05, 0.38, zs, zs + rng.uniform(0.08, 0.18), bevel=0.004)
+                x += bw + 0.02
+        stuff.emit(f"Bekant_Cart_{i + 1}_Boxes", col, cloc_, crot_)
 
     # ---- standing cutter counter on the NNE glass (x 20.90), next to the vinyl stands, front faces +x
     CL, CD, CH = 1.00, 0.55, 0.92
