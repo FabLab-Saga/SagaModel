@@ -71,6 +71,15 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
 - Kdenlive 26.08 (Flatpak; bundles melt): the cut is also written as a .kdenlive project for hand edits.
 - Inkscape 1.4.4, GIMP 3.2, ImageMagick 7 (`magick`): SVG/logo rasterising, contact sheets, frame checks.
 
+## Cut v3 (2026-10-08, Magnús's notes)
+- Titles: Geislaskerar (shot shows the Epilog), Þrívíddarprentarar, ShopBot Fræsir; 'Hagatorg 1' removed (Magnús).
+- fframes title card (3 bars): ~/Documents/AgentWork/saga-video/fframes-title/ (6x6 brand grid draws on, brand-colour
+  cells flash on the beats, white lockup fades in, tagline 'SKÖPUNAR- OG TÆKNISMIÐJA' + 'BÆNDAHÖLLIN · REYKJAVÍK'
+  (my wording, from the poster)). assemble_film.py uses it when present.
+- Context shots (Magnús: show the whole space and where areas sit): dollhouse cutaway orbit 'Overview' (slab,
+  services, fixtures hidden by keyed hide_render/hide_viewport for that shot), ElectronicsWide, ToolWide (replaces
+  the close tool wall), LoungeWide; Reveal, Corridor, LaserDetail dropped.
+
 ## Drafts (user wants quick drafts until he approves the cut)
 - `renders/walk_flat.mp4`: 1080p flat-shaded Workbench draft, whole film in ~7 min (`render_walk_flat.py`).
 - `renders/walk_test.mp4`: 640x360 Cycles 8 spp animatic (~5 min).

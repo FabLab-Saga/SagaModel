@@ -17,7 +17,8 @@ frames = os.path.join(ROOT, sys.argv[1] if len(sys.argv) > 1 else "renders/walk_
 out = os.path.join(ROOT, sys.argv[2] if len(sys.argv) > 2 else "renders/walk_test.mp4")
 T = os.path.join(ROOT, "renders/video_titles")
 MUSIC = os.path.expanduser("~/Documents/AgentWork/saga-video/music/1_Amarent_-_Stairwell_Harmony.mp3")
-MUSIC_IN, OUTRO_S = 25.57, 6.6
+MUSIC_IN, OUTRO_S = 25.57, 5.4
+CARD = os.path.expanduser("~/Documents/AgentWork/saga-video/fframes-title/title_card.mp4")   # fframes intro
 
 src = ast.parse(open(os.path.join(ROOT, "scripts/build_walkthrough.py")).read())
 V = {t.targets[0].id: ast.literal_eval(t.value) for t in src.body
@@ -27,16 +28,23 @@ BAR = 4 * 60 / 103.36
 INTRO_S = INTRO_BARS * BAR
 ext = "png" if glob.glob(os.path.join(frames, "f*.png")) else "jpg"
 
-inputs = ["-f", "lavfi", "-t", f"{INTRO_S:.3f}", "-i", f"color=black:s=1920x1080:r={FPS}",            # 0 intro bg
-          "-loop", "1", "-framerate", str(FPS), "-t", f"{INTRO_S:.3f}", "-i", os.path.join(T, "intro.png"),  # 1
+card = os.path.exists(CARD)
+inputs = ["-f", "lavfi", "-t", f"{INTRO_S:.3f}", "-i", f"color=black:s=1920x1080:r={FPS}"]            # 0 intro bg
+inputs += (["-i", CARD] if card else                                                                   # 1 fframes card
+           ["-loop", "1", "-framerate", str(FPS), "-t", f"{INTRO_S:.3f}", "-i", os.path.join(T, "intro.png")])
+inputs += [
           "-framerate", str(FPS), "-pattern_type", "glob", "-i", os.path.join(frames, f"f*.{ext}"),        # 2 body
           "-loop", "1", "-framerate", str(FPS), "-i", os.path.join(T, "bug.png"),                       # 3
           "-f", "lavfi", "-t", f"{OUTRO_S:.3f}", "-i", f"color=black:s=1920x1080:r={FPS}",              # 4 outro bg
           "-loop", "1", "-framerate", str(FPS), "-t", f"{OUTRO_S:.3f}", "-i", os.path.join(T, "outro.png")]  # 5
-fc = [f"[1]format=rgba,fade=in:st=0.3:d=0.8:alpha=1,fade=out:st={INTRO_S - 0.6:.3f}:d=0.5:alpha=1[il]",
-      "[0][il]overlay=format=auto[intro]",
+fc = ([f"[1]fps={FPS},trim=duration={INTRO_S:.3f},setpts=PTS-STARTPTS,format=yuv420p,"
+       f"fade=out:st={INTRO_S - 0.5:.3f}:d=0.5[intro]"] if card else
+      [f"[1]format=rgba,fade=in:st=0.3:d=0.8:alpha=1,fade=out:st={INTRO_S - 0.6:.3f}:d=0.5:alpha=1[il]",
+       "[0][il]overlay=format=auto[intro]"])
+fc += [
       f"[2]scale=1920:1080:flags=lanczos,setsar=1,fps={FPS}[b0]",
       "[b0][3]overlay=shortest=1:format=auto[b1]"]
+fc = [x for x in fc]
 idx, last, b = 6, "b1", 0
 for name, bars, title, *_ in SHOTS:
     t0, dur = b * BAR, bars * BAR
