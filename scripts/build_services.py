@@ -105,9 +105,9 @@ def emit(name, bm, mat, col, smooth=False):
     me = bpy.data.meshes.new(name)
     bm.to_mesh(me)
     bm.free()
-    if smooth:
-        for p in me.polygons:
-            p.use_smooth = True
+    for p in me.polygons:                        # auto-smooth (bmesh output is smooth-shaded by default)
+        p.use_smooth = True
+    me.set_sharp_from_angle(angle=math.radians(180 if smooth else 30))
     me.materials.append(mat)
     ob = bpy.data.objects.new(name, me)
     col.objects.link(ob)

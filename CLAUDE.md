@@ -58,7 +58,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 ## Zones (current layout, user-approved)
 - **Laser room** (glazed room by SSW façade, x 29.67–32.53, y 20.14–26.92; `build_laser_room.py`, collection
   LaserRoom; machine MODELS in build_machines.py, checked against the equipment list): 4.86 m profile laser bench on the
-  SSW glass (flat-file sheet drawers under) with 2× Glowforge Pro HD, Glowforge Aura (orange lid), xTool F1 Ultra +
+  SSW glass (flat-file sheet drawers under) with 2× Glowforge Pro HD, Glowforge Aura (orange lid), xTool F1 Ultra (UPRIGHT
+  green-shield galvo tower 273x373x492 + separate touchscreen controller; checked against xTool photos) +
   1.3 m staging; Epilog Fusion Edge 24 floor unit at the NNE/WNW corner (0.20 m off the partition, riser behind);
   laser stock rack (upright sheet slots, 0.98 m worktop, bins/rolls) on the NNE partition; 2 m standing prep counter
   under the interior window; safety station + 3 offcut bins on the WNW wall. ONE central exhaust (`Exhaust_Central`):
@@ -108,6 +109,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Photorealism (user's choice). It's a LAB, not a house: no rugs, no indoor plants, no homey décor.
 - Brand colours = manual hex exactly (red #E03A3F, green #009967, blue #1245DE, orange #FFA13D,
   yellow #F2C200, pink #E099AB); fix appearance via view transform (AgX Punchy), not material colours.
+- Shading: builder emits use auto-smooth (smooth + sharp edges > 30°). Blender 5.2 bmesh output is smooth-shaded by
+  default, which made flat boxes shade like blobs. Model real products from PHOTOS, not memory.
 - Black anodised 20x20 / 40x40 T-slot profile + birch ply = the furniture language. Tables prefer to be
   integrated as gaps in shelving.
 - Glass panes are zero-thickness planes: `Glass_Clear` must stay THIN glass (`fix_glass.py`: transparent +

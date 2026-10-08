@@ -116,9 +116,10 @@ class Part:
         for mname, (m, bm) in self.bms.items():
             me = bpy.data.meshes.new(f"{name}_{mname}")
             bm.to_mesh(me)
+            for f in me.polygons:                           # auto-smooth: flat boxes, round cylinders
+                f.use_smooth = True
             bm.free()
-            for p in me.polygons:
-                p.use_smooth = True
+            me.set_sharp_from_angle(angle=math.radians(30))
             me.materials.append(m)
             o = bpy.data.objects.new(f"{name}_{mname}", me)
             col.objects.link(o)
@@ -190,22 +191,70 @@ def glowforge_aura(w=0.556, d=0.521, h=0.127):
     return p
 
 
-def xtool_f1_ultra(w=0.493, d=0.373, h=0.273):
-    """xTool F1 Ultra (493 x 373 x 273): dark lunchbox base, amber flip-up lid in a black frame, folding top
-    handle, button strip on the front, rear smoke port."""
+def _acrylic(name, hexcol, rough=0.08, alpha=0.45):
+    """Tinted acrylic sheet without refraction (alpha-blended colour + clear-coat reflections): thin sheets
+    modelled as boxes otherwise render like warped chrome."""
+    m = mat(name, hexcol, rough, coat=0.8)
+    b = next(n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+    b.inputs["Transmission Weight"].default_value = 0.0
+    b.inputs["Alpha"].default_value = alpha
+    if hasattr(m, "surface_render_method"):
+        m.surface_render_method = "BLENDED"
+    return m
+
+
+def xtool_f1_ultra(w=0.273, d=0.373, h=0.492):
+    """xTool F1 Ultra (273 W x 373 D x 492 H, upright galvo tower; checked against xTool product photos):
+    translucent green acrylic shield on the front + left side that lifts by a low silver handle, a more solid
+    green upper band (galvo housing behind, XTOOL wordmark), grey aluminium right-side panel with the orange-red
+    E-stop and a button strip, dark top, ribbed slatted back wall inside, silver base plate on feet, rear smoke
+    outlet. The touchscreen controller is a separate object (xtool_controller)."""
     p = Part()
-    _rbox(p, M["dark"], 0.0, w, 0.0, d, 0.006, 0.150, 0.015)                             # base
-    p.box(M["black"], 0.004, w - 0.004, 0.004, d - 0.004, 0.0, 0.008)                     # foot plate
-    p.box(M["black"], 0.0, w, -0.001, d + 0.001, 0.148, 0.160)                            # lid seam band
-    _rbox(p, M["black"], 0.0, w, 0.0, d, 0.158, h - 0.012, 0.015)                         # lid frame
-    p.box(M["amber"], 0.03, w - 0.03, -0.002, d - 0.03, 0.172, h - 0.026)                 # front + top window
-    p.box(M["amber"], 0.03, w - 0.03, 0.03, d - 0.03, h - 0.013, h - 0.006)
-    for x in (0.10, w - 0.10):                                                            # folding handle
-        p.box(M["black"], x - 0.008, x + 0.008, d / 2 - 0.012, d / 2 + 0.012, h - 0.008, h + 0.030, bevel=0.003)
-    p.box(M["black"], 0.10, w - 0.10, d / 2 - 0.014, d / 2 + 0.014, h + 0.022, h + 0.036, bevel=0.006)
-    p.box(M["grey"], w - 0.13, w - 0.03, -0.002, 0.0, 0.050, 0.100, bevel=0.003)          # button strip
-    p.cyl(mat("Glowforge_Button", "#9FE7F2", 0.2, emit=3.0), (w - 0.06, -0.003, 0.075), (w - 0.06, -0.001, 0.075), 0.010, seg=16)
-    _port(p, w / 2, d, 0.075, 0.035)
+    green = _acrylic("xTool_Green", "#36A826", 0.06, 0.26)
+    band = _acrylic("xTool_Green_Band", "#45B82F", 0.20, 0.88)
+    alu = mat("xTool_Alu", "#8E9296", 0.35, metal=0.7)
+    t, sp = 0.004, 0.022                                                   # acrylic thickness, right panel
+    p.box(alu, 0.0, w, 0.0, d, 0.010, 0.020, bevel=0.002)                  # base plate
+    for x in (0.03, w - 0.03):
+        for y in (0.03, d - 0.03):
+            p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.010), 0.012, seg=12)
+    p.box(alu, w - sp, w, 0.0, d, 0.020, h, bevel=0.003)                   # right side panel (body spine)
+    p.box(M["dark"], 0.0, w, 0.0, d, h - 0.012, h, bevel=0.003)            # top
+    p.box(M["dark"], 0.004, w - sp, d - 0.012, d, 0.020, h - 0.012)        # back panel
+    zb = 0.315                                                             # bottom of the solid upper band
+    p.box(green, 0.0, w - sp, 0.0, t, 0.020, zb)                           # front shield (clear part)
+    p.box(green, 0.0, t, t, d - 0.012, 0.020, zb)                          # left shield (clear part)
+    p.box(band, 0.0, w - sp, 0.0, t, zb, h - 0.012)                        # upper band, front
+    p.box(band, 0.0, t, t, d - 0.012, zb, h - 0.012)                       # upper band, left
+    p.box(M["dark"], t, w - sp, t, d - 0.012, zb, h - 0.014)               # galvo housing behind the band
+    p.cyl(M["black"], (w * 0.45, d * 0.45, zb - 0.010), (w * 0.45, d * 0.45, zb), 0.030, seg=24)   # lens
+    for k in range(12):                                                    # ribbed back wall inside
+        x = 0.012 + k * (w - sp - 0.024) / 11
+        p.box(M["black"], x, x + 0.010, d - 0.030, d - 0.012, 0.020, zb)
+    p.box(M["black"], t, w - sp, t, d - 0.030, 0.020, 0.024)               # slatted work panel
+    p.box(alu, 0.05, 0.17, -0.016, -0.004, 0.034, 0.042, bevel=0.003)      # front lift handle
+    for x in (0.055, 0.165):
+        p.box(alu, x - 0.004, x + 0.004, -0.006, t, 0.034, 0.042)
+    estop = mat("xTool_EStop", "#E2462B", 0.35)
+    p.cyl(M["dark"], (w, d * 0.30, 0.17), (w + 0.010, d * 0.30, 0.17), 0.020, seg=20)
+    p.cyl(estop, (w + 0.010, d * 0.30, 0.17), (w + 0.026, d * 0.30, 0.17), 0.016, seg=20)
+    p.box(M["black"], w, w + 0.004, d * 0.20, d * 0.24, 0.06, 0.15, bevel=0.002)   # button strip
+    _port(p, (w - sp) / 2, d, 0.22, 0.045)                                 # rear smoke outlet
+    return p
+
+
+def xtool_controller():
+    """F1 Ultra touchscreen controller (separate, ~130 x 90 x 30 mm): black body, green base strip, screen, loop."""
+    p = Part()
+    p.box(M["black"], 0.0, 0.13, 0.0, 0.032, 0.006, 0.090, bevel=0.006)
+    p.box(mat("xTool_Green_Strip", "#3FD12C", 0.4), 0.0, 0.13, 0.0, 0.032, 0.0, 0.008, bevel=0.002)
+    p.box(mat("xTool_Screen", "#1C2A22", 0.15, emit=0.4), 0.012, 0.100, -0.001, 0.0, 0.020, 0.078)
+    p.box(mat("xTool_Green_Strip", "#3FD12C", 0.4), 0.035, 0.075, -0.0015, -0.001, 0.045, 0.053)
+    for k in range(3):
+        p.box(M["dark"], 0.108, 0.122, -0.001, 0.0, 0.025 + k * 0.022, 0.039 + k * 0.022)
+    p.cyl(M["black"], (0.035, 0.016, 0.090), (0.035, 0.016, 0.120), 0.003, seg=8)
+    p.cyl(M["black"], (0.095, 0.016, 0.090), (0.095, 0.016, 0.120), 0.003, seg=8)
+    p.cyl(M["black"], (0.035, 0.016, 0.120), (0.095, 0.016, 0.120), 0.003, seg=8)
     return p
 
 

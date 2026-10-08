@@ -135,6 +135,9 @@ class Part:
             bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
             me = bpy.data.meshes.new(f"{name}_{mname}")
             bm.to_mesh(me)
+            for f in me.polygons:                           # auto-smooth: flat boxes, round cylinders
+                f.use_smooth = True
+            me.set_sharp_from_angle(angle=math.radians(30))
             bm.free()
             me.materials.append(m)
             o = bpy.data.objects.new(f"{name}_{mname}", me)

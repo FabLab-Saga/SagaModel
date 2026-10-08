@@ -84,6 +84,9 @@ def emit(col, name, parts):
         me = bpy.data.meshes.new(f"{name}_{mname}")
         bm.to_mesh(me)
         bm.free()
+        for f in me.polygons:
+            f.use_smooth = True
+        me.set_sharp_from_angle(angle=math.radians(30))
         me.materials.append(m)
         col.objects.link(bpy.data.objects.new(f"{name}_{mname}", me))
 
