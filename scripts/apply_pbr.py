@@ -32,7 +32,9 @@ def img(asset, mapname, noncolor):
 
 
 def pbr(mat_name, asset, rot_z=0.0, scale=1.0, tint=None, tint_mix=0.0, rough_mul=1.0, normal=1.0, bevel=0.004,
-        blend=0.2, coat=0.0):
+        blend=0.2, coat=0.0, hsv=None, joints=None):
+    """hsv=(hue, sat, val): colour-correct the scan (linear values, 0.5/1/1 = neutral).
+    joints=(gx, gy, width): formwork panel joints on a gx x gy grid in world XY (darkened, recessed)."""
     m = bpy.data.materials.get(mat_name) or bpy.data.materials.new(mat_name)
     m.use_nodes = True
     nt = m.node_tree
@@ -108,6 +110,32 @@ def pbr(mat_name, asset, rot_z=0.0, scale=1.0, tint=None, tint_mix=0.0, rough_mu
 
     diff = tex("diff", False)
     col = diff.outputs["Color"]
+    if hsv:
+        hn = N("ShaderNodeHueSaturation")
+        hn.inputs["Hue"].default_value, hn.inputs["Saturation"].default_value, hn.inputs["Value"].default_value = hsv
+        L(col, hn.inputs["Color"])
+        col = hn.outputs["Color"]
+    jfac = None
+    if joints:
+        gx, gy, jw = joints
+        br = N("ShaderNodeTexBrick")
+        br.offset, br.offset_frequency, br.squash, br.squash_frequency = 0.0, 1, 1.0, 1
+        br.inputs["Scale"].default_value = 1.0
+        br.inputs["Brick Width"].default_value = gx
+        br.inputs["Row Height"].default_value = gy
+        br.inputs["Mortar Size"].default_value = jw
+        br.inputs["Mortar Smooth"].default_value = 0.4
+        br.inputs["Color1"].default_value = br.inputs["Color2"].default_value = (0, 0, 0, 1)
+        br.inputs["Mortar"].default_value = (1, 1, 1, 1)
+        L(geo.outputs["Position"], br.inputs["Vector"])
+        jfac = br.outputs["Fac"]
+        dk = N("ShaderNodeMix")
+        dk.data_type = "RGBA"
+        dk.blend_type = "MULTIPLY"
+        L(jfac, dk.inputs["Factor"])
+        L(col, dk.inputs["A"])
+        dk.inputs["B"].default_value = (0.72, 0.72, 0.72, 1)
+        col = dk.outputs["Result"]
     if tint:
         mix = N("ShaderNodeMix")
         mix.data_type = "RGBA"
@@ -131,7 +159,15 @@ def pbr(mat_name, asset, rot_z=0.0, scale=1.0, tint=None, tint_mix=0.0, rough_mu
     dsum = tex("disp", True).outputs["Color"]
     dsep = N("ShaderNodeSeparateXYZ")
     L(dsum, dsep.inputs["Vector"])
-    L(dsep.outputs["X"], nrm.inputs["Height"])
+    if jfac is not None:                                              # joints recessed ~1.5 mm
+        jd = N("ShaderNodeMath")
+        jd.operation = "MULTIPLY_ADD"
+        jd.inputs[1].default_value = -0.75
+        L(jfac, jd.inputs[0])
+        L(dsep.outputs["X"], jd.inputs[2])
+        L(jd.outputs[0], nrm.inputs["Height"])
+    else:
+        L(dsep.outputs["X"], nrm.inputs["Height"])
     if bevel:
         bv = N("ShaderNodeBevel")
         bv.samples = 6
@@ -167,11 +203,13 @@ def add_bevel(mat_name, radius=0.002):
 
 def run():
     pbr("Parquet", "wood_floor_worn", rot_z=math.radians(90), coat=0.0, rough_mul=1.35, bevel=0)
-    pbr("Concrete_Exposed", "concrete_slab_wall", normal=0.8)
+    # raw cast soffit: plain concrete scan (concrete_slab_wall's horizontal bands read as timber boards on the
+    # ceiling), lightened, with faint 2.4 x 1.2 m formwork panel joints
+    pbr("Concrete_Exposed", "concrete_floor_worn_001", normal=0.7, hsv=(0.5, 0.6, 2.8), joints=(2.4, 1.2, 0.006))
     pbr("Paint_White", "painted_plaster_wall", tint="#EEECE7", tint_mix=0.82, normal=0.35, rough_mul=1.0)
     pbr("OSB", "oriented_strand_board", normal=0.8)                 # no rotation: box projection on vertical boards
     for mname in ("Plywood_Birch", "Material_27"):
-        pbr(mname, "plywood", normal=0.6, coat=0.0, bevel=0.0015, rough_mul=2.2)
+        pbr(mname, "plywood", normal=0.6, coat=0.0, bevel=0.0015, rough_mul=2.2, hsv=(0.515, 0.6, 3.0))  # -> pale birch
     pbr("Sofa_LightGrey", "rough_linen", scale=0.6, tint="#9C9B96", tint_mix=0.6, normal=1.6, bevel=0.02)
     for mname in ("Alu_Black_Anodized", "Alu_Frame_Dark", "Mach_White", "Mach_Grey", "Mach_DarkGrey", "Mach_Black",
                   "Desk_Black", "Cart_Black", "Galvanised", "Enamel_Black"):

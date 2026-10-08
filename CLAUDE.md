@@ -94,7 +94,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   integrated as gaps in shelving.
 - Glass panes are zero-thickness planes: `Glass_Clear` must stay THIN glass (`fix_glass.py`: transparent +
   back-face-corrected Fresnel gloss). Never a refractive/IOR>1 transmission shader on them (warps the view).
-- Raw concrete ceiling, galvanised services, round black enamel pendants, worn oak parquet.
+- Raw concrete ceiling (`Concrete_Exposed` = Poly Haven concrete_floor_worn_001 + formwork joints; NOT
+  concrete_slab_wall, whose bands read as timber), birch ply = Poly Haven plywood colour-corrected pale (hsv in apply_pbr),
+  galvanised services, round black enamel pendants, worn oak parquet.
 
 ## Open items
 - On-site 360° photo for the window view → `refs/skybox/` (current HDRI is a CC0 stand-in).

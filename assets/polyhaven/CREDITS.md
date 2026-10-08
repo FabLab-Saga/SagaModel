@@ -6,6 +6,7 @@ free for any use, no attribution required. Credited here as a courtesy.
 | Asset | Authors | Source |
 |---|---|---|
 | concrete_slab_wall | Dimitrios Savva | https://polyhaven.com/a/concrete_slab_wall |
+| concrete_floor_worn_001 (ceiling soffit) | Dimitrios Savva (photography), Rico Cilliers (processing) | https://polyhaven.com/a/concrete_floor_worn_001 |
 | oriented_strand_board | Dimitrios Savva | https://polyhaven.com/a/oriented_strand_board |
 | painted_plaster_wall | Amal Kumar | https://polyhaven.com/a/painted_plaster_wall |
 | plywood | Rob Tuytel | https://polyhaven.com/a/plywood |

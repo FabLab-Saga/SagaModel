@@ -4,7 +4,7 @@ Checked 2026-10-07. Everything visible in renders is either CC0 or Fab Lab's own
 
 | Content | Where | Licence | Notes |
 |---|---|---|---|
-| PBR textures (wood floor, concrete, plaster, plywood, OSB, linen) | `assets/polyhaven/` | **CC0** (polyhaven.com/license) | Commercial use, redistribution OK, no attribution required; authors credited in `assets/polyhaven/CREDITS.md` |
+| PBR textures (wood floor, concrete incl. concrete_floor_worn_001 ceiling, plaster, plywood, OSB, linen) | `assets/polyhaven/` | **CC0** (polyhaven.com/license) | Commercial use, redistribution OK, no attribution required; authors credited in `assets/polyhaven/CREDITS.md` |
 | HDRI sky + surroundings `buikslotermeerplein` (Greg Zaal) | `assets/polyhaven/hdri/` | **CC0** (polyhaven.com/license) | Placeholder outdoor view until our own on-site 360° photo |
 | Scanned models: plants (potted_plant_01/02/04, pachira_aquatica_01), Drill_01, cardboard_box_01 | `assets/polyhaven/models/` | **CC0** | Authors in CREDITS.md |
 | Roboto, Roboto Condensed, Roboto Slab fonts | `refs/branding/fonts/` | **Apache License 2.0** (embedded in the font files) | Licence text: `refs/branding/fonts/LICENSE-Apache-2.0.txt` |
