@@ -18,11 +18,18 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - They like to SEE work live: drive the open Blender GUI through the MCP add-on (or `scripts/bmcp.py`,
   which talks to the add-on socket 127.0.0.1:9876 directly). Save the live file after each change —
   saving is Claude's job.
+- **Move the user's visible viewport to whatever you are working on** (set region_3d view_location /
+  view_rotation / view_distance, perspective, Rendered shading) at the start of a step and after rebuilds —
+  they like seeing results instantly. Headless review renders for verification on top of that.
+- Verify visually: `scripts/render_cams.py -- <CamNames>` (review renders, ~5 s each on the GPU) and
+  `scripts/peek.py -- eye target out.png lens` (ad-hoc viewpoint); read the PNGs before reporting.
+- Real products (machines, furniture) are modelled from PHOTOS (manufacturer pages), never from memory.
+- Push after each commit (remote: github.com/MagnusPetursson/SagaModel, private).
 - Everything scripted and re-runnable; commit after each step (attribution lines per system prompt).
 - **Licensing:** only CC0 (Poly Haven) or the Fab Lab's own material in renders; record every new asset
   in `LICENSES.md` and `assets/polyhaven/CREDITS.md`. The user asked for this to be triple-checked.
-- Laptop (old machine) = fast reference renders only (`scripts/render_review.py`, 960x540, 12 spp).
-  Finals belong on the powerful machine (`scripts/render_finals.py`, auto-picks the GPU).
+- MPDESKTOP (RTX 4070 Ti SUPER, OptiX) is the render machine: finals via `scripts/render_finals.py`
+  (`SAGA_OUT=final3 SAGA_SPP=128`, ~15 s per 1080p still). The old laptop only did quick references.
 
 ## Files
 - `SagaV2_work.blend` — **the working file, source of truth** (contains manual tweaks: HDRI world +
@@ -33,12 +40,18 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `build_services` → `build_lighting` → `build_machines` → `build_laser_room` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
   `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
   `build_cupboard` → `cleanup_leftovers` → `build_material_storage` → `build_hall_entrance` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
+  Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
+  exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
+  (hides colleague leftovers), `build_material_storage` (CNC room stock), `build_hall_entrance` (hall signage),
+  `fix_glass` (thin-glass shader).
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
+  `render_cams.py` (fast GPU review renders), `peek.py` (ad-hoc viewpoint still),
   `bmcp.py` (MCP-socket fallback), `import_glb.py`.
-- `assets/` — CC0 textures/models/HDRI (HDRI .exr is git-ignored: re-fetch `buikslotermeerplein` 4k exr
-  from Poly Haven into `assets/polyhaven/hdri/` if missing), mural, signs.
+- `assets/` — CC0 textures/models/HDRI (HDRI .exr is git-ignored: `./setup.sh` re-fetches `buikslotermeerplein`
+  4k exr from Poly Haven into `assets/polyhaven/hdri/`; it is the ONLY external file not in git), mural, signs.
+- `PLAN.md` — the review-fix goals G1–G11 (all done). New multi-step work: write a similar plan.
 - `refs/` — branding (Fab Lab Ísland brand manual 2021, signs, logos, Roboto fonts), equipment list PDF
   (the machinery list given to the architects for electrical load + airflow), user photos.
 - `renders/final3/` — 29 stills at 1920x1080 (GPU OptiX, 128 spp) after the PLAN.md goals G1–G11 (2026-10-08).
