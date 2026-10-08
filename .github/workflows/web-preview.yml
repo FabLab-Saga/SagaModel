@@ -1,0 +1,65 @@
+name: Web preview
+# Rebuilds and deploys the live web preview (github.com/MagnusPetursson/SagaModel-web, GitHub Pages) whenever
+# the .blend or assets change. Runs entirely on GitHub; no local machine involved. Manual: Actions tab -> Run workflow.
+on:
+  push:
+    branches: [main]
+    paths: ['*.blend', '**/*.blend', 'assets/**', '.github/workflows/web-preview.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: web-preview
+  cancel-in-progress: true          # a newer push supersedes a running build
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: SagaModel, fetch-depth: 1 }
+      - uses: actions/checkout@v4
+        with: { repository: MagnusPetursson/SagaModel-web, path: SagaModel-web }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: SagaModel-web/package-lock.json }
+
+      - name: Blender 5.2.2 (cached)
+        id: blender
+        uses: actions/cache@v4
+        with: { path: ~/blender, key: blender-5.2.2-linux-x64 }
+      - name: Download Blender
+        if: steps.blender.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/blender
+          curl -sfL https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz \
+            | tar -xJ -C ~/blender --strip-components=1
+      - name: Blender runtime libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 \
+            libxkbcommon0 libsm6 libice6 libx11-6 libxext6 >/dev/null
+
+      - run: npm ci
+        working-directory: SagaModel-web
+
+      - name: Deploy key for SagaModel-web
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SAGA_WEB_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Build, smoke-test, deploy
+        working-directory: SagaModel-web
+        env:
+          SAGA_REPO: ${{ github.workspace }}/SagaModel
+          BLENDER: /home/runner/blender/blender
+          SNAP_SOFT: '1'
+          DEPLOY_REMOTE: git@github.com:MagnusPetursson/SagaModel-web.git
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: tools/publish.sh
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: preview-screenshot, path: SagaModel-web/cache/shots/, if-no-files-found: ignore }
