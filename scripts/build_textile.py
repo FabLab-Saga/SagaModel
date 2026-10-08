@@ -1,10 +1,10 @@
 """Craft & large-format corner by the SSW glass, between the laser room's glazed ESE partition (y 26.94) and the
 lounge nook; the main circulation x 28.0-29.5 stays clear. Re-runnable ("Textile" collection).
-- Sewing/heat-transfer wall bench 2.6 x 0.75 m against the partition (sit facing it, 3 profile chairs): Cricut
-  EasyPress 3 (+ a second on the shelf), Cricut Mug Press, overlocker, Brother embroidery + sewing machine.
-- Large-format/clay bench 1.9 x 0.8 m on the SSW glass (x 31.65-32.45, y 28.18-30.08): Secabo TC7 heat press,
+- Sewing/heat-transfer wall bench 2.6 x 0.75 m against the partition (sit facing it, 3 profile chairs): LOKLiK Auto
+  Heat Press, Cricut Mug Press, overlocker, Brother embroidery + sewing machine; 2 Cricut EasyPress 3 on the shelf.
+- Large-format/clay bench 1.9 x 0.8 m on the SSW glass (x 31.65-32.45, y 28.18-30.08): red industrial clam press,
   Eazao Zero clay printer (microwave + clay buckets on the shelf), Creality CR-10 Max.
-- Two IKEA BEKANT rolling carts (birch-ply top) against felt panel 1 by the cutter corner: Cricut Maker 3, EinScan SE.
+- Two IKEA BEKANT rolling carts (birch-ply top) against felt panel 1 by the cutter corner: Cricut Maker 3, handheld 3D scanner kit (tripod, turntable, case).
 - Cutter counter (Cricut Maker + Mayku FormBox, 1.0 x 0.55 m, standing height) on the NNE glass next to the
   vinyl cutters (y 28.55-29.55): all the cutters in one corner.
 """
@@ -63,10 +63,11 @@ def build():
     part, _ = lib["table_unit"](BL, BD, BH, [0.0, BL / 2 - 0.02, BL - 0.04], lower=(0.16,))
     loc, rot = lib["placement"](32.35 - BL / 2, 26.96 + BD / 2, BL, BD, "+y")    # local x=0 at the glass end
     part.emit("SewingBench", col, loc, rot)
-    put(mach["cricut_easypress3"](), "Cricut_EasyPress3_1", loc, rot, 0.21, 0.30, BH, 0.305, 0.254)
-    put(mach["cricut_easypress3"](on_base=False), "Cricut_EasyPress3_2", loc, rot, 0.25, 0.32, 0.16, 0.305, 0.254)
-    put(mach["cricut_mug_press"](), "Cricut_MugPress", loc, rot, 0.58, 0.25, BH, 0.275, 0.157)
-    put(mach["overlock"](), "Overlock", loc, rot, 1.02, 0.30, BH, 0.33, 0.28)
+    put(mach["loklik_auto_press"](), "LOKLiK_AutoPress", loc, rot, 0.29, 0.30, BH, 0.50, 0.40)
+    put(mach["cricut_mug_press"](), "Cricut_MugPress", loc, rot, 0.70, 0.22, BH, 0.275, 0.157)
+    put(mach["overlock"](), "Overlock", loc, rot, 1.14, 0.30, BH, 0.33, 0.28)
+    put(mach["cricut_easypress3"](), "Cricut_EasyPress3_1", loc, rot, 0.30, 0.34, 0.16, 0.305, 0.254)   # shelf
+    put(mach["cricut_easypress3"](), "Cricut_EasyPress3_2", loc, rot, 0.72, 0.34, 0.16, 0.305, 0.254)
     put(mach["sewing"](0.50, 0.24, 0.32), "Brother_Embroidery", loc, rot, 1.62, 0.26, BH, 0.50, 0.24)
     put(mach["sewing"](), "Brother_Sewing", loc, rot, 2.30, 0.26, BH, 0.42, 0.20)
     props = Part()
@@ -85,11 +86,11 @@ def build():
     for k in range(6):                                                                  # thread spools
         x = 2.20 + k * 0.035
         props.cyl(MAT["bins"][k % 6], (x, 0.66, BH), (x, 0.66, BH + 0.055), 0.013, seg=14)
-    tee = mat("Tee_White", "#F1F0EC", 0.9)                                             # T-shirt + HTV on the press
-    props.box(tee, 0.05, 0.40, 0.48, 0.70, BH, BH + 0.012, bevel=0.004)
-    props.box(MAT["bins"][2], 0.14, 0.30, 0.55, 0.64, BH + 0.012, BH + 0.0135)
-    for k in range(3):                                                                  # HTV rolls
-        props.cyl(MAT["bins"][(k * 2) % 6], (0.75, 0.55 + k * 0.07, BH + 0.032), (0.95, 0.55 + k * 0.07, BH + 0.032), 0.032, seg=20)
+    tee = mat("Tee_White", "#F1F0EC", 0.9)                                             # T-shirt waiting by the press
+    props.box(tee, 0.56, 0.86, 0.48, 0.70, BH, BH + 0.012, bevel=0.004)
+    props.box(MAT["bins"][2], 0.63, 0.78, 0.53, 0.64, BH + 0.012, BH + 0.0135)
+    for k in range(3):                                                                  # HTV rolls on the shelf
+        props.cyl(MAT["bins"][(k * 2) % 6], (1.00, 0.20 + k * 0.08, 0.16 + 0.032), (1.25, 0.20 + k * 0.08, 0.16 + 0.032), 0.032, seg=20)
     props.emit("SewingBench_Props", col, loc, rot)
     for i, lx in enumerate((2.30, 1.62, 1.02)):                         # three chairs facing the bench
         c = lib["to_world"](loc, rot, (lx, 0, 0))
@@ -104,7 +105,7 @@ def build():
     part, _ = lib["table_unit"](GL, GD, GH, [0.0, GL / 2 - 0.02, GL - 0.04], lower=(0.16,))
     gloc, grot = lib["placement"](32.45 - GD / 2, 28.18 + GL / 2, GL, GD, "-x")     # local x=0 at the nook end
     part.emit("GlassBench", col, gloc, grot)
-    put(mach["secabo_tc7"](), "Secabo_TC7", gloc, grot, 0.30, 0.37, GH, 0.43, 0.57)
+    put(mach["secabo_tc7"](), "HeatPress_RedClam", gloc, grot, 0.30, 0.37, GH, 0.43, 0.57)
     put(mach["eazao_zero"](), "Eazao_Zero", gloc, grot, 0.98, 0.30, GH, 0.35, 0.30)
     put(mach["creality_cr10_max"](), "Creality_CR10_Max", gloc, grot, 1.52, 0.4125, GH, 0.65, 0.785)
     put(mach["microwave"](), "Clay_Microwave", gloc, grot, 0.98, 0.30, 0.16, 0.45, 0.35)
@@ -124,7 +125,7 @@ def build():
             blue = mat("Cricut3_Blue", "#C7D5E2", 0.35, coat=0.2)
             put(mach["cricut"](0.538, 0.178, 0.151, body=blue), "Cricut_Maker_3", cloc_, crot_, 0.305, 0.20, zt, 0.538, 0.178)
         else:
-            put(mach["einscan_se"](), "EinScan_SE", cloc_, crot_, 0.30, 0.24, zt, 0.60, 0.21)
+            put(mach["revopoint_pop3_kit"](), "Handheld_3DScanner", cloc_, crot_, 0.305, 0.20, zt, 0.40, 0.40)
         stuff = Part()                                                  # kit boxes on the cart shelves
         for zs in (0.448, 0.698):
             x = 0.02

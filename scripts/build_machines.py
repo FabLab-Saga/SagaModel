@@ -772,36 +772,77 @@ def eazao_zero(w=0.35, d=0.30, h=0.50):
     return p
 
 
-def einscan_se():
-    """Shining 3D EinScan SE V2 (570 x 210 x 210 assembled; checked against Shining 3D photos): black turntable on a
-    flat black arm, angled black stand at the far end carrying the dark-grey scanner head (projector between two
-    cameras) aimed at the turntable; a printed figure on the turntable."""
+def revopoint_pop3_kit():
+    """Handheld 3D scanner kit (the lab's is "just a handheld scanner"; Revopoint POP 3 as the stand-in, 153 x 45 x 29
+    head; checked against Revopoint/retailer photos): dark-grey aluminium head with a black glass face (two IR
+    cameras, projector, RGB camera, LEDs) on a black mini tripod/handle, a small black turntable with a blue printed
+    figure, and the grey zip carry case lying open-lid beside it."""
     p = Part()
-    blk = mat("Scanner_Black", "#16171A", 0.35)
-    head = mat("Scanner_Grey", "#3E4246", 0.35, metal=0.3)
-    tc = Vector((0.105, 0.105, 0.0))
-    p.cyl(blk, tc, tc + Vector((0, 0, 0.055)), 0.100, seg=40)                      # turntable base
-    p.cyl(M["dark"], tc + Vector((0, 0, 0.055)), tc + Vector((0, 0, 0.060)), 0.090, seg=40)   # rotating disc
-    p.box(blk, 0.10, 0.50, 0.075, 0.135, 0.0, 0.018, bevel=0.004)                  # flat arm
-    _obox(p, blk, Vector((0.505, 0.105, 0.135)), (0.035, 0.055, 0.27), Matrix.Rotation(-0.22, 3, "Y"))  # stand
-    rot = Matrix.Rotation(0.42, 3, "Y")                                            # head tilted down to the table
-    hc = Vector((0.49, 0.105, 0.285))
-    _obox(p, head, hc, (0.075, 0.250, 0.065), rot)
-    face = hc + rot @ Vector((-0.0385, 0.0, 0.0))
-    for dy, r in ((-0.085, 0.011), (0.0, 0.016), (0.085, 0.011)):                 # cameras + projector lens
-        c = face + Vector((0, dy, 0))
-        p.cyl(M["black"], c, c + rot @ Vector((-0.006, 0, 0)), r, seg=20)
-        p.cyl(M["lcd"] if dy == 0 else M["smoke"], c + rot @ Vector((-0.006, 0, 0)), c + rot @ Vector((-0.007, 0, 0)), r * 0.7, seg=20)
-    fig = M["spools"][3]                                                            # orange printed figure
-    p.cyl(fig, tc + Vector((0, 0, 0.060)), tc + Vector((0, 0, 0.075)), 0.035, seg=24)
-    p.cyl(fig, tc + Vector((0, 0, 0.075)), tc + Vector((0, 0, 0.150)), 0.018, seg=20)
-    bmesh.ops.create_uvsphere(p.bm(fig), u_segments=20, v_segments=10, radius=0.028,
-                              matrix=Matrix.Translation(tc + Vector((0, 0, 0.170))))
+    alu = mat("Scanner_Alu", "#55595E", 0.30, metal=0.7)
+    glass = mat("Scanner_Glass", "#0B0C0E", 0.08, coat=0.8)
+    blk = mat("Scanner_Black", "#16171A", 0.45)
+    felt = mat("Case_Grey", "#6B6E72", 0.9)
+    # tripod: three splayed legs, column, ball head
+    c = Vector((0.12, 0.10, 0.0))
+    for k in range(3):
+        a_ = math.radians(90 + k * 120)
+        foot = c + Vector((math.cos(a_) * 0.075, math.sin(a_) * 0.075, 0.004))
+        p.cyl(blk, foot, c + Vector((0, 0, 0.075)), 0.008, seg=10)
+    p.cyl(blk, c + Vector((0, 0, 0.06)), c + Vector((0, 0, 0.145)), 0.014, seg=16)
+    bmesh.ops.create_uvsphere(p.bm(blk), u_segments=14, v_segments=8, radius=0.012,
+                              matrix=Matrix.Translation(c + Vector((0, 0, 0.152))))
+    hc = c + Vector((0, 0, 0.162 + 0.0225))                                         # head centre, face toward -y
+    tilt = Matrix.Rotation(-0.25, 3, "X")
+    _obox(p, alu, hc, (0.153, 0.029, 0.045), tilt)
+    face = hc + tilt @ Vector((0, -0.0148, 0))
+    _obox(p, glass, face, (0.143, 0.002, 0.036), tilt)
+    for dx, r, m_ in ((-0.055, 0.0065, M["smoke"]), (-0.035, 0.003, M["lcd"]), (0.0, 0.0055, M["smoke"]),
+                      (0.035, 0.003, M["lcd"]), (0.055, 0.0065, M["smoke"])):
+        q = face + tilt @ Vector((dx, -0.0012, 0))
+        p.cyl(m_, q, q + tilt @ Vector((0, -0.0008, 0)), r, seg=16)
+    # turntable + figure
+    t = Vector((0.31, 0.10, 0.0))
+    p.cyl(blk, t, t + Vector((0, 0, 0.030)), 0.075, seg=36)
+    p.cyl(M["dark"], t + Vector((0, 0, 0.030)), t + Vector((0, 0, 0.036)), 0.070, seg=36)
+    fig = M["spools"][2]
+    for z0, z1, r in ((0.036, 0.075, 0.016), (0.075, 0.115, 0.022), (0.115, 0.13, 0.010)):
+        p.cyl(fig, t + Vector((0, 0, z0)), t + Vector((0, 0, z1)), r, seg=16)
+    bmesh.ops.create_uvsphere(p.bm(fig), u_segments=14, v_segments=8, radius=0.017, matrix=Matrix.Translation(t + Vector((0, 0, 0.145))))
+    # carry case, closed, at the back
+    p.box(felt, 0.02, 0.36, 0.22, 0.40, 0.0, 0.085, bevel=0.02)
+    p.box(M["black"], 0.15, 0.23, 0.215, 0.225, 0.07, 0.08, bevel=0.003)           # handle
+    return p
+
+
+def loklik_auto_press(w=0.50, d=0.40, h=0.30, color="#47C3C9"):
+    """LOKLiK Auto Heat Press 15 x 15" (500 x 400 x 300, 38 x 38 cm plate; checked against LOKLiK product photos):
+    gloss teal base tray with the black pull-out drawer + handle, black lower platen, wide gloss-teal upper hood with a
+    black skirt, raised teal control box on top (ribbed top, black display, white buttons), LOKLiK mark on the base."""
+    p = Part()
+    teal = mat("Loklik_Teal", color, 0.18, coat=0.6)
+    blk = mat("Loklik_Black", "#18191B", 0.4)
+    p.box(teal, 0.0, w, 0.0, d, 0.0, 0.055, bevel=0.018)                            # base tray
+    p.box(blk, 0.13, w - 0.13, -0.004, d - 0.06, 0.04, 0.115, bevel=0.006)          # drawer body
+    p.box(blk, 0.18, w - 0.18, -0.020, -0.004, 0.065, 0.085, bevel=0.005)           # drawer handle
+    p.box(blk, 0.02, w - 0.02, 0.0, d - 0.03, 0.115, 0.140, bevel=0.008)            # lower platen
+    p.box(blk, 0.015, w - 0.015, -0.005, d - 0.02, 0.150, 0.165, bevel=0.006)       # hood skirt
+    p.box(teal, 0.010, w - 0.010, -0.010, d - 0.015, 0.165, 0.215, bevel=0.02)      # upper hood
+    p.box(blk, w * 0.32, w * 0.68, 0.10, d - 0.06, 0.215, 0.225)                     # neck
+    p.box(teal, w * 0.29, w * 0.71, 0.08, d - 0.04, 0.225, h, bevel=0.012)          # control box
+    for k in range(12):                                                               # ribbed top
+        y = 0.10 + k * (d - 0.16) / 11
+        p.box(teal, w * 0.30, w * 0.70, y, y + 0.006, h, h + 0.002)
+    p.box(mat("Loklik_LCD", "#0B0B0C", 0.15, emit=0.0), w * 0.43, w * 0.57, 0.0785, 0.08, 0.255, 0.280)
+    p.box(M["lcd"], w * 0.445, w * 0.555, 0.0780, 0.0785, 0.260, 0.275)
+    for dx in (-0.075, -0.055, 0.055, 0.075):                                          # white buttons
+        p.cyl(M["white"], (w / 2 + dx, 0.0785, 0.265), (w / 2 + dx, 0.074, 0.265), 0.008, seg=14)
+    p.box(M["grey"], w * 0.42, w * 0.58, -0.0005, 0.0, 0.018, 0.030)                  # LOKLiK mark
     return p
 
 
 def secabo_tc7(w=0.43, d=0.57, open_deg=24):
-    """Secabo TC7 40 x 50 cm clam heat press (43 x 57 x 75 closed; checked against Secabo photos), shown open:
+    """Classic red industrial clamshell heat press (the lab's exact model unknown; modelled on the Secabo TC7 40 x 50,
+    43 x 57 x 75 closed; checked against Secabo photos), shown open:
     black steel base on levelling feet, galvanised lower platen frame with the black silicone pad, red vented heat
     hood on a black heat plate hinged at the back, black lever arms up to the foam handle, red controller with LCD
     and buttons on the rear right."""

@@ -54,7 +54,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (hides colleague leftovers), `build_material_storage` (CNC room stock), `build_hall_entrance` (hall signage),
   `fix_glass` (thin-glass shader), `build_worktables` (2x2 work tables + chairs), `build_print_farm` (printer wall with
   cabins), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
-  EinScan, Secabo, EasyPress, Mug Press, BEKANT cart) are functions in build_machines.py; zone builders place them.
+  handheld scanner, red clam press, LOKLiK, EasyPress, Mug Press, BEKANT cart) are functions in build_machines.py; zone builders place them.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
@@ -99,7 +99,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   y 21.95–25.31: one 3.36 m profile wall, 5 bays x 3 rows of birch cells (decks 0.12/0.80/1.48/2.16) + open spool top.
   7 Prusa MK3S+ (user decision), EACH IN ITS OWN CABIN: birch sides/back, clear acrylic door hinged on the left post
   (bar handle, magnet catch), LED strip + power strip inside; one door shown open. Open cells: 3x Creality CR-200B
-  (top row), Bambu P2S + Flashforge AD5M Pro (bottom row); 3 doored filament dry cells.
+  (top row), Bambu P2S + Flashforge AD5M Pro (bottom row; exact Flashforge model doesn't matter); 3 doored dry cells.
 - **CNC room**: ShopBot PRS Alpha 120 against the INTERIOR wall; ACword FT100 dust collector out by the
   far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`), brush skirt on the spindle.
   (Clearance ignored per user.) No SRM-20s here.
@@ -122,11 +122,12 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   The colleague's six benches + stools are gone (too dense, chairs overlapped).
 - **Cutter corner** on the NNE glass: 2 Roland vinyl cutters on rolling stands (y 26.5–28.5), Cricut Maker + Mayku
   FormBox counter (y 28.55–29.55), two IKEA BEKANT carts (birch top) against felt panel 1 with the Cricut Maker 3 and
-  the EinScan SE scanner.
+  the HANDHELD 3D scanner kit (Revopoint POP 3 stand-in: head on mini tripod, turntable, case).
 - **Craft & large-format corner** (`build_textile.py`, collection Textile) between the laser room's glazed ESE
-  partition (y 26.94) and the nook: 2.6 m wall bench along the partition (sit facing it, 3 chairs) with EasyPress 3
-  (+1 on the shelf), Mug Press, overlocker, Brother embroidery + sewing; 1.9x0.8 m bench on the SSW glass
-  (x 31.65–32.45, y 28.18–30.08) with Secabo TC7 heat press, Eazao Zero clay printer (microwave + clay below) and
+  partition (y 26.94) and the nook: 2.6 m wall bench along the partition (sit facing it, 3 chairs) with the LOKLiK
+  Auto Heat Press (teal), Mug Press, overlocker, Brother embroidery + sewing, 2 EasyPress 3 on the shelf; 1.9x0.8 m
+  bench on the SSW glass (x 31.65–32.45, y 28.18–30.08) with the red industrial clam press (Secabo TC7-based),
+  Eazao Zero clay printer (stand-in, lab unsure; microwave + clay below) and
   Creality CR-10 Max. Main circulation x 28.0–29.5 stays clear.
 - **Lounge** (by the SSW glass): ONE small circular conversation nook (`nook()` in build_bank_lounge.py, centre
   30.95/31.60, 2.85 m): 240° curved charcoal sofa (back to the glass, open towards the spine path), felt cushions,
@@ -176,9 +177,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   model — ask the user: loading door, glazing, or wall?
 - Animated walkthrough (stills done on MPDESKTOP: RTX 4070 Ti SUPER, OptiX; ~10-25 s per 1080p still).
 - Spine has no camera on its workshop face (tool library); add one if it should be in the finals.
-- Stand-in machine models to confirm with the lab (list gives no model): Flashforge (AD5M Pro used), clay printer
-  (Eazao Zero), 3D scanner (EinScan SE V2), large heat press (Secabo TC7), Brother sewing/embroidery, overlocker,
-  EasyPress generation; Roland vinyl GS-24 vs GS2-24; Epilog wattage (list 80 W, Epilog sells 50/60 W).
+- Confirmed by the lab: Epilog is 80 W; scanner is a handheld one; presses = a LOKLiK + a classic red industrial
+  clam press (+ the Cricut ones); the Flashforge model doesn't matter. Still unknown (stand-ins in the model): clay
+  printer (Eazao Zero; lab unsure), handheld scanner model, red press model, LOKLiK model, Brother sewing/embroidery,
+  overlocker, EasyPress generation; Roland vinyl GS-24 vs GS2-24.
 - Prusa count: 7 now; list says 5, its power notes 10, "probably 15 printers in total".
 - Finals (renders/final3) are outdated; re-render when the layout settles. Non-final cameras (Counter, Craft,
   Interior_01, Mural, ...) were not reframed after the layout changes.
