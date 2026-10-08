@@ -43,11 +43,11 @@ SHOTS = [
     ("CNCRoom", 2, None,
      (22.70, 15.50, 1.90), (22.70, 17.40, 1.90), (22.9, 20.0, 1.00), 20),
     ("Electronics", 2, "FAB LAB SAGA // Rafeindaverkstæði",
-     (24.30, 31.75, 1.40), (22.10, 31.75, 1.40), (23.2, 30.40, 1.00), 28),
+     (24.70, 32.70, 1.50), (22.50, 32.70, 1.50), (24.70, 30.20, 1.05), 24),
     ("Craft", 2, "FAB LAB SAGA // Textílsvæði",
      (30.80, 30.20, 1.50), (30.80, 28.30, 1.50), (30.8, 27.00, 1.00), 22),
     ("ToolWall", 2, "FAB LAB SAGA // Verkfæri",
-     (23.10, 24.20, 1.60), (23.10, 26.60, 1.60), (21.0, 25.40, 1.30), 22),
+     (23.30, 24.00, 1.60), (23.30, 26.20, 1.60), (21.0, 24.00, 1.30), 24),
     ("Bank", 3, "Búnaðarbanki SFS",
      (33.60, 37.05, 1.60), (29.40, 37.05, 1.60), (27.8, 37.10, 1.30), 24),
     ("Lounge", 2, None,
@@ -88,6 +88,29 @@ def linearize(ob):
     return len(curves)
 
 
+def secret_door(fa, fb, angle=75.0):
+    """Bank shot: the secret door in the birch-fin relief swings open into the bank (hinge at the WNW face of the
+    wall, y 36.62 jamb; build_bank_walls.py). Eased (a real door accelerates/decelerates); closed outside the shot."""
+    leaf = bpy.data.objects.get("SecretDoor_Leaf")
+    if not leaf:
+        return
+    hinge = bpy.data.objects.get("SecretDoor_Hinge") or bpy.data.objects.new("SecretDoor_Hinge", None)
+    if hinge.name not in bpy.data.collections["EquipmentBank"].objects:
+        bpy.data.collections["EquipmentBank"].objects.link(hinge)
+    hinge.animation_data_clear()
+    hinge.location, hinge.rotation_euler = (27.495, 36.625, 0.0), (0.0, 0.0, 0.0)
+    hinge.empty_display_size = 0.2
+    bpy.context.view_layer.update()
+    if leaf.parent != hinge:
+        mw = leaf.matrix_world.copy()
+        leaf.parent = hinge
+        leaf.matrix_parent_inverse = hinge.matrix_world.inverted()
+        leaf.matrix_world = mw
+    for fr, a in ((fa, 0.0), (fb, angle)):
+        hinge.rotation_euler.z = math.radians(a)
+        hinge.keyframe_insert("rotation_euler", index=2, frame=fr)
+
+
 def build():
     sc = bpy.context.scene
     col = bpy.data.collections.get(COL) or bpy.data.collections.new(COL)
@@ -124,8 +147,11 @@ def build():
         m = sc.timeline_markers.new(cname, frame=f0)
         m.camera = ob
         print(f"{cname:22s} frames {f0:4d}-{f1:4d}  {secs:4.2f} s  {speed:4.2f} m/s  shift {shift:+.2f}")
+        if name == "Bank":
+            secret_door(f0 + 20, f1 - 30)
         b += bars
     sc.frame_start, sc.frame_end = 1, frame_at(b)
+    sc.frame_set(1)                                                      # stills/peeks see the closed door
     sc.camera = col.objects[0]
     print(f"walkthrough v1: {len(SHOTS)} shots, {b} bars, frames 1-{sc.frame_end} ({sc.frame_end / FPS:.1f} s)"
           f" + intro {INTRO_BARS} bars")
