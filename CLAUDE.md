@@ -133,7 +133,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   Eazao Zero clay printer (stand-in, lab unsure; microwave + clay below) and
   Creality CR-10 Max. Main circulation x 28.0–29.5 stays clear.
 - **Lounge** (by the SSW glass; `conversation_pit()` + `gullvalla()` in build_bank_lounge.py): CONVERSATION PIT - two
-  IKEA GULLVALLA 2-seat sofas, Silkeryd grey-green (user's choice; real size 142 x 83 x 78, seat 42; rolled arms, two
+  IKEA GULLVALLA 2-seat sofas, one Silkeryd grey-green, one Silkeryd dark grey-beige (user's choice; real size 142 x 83 x 78, seat 42; rolled arms, two
   seat + two loose back cushions, black turned legs; modelled from IKEA photos) FACING EACH OTHER across a low birch
   coffee table (1.00 x 0.55, profile frame, shelf), at right angles to the glass (orientation was my choice); the
   glass closes one end, two felt poufs the open lab end -> a ring of 6 (idea = force interaction). Footprint

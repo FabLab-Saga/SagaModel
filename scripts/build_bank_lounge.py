@@ -313,16 +313,20 @@ def conversation_pit(col):
     gb = next(n for n in green.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
     gb.inputs["Sheen Weight"].default_value = 0.25                   # strong white sheen washed the green out
     gb.inputs["Sheen Tint"].default_value = (0.45, 0.55, 0.40, 1)
+    beige = fabric("Silkeryd_DarkGreyBeige", "#6E665A")               # GULLVALLA's other cover: dark grey-beige
+    bb_ = next(n for n in beige.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+    bb_.inputs["Sheen Weight"].default_value = 0.25
+    covers = (green, beige)
     leg = mat("Leg_BlackStained", "#141414", 0.45)
     X1, CY = 32.40, 31.70                                            # glass end, pit axis
     L = 1.42
     X0 = X1 - L
     for k, (y_front, facing) in enumerate(((30.94, "+y"), (32.46, "-y"))):
-        p, L, D = gullvalla(green, leg, felts[(k * 2) % 3], cushion_left=bool(k))
+        p, L, D = gullvalla(covers[k], leg, felts[(k * 2) % 3], cushion_left=bool(k))
         cy = y_front - D / 2 if facing == "+y" else y_front + D / 2
         loc, rot = lib["placement"](X0 + L / 2, cy, L, D, facing)
         root = p.emit(f"Lounge_Sofa_{k + 1}", col, loc, rot)
-        soften(root, ("Silkeryd_GreyGreen",) + tuple(f.name for f in felts), 0.025)
+        soften(root, (covers[k].name,) + tuple(f.name for f in felts), 0.025)
     t = Part()                                                           # low birch coffee table, profile frame
     TL, TD, TH = 1.00, 0.55, 0.40
     tx0, ty0 = X0 + L / 2 - TL / 2, CY - TD / 2
