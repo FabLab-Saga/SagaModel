@@ -104,9 +104,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (bar handle, magnet catch), LED strip + power strip inside; one door shown open. Open cells: 3x Creality CR-200B
   (top row), Bambu P2S + Flashforge AD5M Pro (bottom row; exact Flashforge model doesn't matter); 3 doored dry cells.
 - **CNC room** (`build_cnc_room.py`, collection CNCRoom; machine models in build_machines.py): its wall to the main
-  room is FLUSH WITH THE MURAL WALL (y 21.66–21.82), solid, NO glass/window (user); the colleague's glazed front
-  (y 23.05) is cut away (`Cut_CNC_Front`/`Cut_CNC_Side`), the strip in front is main lab. Main door (90 cm) by the
-  NNE glass (x 20.90–21.90). The colleague's 1.08 x 2.49 m hallway door was invented (user): replaced by a normal
+  room is FLUSH WITH THE MURAL WALL (y 21.66–21.82) and is a very tall FRAMELESS glass wall (floor to slab, butt-jointed
+  panes, NO aluminium frames) with a tall standard office glass door (1.0 x 2.70, glass transom, BRUSHED aluminium
+  glass-to-glass hinges + pull bar, not chrome) by the NNE glass, x 20.90–21.90 (user). The colleague's glazed front
+  (y 23.05) is cut away (`Cut_CNC_Front`/`Cut_CNC_Side`), the strip in front is main lab. The colleague's 1.08 x 2.49 m hallway door was invented (user): replaced by a normal
   Icelandic interior door (90 x 210, frame + casings, wall completed to the slab), the knocked-down WC's doorway next
   to it walled up. ShopBot PRS Alpha 120 kept along the INTERIOR wall (my call; the room is 3.34 m wide, the
   machine 2.15 x 4.30), at x 21.90–24.05, y 17.15–21.45 with a 1.1 m aisle on the glass side; ACword FT100 in the

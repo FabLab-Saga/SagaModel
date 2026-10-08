@@ -2,7 +2,9 @@
 Run after build_machines, build_material_storage and build_staff_area. Model frame: +X = SSW, +Y = ESE.
 
 Facts (user, 2026-10-08):
-- The CNC room's wall to the main room is FLUSH WITH THE MURAL WALL (y 21.66-21.82), solid - no glass wall, no window.
+- The CNC room's wall to the main room is FLUSH WITH THE MURAL WALL (y 21.66-21.82) and is a VERY TALL GLASS WALL WITH
+  A TALL GLASS DOOR (frameless, floor to slab, no aluminium frames; standard office glass door 1.0 x 2.70 m with
+  brushed aluminium glass-to-glass hinges, by the NNE glass).
   The colleague's front wall at y 23.05-23.14 (glass door + window) and the side wall's window (x 24.15-24.26,
   y 21.96-22.89) are removed (Cut_CNC_Front / Cut_CNC_Side + their window/door objects deleted); the strip
   x 20.8-24.2, y 21.82-23.14 becomes main lab.
@@ -10,7 +12,7 @@ Facts (user, 2026-10-08):
   2.1 m) in a frame, and the wall completed normally round it (infill + wall up to the slab). The knocked-down WC's
   old hallway doorway right next to it is walled up too, so the CNC room has one normal door to the hallway.
 Layout (my choices): the ShopBot keeps its orientation along the interior wall (the room is 3.34 m wide, the
-machine 2.15 x 4.30), moved back to y 17.15-21.45 so it clears the new front wall; main door in the new wall by
+machine 2.15 x 4.30), moved back to y 17.15-21.45 so it clears the new front wall; glass door by
 the glass, opening onto the 1.1 m glass-side aisle; sheet cart at the bed's WNW (loading) end; collector stays in
 the far glass corner; operator corner in the ex-WC bay: ShopBot PC station (standing desk, control box under it) on
 the WC partition + tool bench with drawers and a pegboard (bits, collets, wrenches, hearing/eye protection) on the
@@ -81,18 +83,52 @@ def cutter(name, x0, x1, y0, y1, z0=-0.05, z1=3.94):
     mod.operation, mod.solver, mod.object = "DIFFERENCE", "EXACT", ob
 
 
+def glazed_front(col):
+    """Front wall to the main room, flush with the mural wall: a very tall FRAMELESS glass wall with a tall glass door
+    (user): butt-jointed floor-to-slab panes, no frames or mullions. Standard office glass door, 1.0 x 2.70 m, by the
+    NNE glass (x 20.90-21.90): glass-to-glass hinges in brushed aluminium clamping the leaf to the fixed pane beside it,
+    brushed aluminium lock patch + pull handle, fixed glass transom above. Glass = thin Glass_Clear planes (fix_glass.py)."""
+    gl = bpy.data.materials["Glass_Clear"]
+    alu = mat("Alu_Brushed_Door", "#C8CBCE", 0.32, metal=1.0)   # brushed, not chrome (user)
+    yc = sum(FRONT_Y) / 2
+    x0, x1 = GLASS_X + 0.003, INNER_X - 0.003
+    d0, d1, DH = 20.90, 21.90, 2.70
+    J = 0.004                                                         # silicone butt joints
+    g, p = Part(), Part()
+
+    def pane(xa, xb, za, zb):
+        g.box(gl, xa, xb, yc - 0.0005, yc + 0.0005, za, zb)
+    pane(x0, d0 - J, 0.0, SOFFIT)                                    # narrow pane between façade and door
+    pane(d0, d1, DH + J, SOFFIT)                                     # transom over the door
+    n = max(1, round((x1 - d1) / 1.2))
+    xs = [d1 + J + (x1 - d1 - J) * i / n for i in range(n + 1)]
+    for xa, xb in zip(xs, xs[1:]):
+        pane(xa, xb - J, 0.0, SOFFIT)
+    lx0, lx1 = d0 + 0.004, d1 - 0.004                                 # door leaf (closed)
+    g.box(gl, lx0, lx1, yc - 0.0005, yc + 0.0005, 0.008, DH - 0.002)
+    g.emit("CNC_GlassWall_Glass", col, Vector((0, 0, 0)))
+    # glass-to-glass hinges on the door side next to the fixed pane (hinge axis at x = d0)
+    for z in (0.25, DH - 0.35):
+        p.box(alu, d0 - 0.055, d0 + 0.055, yc - 0.014, yc + 0.014, z, z + 0.09, bevel=0.004)
+        p.cyl(alu, (d0, yc, z - 0.005), (d0, yc, z + 0.095), 0.011, seg=16)
+    # top pivot patch at the transom line, lock patch at the bottom on the opening side
+    p.box(alu, lx1 - 0.16, lx1, yc - 0.016, yc + 0.016, 0.02, 0.10, bevel=0.004)
+    p.cyl(alu, (lx1 - 0.08, yc - 0.017, 0.06), (lx1 - 0.08, yc + 0.017, 0.06), 0.012, seg=16)
+    # pull handle both faces: brushed aluminium bar 0.6 m
+    hx = lx1 - 0.10
+    for sgn in (-1, 1):
+        for z in (0.80, 1.30):
+            p.cyl(alu, (hx, yc + sgn * 0.001, z), (hx, yc + sgn * 0.055, z), 0.008, seg=12)
+        p.cyl(alu, (hx, yc + sgn * 0.055, 0.75), (hx, yc + sgn * 0.055, 1.35), 0.0125, seg=20)
+    p.emit("CNC_GlassWall_Fittings", col, Vector((0, 0, 0)))
+
+
 def walls(col):
     # old front wall (y 23.05-23.14, glass door + window) and the side wall's window stretch beyond the mural line
     cutter("Cut_CNC_Front", GLASS_X + 0.005, 24.27, 23.00, 23.20)
     cutter("Cut_CNC_Side", 24.10, 24.30, FRONT_Y[1] + 0.001, 23.20)
-    # new solid front wall flush with the mural wall, with the main door by the glass (opens into the room)
-    d0, d1 = 20.90, 21.90
-    p = Part()
+    glazed_front(col)
     wall = bpy.data.materials["Paint_White"]
-    p.box(wall, GLASS_X, d0, FRONT_Y[0], FRONT_Y[1], 0.0, SOFFIT)
-    p.box(wall, d1, INNER_X, FRONT_Y[0], FRONT_Y[1], 0.0, SOFFIT)
-    p.emit("CNC_FrontWall", col, Vector((0, 0, 0)))
-    sa["door_in_wall"](col, "CNC_Door_Main", "x", sum(FRONT_Y) / 2, FRONT_Y[1] - FRONT_Y[0], d0, d1, -1, 0, angle=88)
     # hallway: normal door in the colleague's 1.08 m opening (y 16.81-17.89), the wall completed round it, and the
     # knocked-down WC's old doorway (y 18.14-18.93) walled up
     hc, ht = sum(HALL_WALL) / 2, HALL_WALL[1] - HALL_WALL[0]
