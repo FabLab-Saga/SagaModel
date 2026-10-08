@@ -1,5 +1,5 @@
 """Exposed ceiling services: galvanised ducts, wire-mesh cable trays, sprinkler
-mains + heads, round industrial pendants. Re-runnable: clears and rebuilds the
+mains + heads (lighting lives in build_lighting.py). Re-runnable: clears and rebuilds the
 "Services" collection.
 
 Run inside Blender (e.g. via the MCP: exec(open(path).read())).
@@ -249,17 +249,16 @@ def build():
     galv = material("Galvanised", galvanised)
     mats = (material("Enamel_Black", enamel_black), material("Enamel_White", enamel_white),
             material("Bulb_Warm", bulb), material("Cable_Black", cable))
-    pts = pendant_points()                       # before adding services (rays must not hit them)
     duct(col, "Duct_Main_450", 25.9, 0.45, Y0, Y1, galv)
     duct(col, "Duct_Branch_300", 30.6, 0.30, 27.4, Y1, galv)
     cable_tray(col, "CableTray_A", 23.2, Y0, Y1, galv)
     cable_tray(col, "CableTray_B", 29.0, Y0, Y1, galv)
     for i, x in enumerate((22.0, 28.4, 31.7)):
         sprinkler(col, f"Sprinkler_{i + 1}", x, Y0, Y1, galv)
-    pendants(col, mats, pts)
-    return len(pts)
+    # pendants retired 2026-10-08 (user): lighting = linear LED arrays + spots in build_lighting.py
+    return 0
 
 
 if __name__ == "__main__" or True:
     n = build()
-    print("services built;", n, "pendants")
+    print("services built")

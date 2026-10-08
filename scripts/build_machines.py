@@ -539,7 +539,7 @@ def build():
              mdfdark=mat("MDF_Mark", "#8E6C45", 0.8), felt=mat("FilterFelt", "#ECEAE4", 0.95),
              bag=mat("ChipBag", "#C9CED1", 0.25, coat=0.5), hose=mat("Hose_Flex", "#3B3F43", 0.55))
 
-    # ---- placeholders out, ESE shelf boards back
+    # ---- placeholders out
     ph = ["Component_1046510", "Component_1046510.001", "PRSalpha 9660"]
     for o in bpy.data.objects["ROOT"].children:                       # shallow shelves along the SSW glass
         if o.name.startswith(("Component_1062473", "Component_1484326", "Component_1483885")):
@@ -547,10 +547,8 @@ def build():
             if pts and min(p.x for p in pts) > 31.0:
                 ph.append(o.name)
     hidden = set_hidden(ph)
-    for unit in ("Component_289785", "Component_289785.001", "Component_289785.002"):
-        for c in bpy.data.objects[unit].children_recursive:
-            if c.type == "MESH" and c.parent.name.startswith("Plywood") and [m.name for m in c.data.materials] != ["Material_1"]:
-                c.hide_render = c.hide_viewport = False
+    # (the colleague's ESE shelf units Component_289785* used to get their boards back here; the bank's back-wall
+    #  shelving now stands there, so they stay hidden - see cleanup_leftovers.py)
 
     def unit_on(part_dims, cx, cy, facing):
         w, d = part_dims

@@ -56,7 +56,8 @@ sc.cycles.use_denoising = True
 sc.render.resolution_x, sc.render.resolution_y, sc.render.resolution_percentage = 1920, 1080, 100
 sc.render.image_settings.file_format = "PNG"
 cut_hide = [bpy.data.objects["Ceiling_Slab"]] + list(bpy.data.collections["Services"].objects) + \
-           [o for o in bpy.data.collections["Signs"].objects if o.name.endswith("_Cables")]
+           [o for o in bpy.data.collections["Signs"].objects if o.name.endswith("_Cables")] + \
+           [o for o in bpy.data.collections["Lighting"].objects if o.type == "MESH"]    # fixtures (their light stays)
 ground = [bpy.data.objects[n] for n in ("Ground_Paving", "Ground_Grass", "Ceiling_SlabRing") if n in bpy.data.objects]
 base_exposure = sc.view_settings.exposure
 for name, cam in SHOTS:

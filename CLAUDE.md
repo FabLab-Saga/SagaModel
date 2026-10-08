@@ -30,7 +30,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - `SagaV2_import.blend` — raw import (regenerate with `scripts/import_glb.py`); never overwrite the work file.
 - `scripts/` — builders. Each rebuilds its own collection when exec'd inside Blender
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
-  `build_services` → `build_machines` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
+  `build_services` → `build_lighting` → `build_machines` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
   `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
   `build_cupboard` → `cleanup_leftovers` → `build_material_storage` → `build_hall_entrance` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
@@ -106,7 +106,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   back-face-corrected Fresnel gloss). Never a refractive/IOR>1 transmission shader on them (warps the view).
 - Raw concrete ceiling (`Concrete_Exposed` = Poly Haven concrete_floor_worn_001 + formwork joints; NOT
   concrete_slab_wall, whose bands read as timber), birch ply = Poly Haven plywood colour-corrected pale (hsv in apply_pbr),
-  galvanised services, round black enamel pendants, worn oak parquet.
+  galvanised services, worn oak parquet. LIGHTING (`build_lighting.py`): suspended black linear LED arrays
+  (bottom 2.95 m, rows dodge services/felt/boom) + angled track spots on mural, felt, nook, demo. NO pendants.
+  Scene exposure +0.8 EV (was +1.4 with the old pendants).
 
 ## Open items
 - On-site 360° photo for the window view → `refs/skybox/` (current HDRI is a CC0 stand-in).

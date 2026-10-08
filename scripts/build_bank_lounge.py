@@ -259,8 +259,8 @@ def nook(col, c, R=1.42, opening=math.radians(190), arc=math.radians(240)):
         char.name = "Sofa_Charcoal"
     mix = next((n for n in char.node_tree.nodes if n.type == "MIX"), None)
     if mix:
-        mix.inputs["B"].default_value = lin("#3E4144")
-        mix.inputs["Factor"].default_value = 0.78
+        mix.inputs["B"].default_value = lin("#2A2D30")
+        mix.inputs["Factor"].default_value = 0.9
     char.diffuse_color = lin("#3E4144")
     bsdf = next(n for n in char.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
     bsdf.inputs["Sheen Weight"].default_value = 0.3                     # white sheen washes out a dark fabric

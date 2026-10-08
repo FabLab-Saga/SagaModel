@@ -11,7 +11,8 @@ sc = bpy.context.scene
 res = (sc.render.resolution_x, sc.render.resolution_y, sc.cycles.samples)
 sc.render.resolution_x, sc.render.resolution_y, sc.cycles.samples = 960, 540, 12   # fast: denoiser does the rest
 cut = [bpy.data.objects["Ceiling_Slab"]] + list(bpy.data.collections["Services"].objects) + \
-      [o for o in bpy.data.collections["Signs"].objects if o.name.endswith("_Cables")]
+      [o for o in bpy.data.collections["Signs"].objects if o.name.endswith("_Cables")] + \
+      [o for o in bpy.data.collections["Lighting"].objects if o.type == "MESH"]    # fixtures (their light stays)
 ground = [bpy.data.objects[n] for n in ("Ground_Paving", "Ground_Grass", "Ceiling_SlabRing") if n in bpy.data.objects]
 base = sc.view_settings.exposure
 for c in CAMS:
