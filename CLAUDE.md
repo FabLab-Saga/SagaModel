@@ -3,8 +3,9 @@
 Authoritative project state as of 2026-10-08 late evening (MPDESKTOP; PLAN.md G1–G11 done; since then: hidden
 leftovers deleted, work tables, print-farm cabins, every listed machine modelled (MACHINES.md), on-call desk + Fab Lab
 TV, GULLVALLA lounge, back staff area (WC, Kaffistofa, store-room door, hallway glass door), CNC room rebuilt (glass
-front with dot manifestation, real-size ShopBot, upright board rack, loading door + windows)). Next: the animated
-walkthrough. `AGENTS.md` is a symlink to this file (Hermes/Codex/Claude Code all read it). Read this first; then
+front with dot manifestation, real-size ShopBot, upright board rack, loading door + windows); entrance moved to the
+corner bay per the city drawings + hall set; signs re-lettered; walkthrough v1 animatic). Now: the presentation video
+(see RENDER.md). This file is Claude's own file (Magnús): keep it current in every commit, no permission needed. `AGENTS.md` is a symlink to this file (Hermes/Codex/Claude Code all read it). Read this first; then
 `git log --oneline` for history, `LICENSES.md` for asset rules, `SETUP.md` for machine setup (partly written for the
 old laptop). Hermes session "Fab lab Blender" (`hermes --continue "Fab lab Blender"`) holds the 2026-10-08 work —
 this file is the summary of record.
@@ -53,7 +54,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `build_services` → `build_lighting` → `build_machines` → `build_print_farm` → `build_laser_room` → `build_bank_lounge` →
   `build_sofas` (ALWAYS after bank_lounge) → `build_craft_spine` → `build_worktables` → `build_life` (needs WorkTables) →
   `build_microelectronics` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
-  `build_material_storage` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_cnc_room` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
+  `build_material_storage` → `build_entrance_bay` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_cnc_room` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
   `add_cameras` → `purge_hidden`.
   Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
   exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
@@ -94,9 +95,18 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Scale verified: column grid 8.40 m = architects' elevation 8.398 m; width 14.99 m = OSM 15 m.
 - Heights from Reykjavík drawing archive (Hagatorg 1, 2024 set by Andrúm): floor K13.00, next floor
   K17.20, concrete soffit ≈ 3.93 m clear, glazing to 3.6 m, transom ~3.30.
-- Main entrance = door at y 35.11–36.21 on the SSW line. It opens onto the HOTEL'S MAIN HALL (inside Bændahöllin),
-  not the street: `Cam_HallEntrance` (was Cam_ExteriorEntrance) is an interior hall view; hall-side signage in
-  `build_hall_entrance.py` (fascia sign with the Fab Lab icon SVG, plaque, door vinyl). Sun: 22 Sep 15:30 UTC (az 215°, el 22°) so light
+- Main entrance (city drawings, Andrúm SAGA AT 20-10-02 ground-floor plan, approved 2026-06-30, USK26040333; research
+  in ~/Documents/AgentWork/saga-video/hall/HALL.md): the lab includes the CORNER BAY x 32.6–34.3, y 34.7–38.3 (the
+  colleague's model had it as outdoor paving + an entrance wall at x 32.63 that does not exist). The door is a single
+  EI2 30 fire door in the bay's SSW wall at x 34.24–34.44, opening y 36.54–37.47, hinged ESE, opens INTO the lab (held
+  open); fixed EI30 fire glass at y 35.04–36.30 beside it. It opens onto the university hall "háskóli 01-01" (same
+  floor level), NOT the street. `build_entrance_bay.py` builds bay + door wall (Cut_EntranceWall boolean) and the hall
+  SET for the film: glass façade along y 34.70 with an exterior double door (x 40.5–42.5), WC block x 37.0–40.1,
+  y 38.67–42.6 whose two doors face the door wall off a WC lobby (end wall y 42.45), check-in desk beyond it, cleaners'
+  cupboard on the door-wall side, round columns at x 44.8, stone floor, 600 acoustic ceiling at 3.10 (finishes are my
+  inference from lobby photos). Hall-side signage in `build_hall_entrance.py` (fascia sign, plaque, fire-glass vinyl).
+  The drawing also shows a lab escape door (pair, "ÚT") in the SSW glazing at y ~32.4–34.3 (behind the lounge pit; not
+  modelled) and labels the lounge/desk area "fjölnota kennslurými 110.8 m²". Sun: 22 Sep 15:30 UTC (az 215°, el 22°) so light
   reaches under the ~1.9 m upper-floor overhang. HDRI rotation aligned to the sun lamp.
 
 ## Zones (current layout, user-approved)
@@ -242,10 +252,17 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   3.05 x 2.31 m; one line in build_machines.py if it is the 96-60).
 - Stairwell location unknown (the room behind the staff room is electrical/storage, not stairs).
 - Glass manifestation dots run continuously across pane joints (real glass would restart per pane).
-- Brand sign typos in the source files: "VERKÆRI" (missing F), "ELECTRONCS".
+- Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which
+  re-letters them with Magnús's names (GEISLASKERI, ÞRÍVÍDDARPRENTARI, FRÆSIVÉL, RAFEINDAVERKSTÆÐI, TEXTÍLSVÆÐI,
+  VERKFÆRI; VÍNYLSKERI kept). Source PDFs unchanged.
+- Open from the drawings: the lab escape door in the SSW glazing (y ~32.4–34.3) where the lounge pit stands; whether
+  the "fjölnota kennslurými" label is the architects' current layout for the lounge/desk area.
 - Spine bays 0-1 (y 34.0-36.4) face the bank wall 5 cm away (closed boxes only; offer: shorten the spine).
 - Upper hotel floors not modelled → keep exterior shots tight.
-- Animated walkthrough (stills done on MPDESKTOP: RTX 4070 Ti SUPER, OptiX; ~10-25 s per 1080p still).
+- Presentation video: plan, script, brand rules, budget in RENDER.md. `build_walkthrough.py` (shot cameras on music
+  bars, one straight constant-speed move per shot, level cameras + lens shift), `render_walk_test.py` (animatic,
+  ~0.15 s/frame), `assemble_walk_test.py` (system python3; titles + music). Walkthrough timeline markers bind cameras:
+  peek/render_cams/render_finals remove markers with cameras first, else sc.camera is overridden.
 - Cameras Entrance/Lounge/SecretDoor still frame the old view; a dedicated entrance hero shot of the TV + desk
   would help the finals.
 - Spine has no camera on its workshop face (tool library); add one if it should be in the finals.
