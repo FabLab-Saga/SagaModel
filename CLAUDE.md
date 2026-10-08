@@ -32,7 +32,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
   `build_services` → `build_machines` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
   `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
-  `build_cupboard` → `cleanup_leftovers` → `build_material_storage` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
+  `build_cupboard` → `cleanup_leftovers` → `build_material_storage` → `build_hall_entrance` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
@@ -49,7 +49,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Scale verified: column grid 8.40 m = architects' elevation 8.398 m; width 14.99 m = OSM 15 m.
 - Heights from Reykjavík drawing archive (Hagatorg 1, 2024 set by Andrúm): floor K13.00, next floor
   K17.20, concrete soffit ≈ 3.93 m clear, glazing to 3.6 m, transom ~3.30.
-- Main entrance = SSW glass door at y 35.11–36.21. Sun: 22 Sep 15:30 UTC (az 215°, el 22°) so light
+- Main entrance = door at y 35.11–36.21 on the SSW line. It opens onto the HOTEL'S MAIN HALL (inside Bændahöllin),
+  not the street: `Cam_HallEntrance` (was Cam_ExteriorEntrance) is an interior hall view; hall-side signage in
+  `build_hall_entrance.py` (fascia sign with the Fab Lab icon SVG, plaque, door vinyl). Sun: 22 Sep 15:30 UTC (az 215°, el 22°) so light
   reaches under the ~1.9 m upper-floor overhang. HDRI rotation aligned to the sun lamp.
 
 ## Zones (current layout, user-approved)
@@ -112,4 +114,6 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Brand sign typos in the source files: "VERKÆRI" (missing F), "ELECTRONCS".
 - Spine project shelves past the moved bank wall face the wall (offer: shorten the spine).
 - Upper hotel floors not modelled → keep exterior shots tight.
+- CNC room's WNW end (y ≈15.08) has a 2.3 m unglazed opening (x 22.4–24.7) to outdoors in the colleague's
+  model — ask the user: loading door, glazing, or wall?
 - Finals + animated walkthrough on the powerful machine.

@@ -269,6 +269,32 @@ def glass_toolwall(m, col):
     hung.box(m["steel"], 1.42, 1.48, -0.004, -0.002, 1.02, 1.42)                        # try square blade
     hung.box(m["black"], 1.42, 1.62, -0.012, -0.002, 1.40, 1.44, bevel=0.002)           # square stock
     multimeter(hung, m, 1.68, 1.22)
+    # second row below the pliers: scissors, utility knives, calipers, coping saw, glue gun, files
+    for i, sx in enumerate((0.10, 0.18)):                                              # scissors
+        hung.box(m["steel"], sx - 0.004, sx + 0.004, -0.010, -0.006, 1.10, 1.21)
+        for dx in (-0.012, 0.012):
+            hung.cyl((m["red"], m["blue"])[i], (sx + dx, -0.012, 1.08), (sx + dx, -0.004, 1.08), 0.014, seg=14)
+    for i, sx in enumerate((0.27, 0.32)):                                              # utility knives
+        hung.box(m["yellow"], sx - 0.012, sx + 0.012, -0.020, -0.004, 1.04, 1.17, bevel=0.004)
+        hung.box(m["steel"], sx - 0.004, sx + 0.004, -0.014, -0.010, 1.17, 1.20)
+    hung.box(m["steel"], 0.40, 0.41, -0.008, -0.003, 1.03, 1.27)                        # calipers
+    hung.box(m["steel"], 0.38, 0.43, -0.009, -0.003, 1.24, 1.27)
+    hung.box(m["steel"], 0.38, 0.425, -0.010, -0.003, 1.18, 1.20)
+    for a, b in (((0.48, 1.06), (0.48, 1.24)), ((0.48, 1.24), (0.62, 1.24)), ((0.62, 1.24), (0.62, 1.06))):  # coping saw
+        hung.cyl(m["steel"], (a[0], -0.008, a[1]), (b[0], -0.008, b[1]), 0.004, seg=8)
+    hung.cyl(m["steel"], (0.48, -0.008, 1.07), (0.62, -0.008, 1.07), 0.0008, seg=6)
+    hung.cyl(m["black"], (0.48, -0.008, 1.06), (0.48, -0.008, 1.00), 0.012, seg=12)
+    hung.box(m["blue"], 0.66, 0.80, -0.035, -0.005, 1.17, 1.22, bevel=0.008)            # glue gun barrel
+    hung.box(m["blue"], 0.75, 0.79, -0.030, -0.010, 1.04, 1.18, bevel=0.006)            # grip
+    hung.cyl(m["steel"], (0.64, -0.02, 1.195), (0.66, -0.02, 1.195), 0.004, seg=8)
+    for i in range(3):                                                                  # files
+        fx = 0.84 + i * 0.03
+        hung.box(m["steel"], fx - 0.005, fx + 0.005, -0.006, -0.003, 1.00, 1.07)
+        hung.box(m["black"], fx - 0.007, fx + 0.007, -0.010, -0.002, 0.93, 1.00, bevel=0.002)
+    for i, tz in enumerate((1.50, 1.38, 1.26)):                                        # tape measures, right end
+        hung.cyl((m["yellow"], m["black"], m["yellow"])[i], (1.82, -0.042, tz), (1.82, -0.004, tz), 0.035, seg=24)
+    for i in range(7):                                                                  # allen key fan
+        hung.box(m["black"], 1.74 + i * 0.008, 1.745 + i * 0.008, -0.008, -0.003, 1.02, 1.08 + i * 0.012)
     # clamp rack: rail + 5 F-clamps hanging below the pegboard top edge
     hung.box(m["steel"], 0.10, 0.80, -0.03, 0.0, 1.57, 1.59)
     for i in range(5):
@@ -300,8 +326,8 @@ def glass_toolwall(m, col):
     on.cyl(m["steel"], (XB + 0.56, Y0 + 2.375, H + 0.05), (XB + 0.68, Y0 + 2.375, H + 0.05), 0.008, seg=10)
     toolbox(on, m, m["blue"], XB + 0.12, Y0 + 1.25, H, w=0.40, d=0.32, h=0.10)
     on.box(m["grey"], XB + 0.15, XB + 0.40, Y0 + 0.40, Y0 + 0.62, H, H + 0.03, bevel=0.003)
-    on.cyl(m["yellow"], (XB + 0.45, Y0 + 0.85, H + 0.13), (XB + 0.45, Y0 + 0.99, H + 0.13), 0.13, seg=32)   # cable reel
-    on.cyl(m["black"], (XB + 0.45, Y0 + 0.85, H + 0.13), (XB + 0.45, Y0 + 0.99, H + 0.13), 0.06, seg=24)
+    on.cyl(m["yellow"], (XB + 0.45, Y0 + 0.87, H + 0.085), (XB + 0.45, Y0 + 0.97, H + 0.085), 0.085, seg=32)   # cable reel
+    on.cyl(m["black"], (XB + 0.45, Y0 + 0.865, H + 0.085), (XB + 0.45, Y0 + 0.975, H + 0.085), 0.035, seg=24)
     on.emit("GlassTW_Counter", col, Vector((0, 0, 0)))
     # a stool at the counter
     craft["stool"](0.68).emit("GlassTW_Stool", col, Vector((XB + D + 0.10, Y0 + 1.6, 0.0)), 0.2)
@@ -438,6 +464,62 @@ def build():
 
 
 
+def whiteboard_schematic(b, ink, yf, col):
+    """555 LED blinker drawn in marker on the whiteboard (x 23.95-25.55, z 1.1-2.1), plus handwritten-ish text."""
+    def stroke(c, p0, p1, w=0.0035):
+        (x0, z0), (x1, z1) = p0, p1
+        L = math.hypot(x1 - x0, z1 - z0)
+        mtx = Matrix.Translation(((x0 + x1) / 2, yf - 0.0002, (z0 + z1) / 2)) @ Matrix.Rotation(-math.atan2(z1 - z0, x1 - x0), 4, "Y") \
+            @ Matrix.Diagonal((L + w, 0.0004, w, 1))
+        bmesh.ops.create_cube(b.bm(c), size=1.0, matrix=mtx)
+
+    def poly(c, pts):
+        for p0, p1 in zip(pts, pts[1:]):
+            stroke(c, p0, p1)
+
+    def zigzag(c, p0, p1, n=6, amp=0.012):
+        (x0, z0), (x1, z1) = p0, p1
+        dx, dz = (x1 - x0), (z1 - z0)
+        L = math.hypot(dx, dz)
+        nx, nz = -dz / L, dx / L
+        pts = [p0]
+        for k in range(1, n):
+            t = k / n
+            sgn = 1 if k % 2 else -1
+            pts.append((x0 + dx * t + nx * amp * sgn, z0 + dz * t + nz * amp * sgn))
+        pts.append(p1)
+        poly(c, pts)
+
+    blk, blue, red = ink[0], ink[1], ink[2]
+    poly(blk, [(24.10, 1.86), (25.35, 1.86)])                                     # VCC rail
+    poly(blk, [(24.10, 1.30), (25.35, 1.30)])                                     # GND rail
+    poly(blk, [(24.62, 1.42), (24.88, 1.42), (24.88, 1.76), (24.62, 1.76), (24.62, 1.42)])   # 555
+    poly(blk, [(24.75, 1.76), (24.75, 1.86)])                                     # pin 8 VCC
+    poly(blk, [(24.75, 1.42), (24.75, 1.30)])                                     # pin 1 GND
+    poly(blk, [(24.30, 1.86), (24.30, 1.80)]); zigzag(blk, (24.30, 1.80), (24.30, 1.70))   # R1
+    poly(blk, [(24.30, 1.70), (24.62, 1.70)])                                     # -> pin 7
+    zigzag(blk, (24.30, 1.70), (24.30, 1.58)); poly(blk, [(24.30, 1.58), (24.30, 1.50)])  # R2
+    poly(blk, [(24.30, 1.54), (24.62, 1.54)])                                     # -> pins 2/6
+    poly(blk, [(24.27, 1.50), (24.33, 1.50)]); poly(blk, [(24.27, 1.48), (24.33, 1.48)])  # C
+    poly(blk, [(24.30, 1.48), (24.30, 1.30)])
+    poly(blk, [(24.88, 1.62), (24.98, 1.62)]); zigzag(red, (24.98, 1.62), (25.12, 1.62))  # pin 3 -> R3
+    poly(red, [(25.12, 1.62), (25.20, 1.62), (25.20, 1.52)])
+    poly(red, [(25.16, 1.52), (25.24, 1.52), (25.20, 1.45), (25.16, 1.52)])       # LED
+    poly(red, [(25.16, 1.45), (25.24, 1.45)]); poly(red, [(25.20, 1.45), (25.20, 1.30)])
+    poly(red, [(25.26, 1.50), (25.30, 1.54)]); poly(red, [(25.27, 1.47), (25.31, 1.51)])  # light arrows
+    for t, (x, z), size, c in (("555 blinker", (24.06, 1.98), 0.075, blk), ("NE555", (24.66, 1.57), 0.035, blk),
+                               ("f = 1.44 / ((R1 + 2 R2) C)", (24.06, 1.14), 0.040, blue),
+                               ("Soldering 101 - tue 18:00", (24.98, 2.03), 0.030, blue), ("R1", (24.18, 1.75), 0.028, blk),
+                               ("R2", (24.18, 1.62), 0.028, blk), ("10uF", (24.36, 1.46), 0.025, blk), ("330", (25.02, 1.65), 0.025, red)):
+        cu = bpy.data.curves.new("WB_Text", "FONT")
+        cu.body, cu.size = t, size
+        cu.materials.append(c)
+        ob = bpy.data.objects.new("WB_Text", cu)
+        col.objects.link(ob)
+        ob.location = (x, yf - 0.0003, z)
+        ob.rotation_euler = (math.pi / 2, 0, 0)
+
+
 def electronics_commons(m, col):
     """Open floor between the micro bench and the bank wall (x 21.6-27.4, y 31.5-35.1):
     - on the bank wall (faces -y at y 34.32): a profile-framed board run: pin-up board with
@@ -472,13 +554,7 @@ def electronics_commons(m, col):
     # whiteboard x 23.85-25.65 with circuit sketches
     b.box(MAT["profile"], 23.83, 25.67, YW - 0.03, YW, 0.97, 2.23)
     b.box(wb, 23.86, 25.64, YW - 0.032, YW - 0.03, 1.00, 2.20)
-    for k in range(18):
-        c = ink[k % 3]
-        x0, z0 = rng.uniform(24.0, 25.4), rng.uniform(1.15, 2.05)
-        if k % 2:
-            b.box(c, x0, x0 + rng.uniform(0.08, 0.25), YW - 0.0322, YW - 0.032, z0, z0 + 0.004)
-        else:
-            b.box(c, x0, x0 + 0.004, YW - 0.0322, YW - 0.032, z0, z0 + rng.uniform(0.05, 0.15))
+    whiteboard_schematic(b, ink, YW - 0.032, col)
     b.box(MAT["profile"], 23.95, 25.55, YW - 0.08, YW - 0.03, 0.96, 0.98)          # marker tray
     for k, c in enumerate(ink):
         b.cyl(c, (24.1 + k * 0.08, YW - 0.06, 0.985), (24.17 + k * 0.08, YW - 0.06, 0.985), 0.008, seg=10)

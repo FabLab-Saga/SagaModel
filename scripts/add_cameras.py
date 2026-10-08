@@ -18,7 +18,7 @@ CAMS = [
     ("Cam_FeltDetail",    (22.40, 28.70, 1.70), (22.05, 29.75, 2.20), 30, 0.3, False, 4.0),
     ("Cam_MuralFront",    (27.00, 27.20, 1.60), (27.00, 21.84, 1.95), 22, 0.6, False, None),
     ("Cam_SewingDetail",  (22.10, 33.40, 1.35), (21.30, 32.70, 0.95), 35, 0.3, False, 2.8),
-    ("Cam_ExteriorEntrance", (36.1, 36.9, 1.55), (32.5, 35.4, 1.45), 28, -0.6, True, None),   # tight on the door: no roofline (upper floors not modelled)
+    ("Cam_HallEntrance",  (36.4, 37.0, 1.60), (32.5, 35.7, 1.95), 26, -0.6, True, None),   # from the hotel main hall (not outdoors)
 ]
 
 

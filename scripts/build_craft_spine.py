@@ -69,6 +69,8 @@ PLANT_SPOTS = []                                     # (placement, local x, loca
 COVERS = ["#2E3A4F", "#7A2E2A", "#C9B48A", "#3F5A45", "#1F1F1F", "#E8E2D2", "#8C6A3E", "#5B6E7F", "#A33B33",
           "#D9C7A3", "#304B6B", "#6B5B4B", "#B8A27A", "#43403B", "#9AA3A8", "#E03A3F", "#1245DE"]
 PAGES = mat("Book_Pages", "#EDE6D3", 0.8)
+SPINE_INK = [mat("Book_Foil_Gold", "#C9A35A", 0.3, metal=1.0), mat("Book_Label_Cream", "#EFE8D6", 0.6),
+             mat("Book_Ink_Black", "#141414", 0.5), mat("Book_Foil_Silver", "#C8CBCE", 0.3, metal=1.0)]
 
 
 def cover_mat(h):
@@ -78,11 +80,18 @@ def cover_mat(h):
 def book(part, x, y, z, t, h, d, tilt=0.0):
     """Hard-cover book on its tail, spine to the front; tilt leans it towards +x."""
     m = cover_mat(rng.choice(COVERS))
-    n0, p0 = len(part.bm(m).verts), len(part.bm(PAGES).verts)
+    marks = [(part.bm(mm), len(part.bm(mm).verts)) for mm in [m, PAGES] + SPINE_INK]
     part.box(m, x, x + t, y, y + d, z, z + h, bevel=0.0015)
     part.box(PAGES, x + 0.002, x + t - 0.002, y + 0.004, y + d + 0.0008, z + 0.003, z + h + 0.0008)
+    ink = rng.choice(SPINE_INK)                                          # spine: bands + title block
+    for zb in rng.sample((0.07, 0.11, 0.86, 0.90), rng.randint(1, 2)):
+        part.box(ink, x + 0.001, x + t - 0.001, y - 0.0006, y, z + h * zb, z + h * zb + 0.006)
+    if rng.random() < 0.6:
+        lo = rng.uniform(0.30, 0.45)
+        part.box(ink if rng.random() < 0.5 else SPINE_INK[1], x + 0.003, x + t - 0.003, y - 0.0006, y,
+                 z + h * lo, z + h * (lo + rng.uniform(0.18, 0.32)))
     if tilt:
-        for bmx, k in ((part.bm(m), n0), (part.bm(PAGES), p0)):
+        for bmx, k in marks:
             bmx.verts.ensure_lookup_table()
             for v in list(bmx.verts)[k:]:
                 v.co.x += (v.co.z - z) * math.tan(tilt)
