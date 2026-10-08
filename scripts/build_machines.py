@@ -514,7 +514,7 @@ def overlock(w=0.33, d=0.28, h=0.29):
     return p
 
 
-def shopbot(W=2.15, Lg=4.30):
+def shopbot(W=2.31, Lg=3.66):
     """ShopBot PRS Alpha 120 (60" x 120" table): black steel frame, MDF spoilboard, aluminium gantry."""
     p = Part()
     blk, alu, mdf = M["black"], M["alusatin"], M["mdf"]
@@ -1123,9 +1123,12 @@ def build():
 
     # ---- CNC room: ShopBot PRS Alpha 120 along the interior wall (x 24.15, 0.10 m gap), collector out by the far
     #      glass corner (user layout, 2026-10-07). Moved back to y 17.15-21.45 when the room's front wall became
-    #      flush with the mural wall (y 21.66, user 2026-10-08); control box under the PC station (build_cnc_room.py)
-    W, Lg = 2.15, 4.30
-    sb_loc = Vector((24.05 - W, 21.45 - Lg, 0.0))
+    #      flush with the mural wall (y 21.66, user 2026-10-08): x 21.74-24.05, y 17.90-21.56; control box under the
+    #      PC station (build_cnc_room.py)
+    # Real footprint of the PRSalpha 120-60 (ShopBot spec sheet: L 144" x W 91" x H 67" = 3.66 x 2.31 x 1.70 m;
+    # cut area 120" x 60"). Was 4.30 x 2.15 (wrong for any PRS size). The 96-60 would be 3.05 x 2.31.
+    W, Lg = 2.31, 3.66
+    sb_loc = Vector((24.05 - W, 21.56 - Lg, 0.0))
     shopbot(W, Lg).emit("ShopBot_PRSAlpha_120", col, sb_loc, 0.0)
     place(dust_collector(), "ACword_FT100", col, 21.50, 16.45, 0.0, 0.84, 0.50, "+y")
     place(control_box(), "ShopBot_Control", col, 24.62, 19.08, 0.0, 0.50, 0.30, "-y")

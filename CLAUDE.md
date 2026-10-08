@@ -109,16 +109,22 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   glass-to-glass hinges + pull bar, not chrome) by the NNE glass, x 20.90–21.90 (user). The colleague's glazed front
   (y 23.05) is cut away (`Cut_CNC_Front`/`Cut_CNC_Side`), the strip in front is main lab. The colleague's 1.08 x 2.49 m hallway door was invented (user): replaced by a normal
   Icelandic interior door (90 x 210, frame + casings, wall completed to the slab), the knocked-down WC's doorway next
-  to it walled up. ShopBot PRS Alpha 120 kept along the INTERIOR wall (my call; the room is 3.34 m wide, the
-  machine 2.15 x 4.30), at x 21.90–24.05, y 17.15–21.45 with a 1.1 m aisle on the glass side; ACword FT100 in the
-  far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`). Operator corner in the ex-WC bay:
+  to it walled up. ShopBot PRS Alpha 120-60 at its REAL size 3.66 x 2.31 x 1.70 (spec sheet; was 4.30 x 2.15) kept
+  along the INTERIOR wall (my call; room 3.34 m wide), at x 21.74–24.05, y 17.90–21.56, ~0.9 m aisle on the glass
+  side; ACword FT100 in the far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`). Operator
+  corner in the ex-WC bay:
   standing PC station (control box under it, e-stop pendant) + tool bench with drawers and pegboard (bits, wrenches,
   ear defenders, glasses). Shop vac + extinguisher by the WNW wall. (Clearance ignored per user.) No SRM-20s here.
   WNW end wall (y 14.87–15.08): the 2.32 m gap (x 22.40–24.72) is a LOADING DOOR - classic double door, two
-  swinging leaves (user); painted-steel leaves 2 x 1.10 x 2.40, opening outward, wall closed above (my details).
+  swinging leaves (user); painted-steel leaves 2 x 1.10 x 2.40, opening outward (my details). Glass WINDOWS either
+  side of it and ABOVE the door frame (user); façade-style dark frames, glazing to 3.60. Outside: concrete pavers
+  (the colleague's parquet ran on outdoors).
   `Cam_CNC` (from the main door), `Cam_CNCRoom` (from the operator corner).
-  **Material storage** (`build_material_storage.py`): rolling sheet cart (ply/MDF/acrylic) at the ShopBot's
-  loading end (x 21.95–24.50, y 15.75–17.05), offcut slot rack + cantilever rod rack on the side wall x 25.74.
+  **Material storage** (`build_material_storage.py`): NO big sheet table; stored VERTICALLY (user, option A):
+  upright board rack (2440x1220 boards on their short edge in 10 slots, slide out sideways) in the ex-WC corner against
+  the hallway wall (x 24.40–25.70, y 15.15–16.70), offcut boxes/foam on its deck at 2.60 m, rods/profile on cantilever
+  arms at 2.95/3.30 m; low offcut cart in the window corner; step stool. Loading door -> loading zone -> ShopBot bed in
+  a straight line.
 - **Microelectronics** (ESE side of the tool-wall row): tool walls refitted with drawer cabinets, tool
   rails, wire spools, multimeters; bench with **2× Roland SRM-20 (the only machines here)**, soldering
   stations + fume extractors, scope/PSU. Component storage with DRAWER units on the NNE glass

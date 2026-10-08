@@ -23,7 +23,7 @@ SPOT_W = 160.0
 
 # (x, y0, y1): row axis and extent (fixture centres are fitted inside)
 ROWS = [
-    (23.65, 15.6, 21.4), (25.00, 15.6, 19.1),                       # CNC room (clear of the dust boom) + ex-WC bay
+    (23.65, 15.6, 21.4), (25.00, 17.0, 19.1),                       # CNC room (clear of the dust boom) + ex-WC bay (not over the board rack)
     (22.30, 22.3, 29.2), (24.50, 22.3, 29.2), (26.80, 22.2, 29.2), (28.55, 22.2, 29.2),   # workshop / benches
     (22.30, 30.5, 34.1), (24.50, 30.5, 34.1), (26.80, 30.5, 34.1),                        # electronics commons
     (22.30, 34.6, 38.0), (24.50, 34.6, 38.0), (26.80, 34.6, 38.0),                        # equipment bank

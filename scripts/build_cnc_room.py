@@ -18,7 +18,8 @@ the far glass corner; operator corner in the ex-WC bay: ShopBot PC station (stan
 the WC partition + tool bench with drawers and a pegboard (bits, collets, wrenches, hearing/eye protection) on the
 hallway wall; shop vac by the collector, extinguisher on the WNW wall.
 - WNW end wall: the 2.3 m gap is a LOADING DOOR, classic double door with two swinging leaves (user); steel leaves,
-  opening outward, wall closed above (my details).
+  opening outward (my details); glass windows either side and above the door frame (user), façade-style frames.
+- Outside the end wall the colleague's parquet ran on to y 12.81: concrete pavers there now.
 """
 import math
 
@@ -213,26 +214,70 @@ def operator_corner(col, M):
 
 def utilities(col, M):
     p = Part()
-    # shop vac next to the collector (glass corner) - cleaning the bed between jobs
-    vx, vy = 21.30, 15.45
+    # shop vac next to the collector - cleaning the bed between jobs
+    vx, vy = 22.20, 16.45
     p.cyl(mat("ShopVac_Green", "#2E7D4F", 0.45), (vx, vy, 0.06), (vx, vy, 0.52), 0.19, seg=32)
     p.cyl(M["black"], (vx, vy, 0.52), (vx, vy, 0.62), 0.17, seg=32)
     for a in range(4):
         t = a * math.pi / 2 + 0.4
         p.cyl(M["black"], (vx + 0.17 * math.cos(t), vy + 0.17 * math.sin(t), 0.0),
               (vx + 0.17 * math.cos(t), vy + 0.17 * math.sin(t), 0.06), 0.025, seg=10)
-    # CO2 extinguisher on the WNW wall
-    ex, ey = 22.15, 15.17
+    # CO2 extinguisher on the board rack's end post, by the hallway door
+    ex, ey = 24.30, 16.60
+    p.box(M["black"], ex + 0.06, ex + 0.10, ey - 0.03, ey + 0.03, 0.80, 0.95)                 # bracket
     p.cyl(mat("Extinguisher_Red", "#C62828", 0.35, coat=0.4), (ex, ey, 0.30), (ex, ey, 0.92), 0.075, seg=24)
     p.cyl(M["black"], (ex, ey, 0.92), (ex, ey, 1.02), 0.02, seg=12)
-    p.cyl(M["black"], (ex, ey - 0.05, 0.98), (ex + 0.12, ey - 0.10, 0.98), 0.012, seg=8)
+    p.cyl(M["black"], (ex, ey - 0.05, 0.98), (ex - 0.12, ey - 0.10, 0.98), 0.012, seg=8)
     p.emit("CNC_Utilities", col, Vector((0, 0, 0)))
+
+
+WIN_TOP = 3.60                                                       # glazing height (as the façades)
+
+
+def end_windows(col):
+    """WNW end wall (user): glass windows either side of the loading door and above its frame. Same dark aluminium
+    window frames and thin glass as the façades: floor-to-3.60 panes with a transom at the door-head line (2.46),
+    a glazed fanlight over the door; the colleague's wall either side is cut away (Cut_CNC_WinL / _WinR)."""
+    n0, n1 = 14.868, 15.075
+    yc = (n0 + n1) / 2
+    fr, gl = bpy.data.materials["Alu_Frame_Dark"], bpy.data.materials["Glass_Clear"]
+    cutter("Cut_CNC_WinL", 20.86, 22.397, n0 - 0.02, n1 + 0.02, -0.05, WIN_TOP)
+    cutter("Cut_CNC_WinR", 24.721, 25.742, n0 - 0.02, n1 + 0.02, -0.05, WIN_TOP)
+    p, g = Part(), Part()
+    F, TR = 0.06, 2.40
+    for xa, xb in ((20.80, 22.397), (24.721, 25.743)):
+        p.box(fr, xa, xa + F, yc - 0.035, yc + 0.035, 0.0, WIN_TOP)            # jambs
+        p.box(fr, xb - F, xb, yc - 0.035, yc + 0.035, 0.0, WIN_TOP)
+        p.box(fr, xa, xb, yc - 0.035, yc + 0.035, 0.0, F)                      # sill
+        p.box(fr, xa, xb, yc - 0.035, yc + 0.035, TR, TR + F)                  # transom (door-head line)
+        p.box(fr, xa, xb, yc - 0.035, yc + 0.035, WIN_TOP - F, WIN_TOP)        # head
+        p.box(bpy.data.materials["Paint_White"], xa, xb, n0, n1, WIN_TOP, SOFFIT)   # wall above stays
+        g.box(gl, xa + F, xb - F, yc - 0.0005, yc + 0.0005, F, TR)
+        g.box(gl, xa + F, xb - F, yc - 0.0005, yc + 0.0005, TR + F, WIN_TOP - F)
+    a0, a1 = 22.397, 24.721                                          # fanlight over the door frame
+    mid = (a0 + a1) / 2
+    p.box(fr, a0, a1, yc - 0.035, yc + 0.035, WIN_TOP - F, WIN_TOP)
+    p.box(fr, mid - F / 2, mid + F / 2, yc - 0.035, yc + 0.035, TR + F, WIN_TOP)
+    for xa, xb in ((a0 + F, mid - F / 2), (mid + F / 2, a1 - F)):
+        g.box(gl, xa, xb, yc - 0.0005, yc + 0.0005, TR + F, WIN_TOP - F)
+    p.emit("CNC_EndWindows_Frame", col, Vector((0, 0, 0)))
+    g.emit("CNC_EndWindows_Glass", col, Vector((0, 0, 0)))
+
+
+def exterior_paving(col):
+    """The colleague's parquet floor runs on outside the WNW end of the building (to y 12.81): cover the outdoor strip
+    with concrete pavers (Ground_Pavers, Poly Haven concrete_pavers, CC0), stepped like the building line."""
+    pav = bpy.data.materials["Ground_Pavers"]
+    p = Part()
+    p.box(pav, 20.74, 29.25, 12.81, 14.862, 0.0, 0.004)
+    p.box(pav, 29.25, 32.59, 12.81, 13.10, 0.0, 0.004)
+    p.emit("Exterior_Paving_WNW", col, Vector((0, 0, 0)))
 
 
 def loading_door(col, M):
     """WNW end wall (y 14.868-15.075): the colleague's 2.32 m full-height gap (x 22.397-24.721) is a LOADING DOOR - a
     classic double door, two swinging leaves (user). My details: painted-steel leaves 2 x 1.10 x 2.40 m in a steel
-    frame, wall closed above up to the slab, opening OUTWARD (exterior door; the sheet cart stands 0.7 m inside),
+    frame, glazed fanlight above (end_windows), opening OUTWARD (exterior door),
     fixed leaf with flush bolts, active leaf with a lever handle + lock, drawn ajar so the door reads as a door."""
     a0, a1, n0, n1 = 22.397, 24.721, 14.868, 15.075
     H, FW = 2.40, 0.06
@@ -241,7 +286,7 @@ def loading_door(col, M):
     frame = mat("Door_Frame_Grey", "#8A8F93", 0.4, metal=0.4)
     alu = mat("Alu_Brushed_Door", "#C8CBCE", 0.32, metal=1.0)
     p = Part()
-    p.box(wall, a0, a1, n0, n1, H + FW, SOFFIT)                      # wall above the door
+    p.box(wall, a0, a1, n0, n1, WIN_TOP, SOFFIT)                     # wall above the glazing
     p.box(frame, a0, a0 + FW, n0 - 0.005, n1 + 0.005, 0.0, H + FW)  # frame
     p.box(frame, a1 - FW, a1, n0 - 0.005, n1 + 0.005, 0.0, H + FW)
     p.box(frame, a0, a1, n0 - 0.005, n1 + 0.005, H, H + FW)
@@ -279,6 +324,8 @@ def build():
     operator_corner(col, M)
     utilities(col, M)
     loading_door(col, M)
+    end_windows(col)
+    exterior_paving(col)
     print("CNC room built,", n, "colleague parts deleted,", len(col.objects), "objects")
 
 
