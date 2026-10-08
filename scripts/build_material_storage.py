@@ -1,7 +1,7 @@
 """Material storage in the CNC room, around the ShopBot's loading end. Re-runnable (collection "MaterialStorage").
 
 - Sheet cart: rolling 40x40 profile cart for flat 1220x2440 stock (birch ply, MDF, acrylic) right in front of
-  the ShopBot bed end (y 18.45), so sheets slide straight onto the bed. Top = breakdown surface.
+  the ShopBot bed end (y 17.15), so sheets slide straight onto the bed. Top = breakdown surface.
 - Offcut rack: vertical slots (20x20 dividers) against the side wall (x 25.74, y 15.2-16.7, short of the door
   at y 16.8), offcuts and half sheets standing on edge.
 - Rod rack: two 40x40 wall posts with cantilever arms above the offcut rack: aluminium profile, threaded rod,
@@ -39,7 +39,7 @@ def stack(p, x0, y0, z, w, d, layers):
     return z
 
 
-def sheet_cart(m, col, x0=22.35, y0=16.95):
+def sheet_cart(m, col, x0=21.95, y0=15.75):
     L, D, H = 2.55, 1.30, 0.80
     part, _ = lib["table_unit"](L, D, H, [0.0, L / 2 - 0.02, L - 0.04], lower=(0.20, 0.50), feet_h=0.11)
     loc, rot = lib["placement"](x0 + L / 2, y0 + D / 2, L, D, "+y")

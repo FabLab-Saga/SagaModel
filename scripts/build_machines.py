@@ -1121,13 +1121,14 @@ def build():
     # ---- print farm: build_print_farm.py (run it after this script)
     k = 0
 
-    # ---- CNC room: ShopBot PRS Alpha 120 against the interior wall (x 24.15), collector out by the far glass
-    #      corner, control box on the glass side (user layout, 2026-10-07)
+    # ---- CNC room: ShopBot PRS Alpha 120 along the interior wall (x 24.15, 0.10 m gap), collector out by the far
+    #      glass corner (user layout, 2026-10-07). Moved back to y 17.15-21.45 when the room's front wall became
+    #      flush with the mural wall (y 21.66, user 2026-10-08); control box under the PC station (build_cnc_room.py)
     W, Lg = 2.15, 4.30
-    sb_loc = Vector((24.13 - W, 22.75 - Lg, 0.0))
+    sb_loc = Vector((24.05 - W, 21.45 - Lg, 0.0))
     shopbot(W, Lg).emit("ShopBot_PRSAlpha_120", col, sb_loc, 0.0)
     place(dust_collector(), "ACword_FT100", col, 21.50, 16.45, 0.0, 0.84, 0.50, "+y")
-    place(control_box(), "ShopBot_Control", col, 21.17, 21.95, 0.0, 0.50, 0.30, "+x")
+    place(control_box(), "ShopBot_Control", col, 24.62, 19.08, 0.0, 0.50, 0.30, "-y")
     # dust extraction: brush skirt on the spindle, ribbed hose up to a ceiling-hung swing boom (40x40 profile on
     # a drop rod by the collector), along the boom in rings, spring balancer at the boom end, down to the inlet
     gy = sb_loc.y + Lg * 0.42

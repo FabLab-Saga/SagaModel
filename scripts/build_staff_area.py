@@ -213,6 +213,52 @@ def door(col, name, hinge, width, opening_dir, angle_deg, h=2.10, t=0.04, plaque
     return root
 
 
+def door_in_wall(col, name, along, wall_c, wall_t, a0, a1, swing, hinge_end, angle=80.0, H=2.12, leaf=0.90):
+    """Standard Icelandic interior door (90 cm leaf, 2.1 m) set properly into a colleague's full-height opening:
+    the rough opening a0..a1 is narrowed to leaf + frame with wall infill (centred), the wall is closed above the
+    frame head up to the slab, white painted frame + casings both faces, birch-veneer leaf drawn open by `angle`.
+    along = 'y' (wall runs along y at x = wall_c) or 'x' (runs along x at y = wall_c); swing = +1/-1 = side of the
+    wall the leaf opens into (along the wall normal); hinge_end = 0 (hinge at the a0 jamb) or 1 (a1 jamb)."""
+    JW, CW, CT = 0.045, 0.07, 0.012                                   # jamb, casing width, casing thickness
+    W_o = leaf + 2 * JW + 0.006
+    c = (a0 + a1) / 2
+    o0, o1 = (c - W_o / 2, c + W_o / 2) if a1 - a0 > W_o + 0.005 else (a0, a1)
+    n0, n1 = wall_c - wall_t / 2, wall_c + wall_t / 2
+
+    def bx(p, m, A0, A1, N0, N1, z0, z1):
+        if along == "y":
+            p.box(m, N0, N1, A0, A1, z0, z1)
+        else:
+            p.box(m, A0, A1, N0, N1, z0, z1)
+
+    wall = bpy.data.materials["Paint_White"]
+    trim = bpy.data.materials["Paint_White_Gloss"]
+    p = Part()
+    if o0 > a0 + 0.001:
+        bx(p, wall, a0, o0, n0, n1, 0.0, SOFFIT)
+    if o1 < a1 - 0.001:
+        bx(p, wall, o1, a1, n0, n1, 0.0, SOFFIT)
+    bx(p, wall, o0, o1, n0, n1, H, SOFFIT)                              # wall above the door, up to the slab
+    bx(p, trim, o0, o0 + JW, n0 - 0.005, n1 + 0.005, 0.0, H)           # jambs + head
+    bx(p, trim, o1 - JW, o1, n0 - 0.005, n1 + 0.005, 0.0, H)
+    bx(p, trim, o0, o1, n0 - 0.005, n1 + 0.005, H - JW, H)
+    for N0, N1 in ((n0 - CT, n0), (n1, n1 + CT)):                      # casings on both faces
+        bx(p, trim, o0 - CW + JW, o0 + JW, N0, N1, 0.0, H + CW - JW)
+        bx(p, trim, o1 - JW, o1 + CW - JW, N0, N1, 0.0, H + CW - JW)
+        bx(p, trim, o0 - CW + JW, o1 + CW - JW, N0, N1, H - JW, H + CW - JW)
+    p.emit(f"{name}_Frame", col, Vector((0, 0, 0)))
+    ha = o0 + JW + 0.003 if hinge_end == 0 else o1 - JW - 0.003
+    hn = wall_c + swing * (wall_t / 2 - 0.025)
+    d0 = (1.0 if hinge_end == 0 else -1.0)                            # closed leaf runs from the hinge along +-a
+    if along == "y":
+        hinge, dvec, nvec = (hn, ha), (0.0, d0), (float(swing), 0.0)
+    else:
+        hinge, dvec, nvec = (ha, hn), (d0, 0.0), (0.0, float(swing))
+    sgn = 1.0 if dvec[0] * nvec[1] - dvec[1] * nvec[0] > 0 else -1.0
+    door(col, name, hinge, W_o - 2 * JW - 0.006, dvec, sgn * angle, h=H - JW - 0.006)
+    return o0, o1
+
+
 def wc(col, M):
     x0, x1, y0, y1 = WC["x0"], WC["x1"], WC["y0"], WC["y1"]
     d0, d1 = WC["door"]
@@ -278,10 +324,10 @@ def wc(col, M):
     for k in range(5):
         p.box(M["black"], x1 - 0.37, x1 - 0.23, y1 - 0.036, y1 - 0.034, 2.505 + k * 0.022, 2.512 + k * 0.022)
     p.emit("WC_Accessories", col, Vector((0, 0, 0)))
-    # door: hinged at the CNC end of the opening, opens inward, drawn ajar so the room reads from the hallway
-    door(col, "WC_Door", (x1, d0 + 0.02), (d1 - d0) - 0.06, (0, 1), 62)
-    # "WC" plaque on the hallway side
-    plaque(col, "WC", "WC", (HALL_X[0], d1 + 0.14, 1.55), (1, 0))
+    # standard 90 cm door in a frame, wall closed above it (the colleague's opening ran to the slab); hinged at the
+    # CNC end, opens inward, drawn ajar so the room reads from the hallway
+    door_in_wall(col, "WC_Door", "y", 25.822, 0.168, d0, d1, -1, 0, angle=62)
+    plaque(col, "WC", "WC", (HALL_X[0] + 0.012, d1 + 0.20, 1.55), (1, 0))
 
 
 def plaque(col, name, text, pos, normal, w=0.18, h=0.18, size=0.08):
@@ -548,7 +594,7 @@ def staff_room(col, M):
     p.emit("Staff_Tote", col, Vector((0, 0, 0)))
     # door from the hallway: hinged at the far (y 21.35) jamb, opens into the bay, drawn open
     d0, d1 = ST["door"]
-    door(col, "Staff_Door", (X0 - 0.02, d1 - 0.02), (d1 - d0) - 0.06, (0, -1), 80)
+    door_in_wall(col, "Staff_Door", "y", 27.62, 0.22, d0, d1, +1, 1, angle=80)
     plaque(col, "Kaffistofa", "KAFFISTOFA\nstarfsfólk", (HALL_X[1], d0 - 0.24, 1.55), (-1, 0), w=0.30, h=0.14, size=0.042)
 
 

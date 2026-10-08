@@ -20,7 +20,7 @@ FACE = {"-x": -math.pi / 2, "+x": math.pi / 2, "-y": 0.0, "+y": math.pi}
 SIGNS = [
     ("Sign_3DPrentari", "3d_prentari", (28.76, 23.63, 2.42 + 0.20), "-x", False),     # on the print-farm top frame
     ("Sign_Laserskeri", "laser", (29.30, 26.34, 2.60), "-x", True),                   # hung at the laser-room door
-    ("Sign_Fraesivel", "fraesi_vel", (23.05, 23.16, 2.55), "+y", False),               # above the CNC-room window
+    ("Sign_Fraesivel", "fraesi_vel", (21.40, 21.836, 2.48), "+y", False),              # above the CNC-room door
     ("Sign_Rafeinda", "rafeinda", (24.11, 29.96, 1.92), "+y", False),                 # microelectronics tool wall
     ("Sign_Verkfaeri", "verkfaeri", (20.95, 24.25, 1.93), "+x", True),                # hand-tool wall on the NNE glass
     ("Sign_Vinylskeri", "vinylskeri", (21.30, 27.75, 2.45), "+x", True),              # over the vinyl stands + cutter counter

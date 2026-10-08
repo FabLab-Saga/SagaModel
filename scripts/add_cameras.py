@@ -11,7 +11,8 @@ CAMS = [
     ("Cam_HighCorner",    (21.3, 23.6, 3.45), (28.5, 35.0, 0.2), 16, 0.3, False, None),
     ("Cam_BenchDetail",   (24.95, 27.55, 1.25), (23.90, 26.10, 0.80), 35, 0.4, False, 2.8),
     ("Cam_ShopBot",       (23.55, 22.55, 1.75), (21.9, 18.9, 0.9), 20, 0.2, False, None),
-    ("Cam_CNCThroughGlass", (25.2, 25.6, 1.6), (22.6, 20.4, 1.1), 24, 0.3, False, None),
+    ("Cam_CNC",           (21.30, 21.35, 1.65), (23.40, 16.60, 0.90), 18, 0.3, False, None),   # CNC room from the main door
+    ("Cam_CNCRoom",       (25.05, 17.30, 1.65), (21.90, 20.90, 0.95), 18, 0.2, False, None),   # CNC room from the operator corner
     ("Cam_LaserDetail",   (31.20, 21.30, 1.30), (32.20, 20.85, 0.85), 30, -0.2, False, 4.0),
     ("Cam_LoungeLow",     (29.20, 31.70, 1.10), (32.40, 31.70, 0.55), 24, 0.1, False, None),   # down the pit axis, sofas left/right
     ("Cam_StaffRoom",     (28.50, 19.35, 1.60), (32.00, 18.45, 0.90), 18, 0.0, False, None),   # staff room from the entry bay

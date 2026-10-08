@@ -50,13 +50,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `build_services` → `build_lighting` → `build_machines` → `build_print_farm` → `build_laser_room` → `build_bank_lounge` →
   `build_sofas` (ALWAYS after bank_lounge) → `build_craft_spine` → `build_worktables` → `build_life` (needs WorkTables) →
   `build_microelectronics` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
-  `build_material_storage` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
+  `build_material_storage` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_cnc_room` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
   `add_cameras` → `purge_hidden`.
   Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
   exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
   (hides colleague leftovers), `build_material_storage` (CNC room stock), `build_hall_entrance` (hall signage),
   `fix_glass` (thin-glass shader), `build_worktables` (2x2 work tables + chairs), `build_print_farm` (printer wall with
-  cabins), `build_welcome` (on-call desk + Fab Lab TV), `build_staff_area` (back WC, staff room, `Cut_WC2` boolean on ROOT.geo0 = the demolished second WC), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
+  cabins), `build_welcome` (on-call desk + Fab Lab TV), `build_staff_area` (back WC, staff room, `Cut_WC2` boolean on ROOT.geo0 = the demolished second WC; its `door_in_wall()` sets normal doors into colleague openings), `build_cnc_room` (CNC walls/doors + operator corner), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
   handheld scanner, red clam press, LOKLiK, EasyPress, Mug Press, BEKANT cart) are functions in build_machines.py; zone builders place them.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
@@ -103,18 +103,26 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   7 Prusa MK3S+ (user decision), EACH IN ITS OWN CABIN: birch sides/back, clear acrylic door hinged on the left post
   (bar handle, magnet catch), LED strip + power strip inside; one door shown open. Open cells: 3x Creality CR-200B
   (top row), Bambu P2S + Flashforge AD5M Pro (bottom row; exact Flashforge model doesn't matter); 3 doored dry cells.
-- **CNC room**: ShopBot PRS Alpha 120 against the INTERIOR wall; ACword FT100 dust collector out by the
-  far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`), brush skirt on the spindle.
-  (Clearance ignored per user.) No SRM-20s here.
+- **CNC room** (`build_cnc_room.py`, collection CNCRoom; machine models in build_machines.py): its wall to the main
+  room is FLUSH WITH THE MURAL WALL (y 21.66–21.82), solid, NO glass/window (user); the colleague's glazed front
+  (y 23.05) is cut away (`Cut_CNC_Front`/`Cut_CNC_Side`), the strip in front is main lab. Main door (90 cm) by the
+  NNE glass (x 20.90–21.90). The colleague's 1.08 x 2.49 m hallway door was invented (user): replaced by a normal
+  Icelandic interior door (90 x 210, frame + casings, wall completed to the slab), the knocked-down WC's doorway next
+  to it walled up. ShopBot PRS Alpha 120 kept along the INTERIOR wall (my call; the room is 3.34 m wide, the
+  machine 2.15 x 4.30), at x 21.90–24.05, y 17.15–21.45 with a 1.1 m aisle on the glass side; ACword FT100 in the
+  far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`). Operator corner in the ex-WC bay:
+  standing PC station (control box under it, e-stop pendant) + tool bench with drawers and pegboard (bits, wrenches,
+  ear defenders, glasses). Shop vac + extinguisher by the WNW wall. (Clearance ignored per user.) No SRM-20s here.
+  `Cam_CNC` (from the main door), `Cam_CNCRoom` (from the operator corner).
   **Material storage** (`build_material_storage.py`): rolling sheet cart (ply/MDF/acrylic) at the ShopBot's
-  loading end (x 22.35–24.90, y 16.95–18.25), offcut slot rack + cantilever rod rack on the side wall x 25.74.
+  loading end (x 21.95–24.50, y 15.75–17.05), offcut slot rack + cantilever rod rack on the side wall x 25.74.
 - **Microelectronics** (ESE side of the tool-wall row): tool walls refitted with drawer cabinets, tool
   rails, wire spools, multimeters; bench with **2× Roland SRM-20 (the only machines here)**, soldering
   stations + fume extractors, scope/PSU. Component storage with DRAWER units on the NNE glass
   (y 30.3–34.1). Electronics commons on the bank wall: pin-up board, whiteboard, cable pegboard, kit
   shelf, 3.2 m teaching table + 6 chairs.
-- **Hand-tool wall** on the NNE glass (y 24.06–26.46; keeps ≥1.0 m clear in front of the CNC-room door at
-  x 21.0–21.9, y 23.04): pegboard + shelves + counter + tool chest.
+- **Hand-tool wall** on the NNE glass (y 24.06–26.46; starts ≥1.0 m past the old CNC-room door line y 23.04;
+  the CNC door is now at y 21.66): pegboard + shelves + counter + tool chest.
   Rule: along glass = varied tool wall + storage WITH A TABLE BELOW, not plain shelving.
 - **Felt wall**: Flöff-style recycled-textile felt panels (manual orange/green/blue) on the WNW (bench)
   side of the tool walls; arched tops on the manual's 6x6 grid. NEVER a single raised rounded peak
