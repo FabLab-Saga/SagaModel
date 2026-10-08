@@ -32,7 +32,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
   `build_services` → `build_machines` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
   `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
-  `build_cupboard` → `cleanup_leftovers` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
+  `build_cupboard` → `cleanup_leftovers` → `build_material_storage` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
@@ -60,6 +60,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Print farm** outside the laser room: profile shelving, 12 Prusa MK3S+ (0.58 m shelf pitch), Bambu P2S.
 - **CNC room**: ShopBot PRS Alpha 120 against the INTERIOR wall; ACword FT100 dust collector out by the
   far glass corner; flexible hose overhead. (Clearance ignored per user.) No SRM-20s here.
+  **Material storage** (`build_material_storage.py`): rolling sheet cart (ply/MDF/acrylic) at the ShopBot's
+  loading end (x 22.35–24.90, y 16.95–18.25), offcut slot rack + cantilever rod rack on the side wall x 25.74.
 - **Microelectronics** (ESE side of the tool-wall row): tool walls refitted with drawer cabinets, tool
   rails, wire spools, multimeters; bench with **2× Roland SRM-20 (the only machines here)**, soldering
   stations + fume extractors, scope/PSU. Component storage with DRAWER units on the NNE glass
