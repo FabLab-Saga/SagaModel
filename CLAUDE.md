@@ -91,6 +91,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   birch-fin relief sculpture facing the entrance (y 36.62–37.58). Standing desk = a niche/gap in the
   back-wall shelving (no chairs). Nothing from the bank accessible outside it. Shelf-high (2.42 m) birch privacy
   backs behind the shelving along the NNE glass and the ESE back wall (`Bank_PrivacyBacks`): no looking in.
+  Packing table (`Bank_PackingTable`, 3.0x0.70 m, 0.92 m standing, no stools) centred at (24.50, 36.275). RULE: keep
+  >=1.1 m free in front of every shelf run (lifting a huge box off a bottom shelf) and >=1.2 m by the secret door.
 - **Mural-wall cupboard** (`build_cupboard.py`, x 24.32–25.70 against the mural wall): replaced the
   colleague's sink (hidden). Low 40x40 profile cupboard, birch top 0.905 m, door bay + 3 drawers.
 - Accent wall: generated brand mural (`scripts/mural.py`) on the partition by the small rooms; red arch

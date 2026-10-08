@@ -391,6 +391,26 @@ def build():
     loc_c, rot_c = lib["placement"](21.05 + 0.30, 35.66 + Lc / 2, Lc, 0.60, "+x")
     part.emit("Bank_C_Shelving", bank, loc_c, rot_c)
     fill_unit(slots_c, lv_c, H, 0.60).emit("Bank_C_Boxes", bank, loc_c, rot_c)
+    # packing table in the middle: standing height, no stools. Clear floor between shelf fronts is
+    # x 21.64-27.49, y 34.81-37.74 (2.93 m). Sized so >= 1.1 m stays free in front of every shelf run (a large
+    # adult crouching behind a huge box pulled off a bottom shelf: box ~0.6 m + person ~0.5 m) and 1.2 m by the
+    # secret door: 3.0 x 0.70 m centred at (24.50, 36.275) -> 1.12 m to runs A and B, 1.36 m to C, 1.49 m to the door.
+    TL, TD, TH = 3.00, 0.70, 0.92
+    part, _ = lib["table_unit"](TL, TD, TH, [0.0, TL / 2 - 0.02, TL - 0.04], lower=(0.15,))
+    tloc, trot = lib["placement"](24.50, 36.275, TL, TD, "-y")
+    part.emit("Bank_PackingTable", bank, tloc, trot)
+    pk = Part()
+    cb = bpy.data.materials.get("Cardboard") or mat("Cardboard", "#B08A5B", 0.85)
+    pk.box(cb, 0.35, 0.80, 0.18, 0.52, TH, TH + 0.30, bevel=0.004)                     # open shipping box
+    pk.box(cb, 0.33, 0.82, 0.16, 0.18, TH + 0.30, TH + 0.42)                           # flap
+    pk.box(M["black"], 1.20, 1.36, 0.28, 0.36, TH, TH + 0.09, bevel=0.01)              # tape dispenser
+    pk.cyl(mat("Tape_Clear", "#C9B98A", 0.3), (1.25, 0.32, TH + 0.10), (1.31, 0.32, TH + 0.10), 0.045, seg=20)
+    pk.box(mat("Label_Printer", "#2B2C2E", 0.4), 1.75, 1.92, 0.22, 0.40, TH, TH + 0.08, bevel=0.01)
+    pk.box(mat("Label_Roll", "#F4F2EC", 0.6), 1.92, 1.95, 0.27, 0.35, TH + 0.01, TH + 0.05)
+    pk.box(MAT["bins"][1], 2.30, 2.70, 0.15, 0.45, TH, TH + 0.12, bevel=0.004)          # returns tray
+    pk.box(mat("Sheet_Paper", "#EDEBE4", 0.9), 2.35, 2.56, 0.20, 0.49, TH + 0.12, TH + 0.122)  # check-out sheet
+    pk.emit("Bank_PackingTable_Props", bank, tloc, trot)
+
     # C0: corner unit closing the gap between run B (south wall) and run C, same levels as C
     part, slots_c0, Lc0 = lib["shelf_unit"]([1.17], 0.60, H, lv_c)
     loc_c0, rot_c0 = lib["placement"](21.05 + 0.30, 34.405 + Lc0 / 2, Lc0, 0.60, "+x")
