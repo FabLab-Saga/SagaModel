@@ -23,6 +23,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Move the user's visible viewport to whatever you are working on** (set region_3d view_location /
   view_rotation / view_distance, perspective, Rendered shading) at the start of a step and after rebuilds —
   they like seeing results instantly. Headless review renders for verification on top of that.
+  Use `scripts/viewport.py` (EYE/TARGET -> all 3D views, Rendered): view_rotation = (target-eye).to_track_quat('-Z','Y').
+  With 'Z' instead of '-Z' the view points backwards and the user sees the underside of the floor. Verify with
+  `bpy.ops.screen.screenshot_area` (temp_override window/area/region) and look at the PNG.
 - Verify visually: `scripts/render_cams.py -- <CamNames>` (review renders, ~5 s each on the GPU) and
   `scripts/peek.py -- eye target out.png lens` (ad-hoc viewpoint); read the PNGs before reporting.
 - Real products (machines, furniture) are modelled from PHOTOS (manufacturer pages), never from memory.
@@ -130,11 +133,11 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   Eazao Zero clay printer (stand-in, lab unsure; microwave + clay below) and
   Creality CR-10 Max. Main circulation x 28.0–29.5 stays clear.
 - **Lounge** (by the SSW glass; `conversation_pit()` in build_bank_lounge.py): CONVERSATION PIT - two straight
-  2-seat sofas (1.70 x 0.82, charcoal linen on black profile legs, a felt cushion each) FACING EACH OTHER across a low
-  birch coffee table (1.10 x 0.60, profile frame, shelf), at right angles to the glass so both get the window light;
-  felt poufs close the glass end and the corridor end -> a ring of 6 (people sit in a circle; idea = force
-  interaction). Footprint x 29.32–32.35, y 30.22–33.62. No literal round sofa (user), no TV, no machines; walkway
-  along the spine (~1.1 m), the on-call desk and the clay bench kept clear. `Cam_LoungeLow` looks down the pit axis.
+  2-seat sofas (1.45 x 0.78, charcoal linen on black profile legs, a felt cushion each) FACING EACH OTHER across a low
+  birch coffee table (1.00 x 0.55, profile frame, shelf), at right angles to the glass (orientation was my choice)
+  so both get side light; the glass closes one end, two felt poufs the open lab end -> a ring of 6 (people sit in a circle; idea = force
+  interaction). Footprint x 30.32–32.42, y 30.13–33.24, pushed to the glass. No literal round sofa (user), no TV, no machines; RULE: the route from the entrance
+  into the lab passes between the on-call desk corner (29.92, 33.87) and the pit: keep >= 1.2 m there (now 1.22). `Cam_LoungeLow` looks down the pit axis.
   `build_sofas.py` is a no-op (no Cleveland sofas left); the old `nook()` is unused.
 - **Entrance / on-call desk** (`build_welcome.py`, collection Welcome): the on-call desk is NOT a reception desk -
   one person's sitting desk (1.6 x 0.7, 0.75 m) with its BACK TO THE SPINE BOOKCASE at x 28.93–29.92, y 33.87–35.77,

@@ -255,10 +255,10 @@ def soften(root, names, width=0.03):
 def conversation_pit(col):
     """Lounge by the SSW glass (user choice 2026-10-08): two straight 2-seat sofas FACING EACH OTHER across a low
     birch coffee table, set at right angles to the glass so both sides get the window light, two felt poufs closing
-    the ends (glass end + corridor end) into a ring of 6 - people sit in a circle and face each other.
-    Sofas 1.70 x 0.82 (charcoal linen, black 40x40 profile legs, felt cushions), table 1.10 x 0.60 x 0.40.
-    Footprint x 29.32-32.35, y 30.22-33.62: clay bench (y <= 30.08), on-call desk (x <= 29.92, y >= 33.87) and the
-    1.1 m walkway along the spine kept clear."""
+    the open (lab-side) end; the glass closes the other end - people sit in a ring of 6 and face each other.
+    Sofas 1.45 x 0.78 (charcoal linen, black 40x40 profile legs, felt cushions), table 1.00 x 0.55 x 0.40.
+    Pushed against the glass (x 30.32-32.42, y 30.13-33.24) so the route from the entrance into the lab stays open:
+    >= 1.2 m between the on-call desk corner (29.92, 33.87) and the pit, ~2 m between pit and spine further on."""
     char = bpy.data.materials.get("Sofa_Charcoal")
     if char is None:
         char = SOFA.copy()
@@ -272,8 +272,8 @@ def conversation_pit(col):
         bsdf.inputs["Sheen Weight"].default_value = 0.3
         bsdf.inputs["Sheen Tint"].default_value = (0.35, 0.36, 0.38, 1)
     felts = [bpy.data.materials[n] for n in ("Floff_Orange", "Floff_Green", "Floff_Blue")]
-    L, D, X0, CY = 1.70, 0.82, 29.95, 31.92
-    for k, (y_front, facing) in enumerate(((31.04, "+y"), (32.80, "-y"))):
+    L, D, X0, CY = 1.45, 0.78, 30.97, 31.685
+    for k, (y_front, facing) in enumerate(((30.91, "+y"), (32.46, "-y"))):
         p = Part()
         arm, zs = 0.14, 0.18                                             # raised on legs: lighter, lab-like
         for x in (0.05, L - 0.09):
@@ -298,7 +298,7 @@ def conversation_pit(col):
         root = p.emit(f"Lounge_Sofa_{k + 1}", col, loc, rot)
         soften(root, ("Sofa_Charcoal",) + tuple(f.name for f in felts), 0.03)
     t = Part()                                                           # low birch coffee table, profile frame
-    TL, TD, TH = 1.10, 0.60, 0.40
+    TL, TD, TH = 1.00, 0.55, 0.40
     tx0, ty0 = X0 + L / 2 - TL / 2, CY - TD / 2
     for x in (tx0, tx0 + TL - 0.04):
         for y in (ty0, ty0 + TD - 0.04):
@@ -308,13 +308,13 @@ def conversation_pit(col):
     t.box(MAT["ply"], tx0 + 0.04, tx0 + TL - 0.04, ty0 + 0.02, ty0 + TD - 0.02, 0.10, 0.118)            # magazine shelf
     t.box(MAT["ply"], tx0 - 0.01, tx0 + TL + 0.01, ty0 - 0.01, ty0 + TD + 0.01, TH - 0.025, TH, bevel=0.003)
     # what's on it: a sketchbook, a 3D print, two mugs, a demo piece being passed round
-    t.box(mat("Sketchbook", "#F2F0EA", 0.8), tx0 + 0.20, tx0 + 0.50, ty0 + 0.15, ty0 + 0.36, TH, TH + 0.012)
+    t.box(mat("Sketchbook", "#F2F0EA", 0.8), tx0 + 0.15, tx0 + 0.45, ty0 + 0.12, ty0 + 0.33, TH, TH + 0.012)
     t.cyl(STUFF[3], (tx0 + 0.75, ty0 + 0.30, TH), (tx0 + 0.75, ty0 + 0.30, TH + 0.10), 0.035, seg=24)
     for dx, dy in ((0.95, 0.15), (0.35, 0.47)):
         t.cyl(mat("Mug_White", "#F4F3EF", 0.3, coat=0.3), (tx0 + dx, ty0 + dy, TH), (tx0 + dx, ty0 + dy, TH + 0.09), 0.04, seg=24)
     t.emit("Lounge_Table", col, Vector((0, 0, 0)))
-    for k, x in enumerate((32.12, 29.55)):                               # poufs close the glass end + corridor end
-        pouf(felts[(k + 1) % 3]).emit(f"Pouf_{k + 1}", col, Vector((x - 0.23, CY - 0.23, 0)))
+    for k, dy in enumerate((-0.33, 0.33)):                               # two poufs close the open (lab) end
+        pouf(felts[(k + 1) % 3]).emit(f"Pouf_{k + 1}", col, Vector((30.60 - 0.23, CY + dy - 0.23, 0)))
 
 
 def nook(col, c, R=1.42, opening=math.radians(190), arc=math.radians(240)):
