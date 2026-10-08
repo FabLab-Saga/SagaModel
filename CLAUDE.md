@@ -26,13 +26,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 
 ## Files
 - `SagaV2_work.blend` — **the working file, source of truth** (contains manual tweaks: HDRI world +
-  rotation, per-camera `exposure_offset`/`show_ground`/`shot_order`, glass-pane fixes, floor clip, etc.).
+  rotation, per-camera `exposure_offset`/`show_ground`/`shot_order`, floor clip, etc.).
 - `SagaV2_import.blend` — raw import (regenerate with `scripts/import_glb.py`); never overwrite the work file.
 - `scripts/` — builders. Each rebuilds its own collection when exec'd inside Blender
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
   `build_services` → `build_machines` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
   `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
-  `build_cupboard` → `build_signs` → `apply_pbr` → `detail_materials` → `add_cameras`.
+  `build_cupboard` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
@@ -92,6 +92,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   yellow #F2C200, pink #E099AB); fix appearance via view transform (AgX Punchy), not material colours.
 - Black anodised 20x20 / 40x40 T-slot profile + birch ply = the furniture language. Tables prefer to be
   integrated as gaps in shelving.
+- Glass panes are zero-thickness planes: `Glass_Clear` must stay THIN glass (`fix_glass.py`: transparent +
+  back-face-corrected Fresnel gloss). Never a refractive/IOR>1 transmission shader on them (warps the view).
 - Raw concrete ceiling, galvanised services, round black enamel pendants, worn oak parquet.
 
 ## Open items
