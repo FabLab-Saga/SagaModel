@@ -1,6 +1,7 @@
 # Third-party content in this project
 
-Checked 2026-10-07. Everything visible in renders is either CC0 or Fab Lab's own material.
+Checked 2026-10-07. Everything visible in renders is either CC0 or Fab Lab's own material; the only exception is the partner logos
+in the presentation video's outro (see the table).
 
 | Content | Where | Licence | Notes |
 |---|---|---|---|
@@ -15,6 +16,8 @@ Checked 2026-10-07. Everything visible in renders is either CC0 or Fab Lab's own
 | Colleague's SketchUp model | `source/`, `export/`, `.blend` | Colleague's work; components from SketchUp 3D Warehouse | Its embedded textures were replaced by procedural/CC0 materials on everything visible |
 | Fab Lab TV screen capture (`assets/fablabtv/fablabtv_screen.png`) | Welcome TV | **MIT** (github.com/FabLabReykjavik/FabLabTV, © Andri Sæmundsson and Fab Lab Reykjavík) | Captured from our own local run; contains our own render and the repo's bundled demo staff photo (Neil Gershenfeld), used at the user's request |
 | IKEA GULLVALLA / GLOSTAD sofa, POÄNG armchair designs | Lounge (`Lounge_Sofa_*`), staff room (`Staff_Sofa_GLOSTAD`, `Staff_Armchair_POANG`) | Own simplified model of a real product (catalogue dimensions, IKEA photos used as reference only; no IKEA images in the project) | |
+| Partner logos: HÍ Verkfræði- og náttúruvísindasvið, HÍ Menntavísindasvið, Reykjavíkurborg, Mixtúra | `assets/partners/` (sources per file in `assets/partners/SOURCES.md`) | Partners' trademarks, NOT CC0. Used in Fab Lab SAGA presentation material (video outro) as the project's partners, approved by Magnús (who works at all four) 2026-10-08 | HÍ: official identifiers (blue) + our white recolour (HÍ standard allows blue or white; partner use allowed for joint projects). Reykjavík: official white/colour (brand guide allows one-colour white). Mixtúra: no current official logo; archived 2021 mixtura.is logo, wordmark cropped (tagline with the old name removed) + white recolour. Replace with a current Mixtúra file if they supply one |
+| Video music | not chosen yet | Must be **CC0** | Shortlist in progress |
 | OpenSKP (converter) | `.venv/` (not in repo) | MIT | Tool only |
 
 ## Looked at but NOT used / not stored
