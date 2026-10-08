@@ -30,7 +30,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - `SagaV2_import.blend` — raw import (regenerate with `scripts/import_glb.py`); never overwrite the work file.
 - `scripts/` — builders. Each rebuilds its own collection when exec'd inside Blender
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
-  `build_services` → `build_lighting` → `build_machines` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
+  `build_services` → `build_lighting` → `build_machines` → `build_laser_room` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
   `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
   `build_cupboard` → `cleanup_leftovers` → `build_material_storage` → `build_hall_entrance` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
@@ -56,10 +56,14 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   reaches under the ~1.9 m upper-floor overhang. HDRI rotation aligned to the sun lamp.
 
 ## Zones (current layout, user-approved)
-- **Laser room** (glazed room by SSW façade, x 29.67–32.53, y 20.14–26.92): Epilog Fusion Edge 24,
-  2× Glowforge Pro HD, Glowforge Aura, xTool F1 Ultra on profile laser tables. ONE central exhaust
-  (`Exhaust_Central`): rear ports → low manifold on the table backs → one riser (y 25.05) → ceiling collector
-  (Epilog branch joins) → one inline fan → up through the slab to the building's dedicated vent higher up.
+- **Laser room** (glazed room by SSW façade, x 29.67–32.53, y 20.14–26.92; `build_laser_room.py`, collection
+  LaserRoom; machine MODELS in build_machines.py, checked against the equipment list): 4.86 m profile laser bench on the
+  SSW glass (flat-file sheet drawers under) with 2× Glowforge Pro HD, Glowforge Aura (orange lid), xTool F1 Ultra +
+  1.3 m staging; Epilog Fusion Edge 24 floor unit at the NNE/WNW corner (0.20 m off the partition, riser behind);
+  laser stock rack (upright sheet slots, 0.98 m worktop, bins/rolls) on the NNE partition; 2 m standing prep counter
+  under the interior window; safety station + 3 offcut bins on the WNW wall. ONE central exhaust (`Exhaust_Central`):
+  rear ports → manifold behind the bench → riser (y 25.17) → ceiling collector (Epilog branch joins) → inline fan →
+  up through the slab to the building's vent. Keep both doors and a ≥1.0 m aisle clear.
 - **Print farm** outside the laser room: profile shelving, 12 Prusa MK3S+ (0.58 m shelf pitch), Bambu P2S.
 - **CNC room**: ShopBot PRS Alpha 120 against the INTERIOR wall; ACword FT100 dust collector out by the
   far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`), brush skirt on the spindle.

@@ -207,7 +207,7 @@ def laser_room_life():
     p.emit("LaserRoom_Life", col, Vector((0, 0, 0)))
 
 
-laser_room_life()
+# laser_room_life() retired: the laser room (incl. extinguishers) is built by build_laser_room.py
 
 
 def wall_details():

@@ -3,7 +3,7 @@ but recognisable models at the listed sizes. Re-runnable: rebuilds the "Machines
 collection. Run inside Blender: exec(open(path).read()).
 
 Furniture comes from scripts/profile_furniture.py (black 20x20/40x40 profile + birch ply).
-Placement (model frame: +X = SSW, +Y = ESE; main entrance = SSW door at y 35.1-36.2):
+Placement (model frame: +X = SSW, +Y = ESE). Laser models are defined here; the laser ROOM is build_laser_room.py.
   Laser room (glazed room x 29.67-32.53, y 20.14-26.92): Epilog Fusion Edge 24 against
   the NNE partition; 2x Glowforge Pro HD, Glowforge Aura, xTool F1 Ultra on profile laser
   tables (sheet storage below) along the SSW glass. ONE central exhaust: the lasers plug into a low
@@ -137,36 +137,113 @@ def desk(w, d=0.6, h=0.75):
     return p
 
 
-def glowforge(w, d, h, lid):
+def _rbox(p, m, x0, x1, y0, y1, z0, z1, r):
+    """Rounded box (bevel radius r, clamped)."""
+    p.box(m, x0, x1, y0, y1, z0, z1, bevel=min(r, (x1 - x0) / 2.2, (y1 - y0) / 2.2, (z1 - z0) / 2.2))
+
+
+def _port(p, x, y, z, r, length=0.035):
+    """Round exhaust collar sticking out of the back face (y = back) along +y."""
+    p.cyl(M["dark"], (x, y - 0.004, z), (x, y + length, z), r + 0.006, seg=28)
+    p.cyl(M["black"], (x, y + length - 0.002, z), (x, y + length + 0.001, z), r - 0.004, seg=28)
+
+
+def glowforge_pro(w=0.965, d=0.527, h=0.211):
+    """Glowforge Pro HD (965 x 527 x 211): white rounded shell, smoked lid glass lifting from a rear hinge band,
+    front flip-down door with the Pro pass-through slot, glowing button top front right, rear exhaust + switch."""
     p = Part()
-    p.box(M["white"], 0, w, 0, d, 0, h - 0.004, bevel=0.025)
-    b = 0.045
-    p.box(lid, b, w - b, b, d - b, h - 0.012, h, bevel=0.006)                                   # tinted lid
-    p.box(M["white"], w * 0.3, w * 0.7, -0.012, 0.0, h * 0.55, h * 0.75, bevel=0.004)          # front handle lip
+    glow = mat("Glowforge_Button", "#9FE7F2", 0.2, emit=3.0)
+    _rbox(p, M["white"], 0.0, w, 0.0, d, 0.012, h - 0.012, 0.03)                       # shell
+    for x in (0.06, w - 0.06):                                                           # feet
+        for y in (0.06, d - 0.06):
+            p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.012), 0.022, seg=16)
+    p.box(M["black"], 0.03, w - 0.03, -0.001, 0.0, 0.135, 0.137)                         # door seam (top)
+    p.box(M["black"], 0.07, w - 0.07, -0.0015, 0.0, 0.082, 0.090)                        # pass-through slot
+    p.box(M["smoke"], 0.10, w - 0.10, -0.002, -0.001, 0.0835, 0.0885)                    # Pro shield in the slot
+    p.box(M["white"], 0.03, w - 0.03, 0.030, d - 0.105, h - 0.012, h - 0.004, bevel=0.004)  # lid frame
+    p.box(M["smoke"], 0.055, w - 0.055, 0.050, d - 0.125, h - 0.0045, h - 0.0015)        # lid glass
+    _rbox(p, M["white"], 0.02, w - 0.02, d - 0.100, d - 0.012, h - 0.012, h + 0.004, 0.012)  # rear hinge band
+    p.box(M["grey"], w * 0.38, w * 0.62, -0.002, 0.018, h - 0.030, h - 0.016, bevel=0.004)   # lid lift recess
+    p.cyl(M["white"], (w - 0.075, 0.072, h - 0.006), (w - 0.075, 0.072, h + 0.003), 0.030, seg=32)  # button
+    p.cyl(glow, (w - 0.075, 0.072, h + 0.003), (w - 0.075, 0.072, h + 0.004), 0.022, seg=32)
+    p.box(M["black"], 0.07, w - 0.07, d, d + 0.0015, 0.082, 0.090)                       # rear pass-through slot
+    _port(p, w - 0.12, d, 0.080, 0.05)                                                    # 4" exhaust, rear right
+    p.box(M["black"], w - 0.26, w - 0.22, d, d + 0.008, 0.050, 0.070, bevel=0.002)        # power switch
+    return p
+
+
+def glowforge_aura(w=0.556, d=0.521, h=0.127):
+    """Glowforge Aura (556 x 521 x 127): low white shell, orange protective lid, button top front right."""
+    p = Part()
+    glow = mat("Glowforge_Button", "#9FE7F2", 0.2, emit=3.0)
+    _rbox(p, M["white"], 0.0, w, 0.0, d, 0.008, h - 0.010, 0.025)
+    for x in (0.05, w - 0.05):
+        for y in (0.05, d - 0.05):
+            p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.008), 0.018, seg=16)
+    p.box(M["white"], 0.025, w - 0.025, 0.025, d - 0.080, h - 0.010, h - 0.004, bevel=0.003)
+    p.box(M["amber"], 0.045, w - 0.045, 0.040, d - 0.095, h - 0.0045, h - 0.0015)         # orange lid
+    _rbox(p, M["white"], 0.015, w - 0.015, d - 0.078, d - 0.010, h - 0.010, h + 0.003, 0.010)
+    p.box(M["grey"], w * 0.35, w * 0.65, -0.002, 0.014, h - 0.026, h - 0.014, bevel=0.003)
+    p.cyl(M["white"], (w - 0.055, 0.055, h - 0.005), (w - 0.055, 0.055, h + 0.002), 0.022, seg=28)
+    p.cyl(glow, (w - 0.055, 0.055, h + 0.002), (w - 0.055, 0.055, h + 0.003), 0.016, seg=28)
+    _port(p, w - 0.11, d, 0.060, 0.05)
+    return p
+
+
+def xtool_f1_ultra(w=0.493, d=0.373, h=0.273):
+    """xTool F1 Ultra (493 x 373 x 273): dark lunchbox base, amber flip-up lid in a black frame, folding top
+    handle, button strip on the front, rear smoke port."""
+    p = Part()
+    _rbox(p, M["dark"], 0.0, w, 0.0, d, 0.006, 0.150, 0.015)                             # base
+    p.box(M["black"], 0.004, w - 0.004, 0.004, d - 0.004, 0.0, 0.008)                     # foot plate
+    p.box(M["black"], 0.0, w, -0.001, d + 0.001, 0.148, 0.160)                            # lid seam band
+    _rbox(p, M["black"], 0.0, w, 0.0, d, 0.158, h - 0.012, 0.015)                         # lid frame
+    p.box(M["amber"], 0.03, w - 0.03, -0.002, d - 0.03, 0.172, h - 0.026)                 # front + top window
+    p.box(M["amber"], 0.03, w - 0.03, 0.03, d - 0.03, h - 0.013, h - 0.006)
+    for x in (0.10, w - 0.10):                                                            # folding handle
+        p.box(M["black"], x - 0.008, x + 0.008, d / 2 - 0.012, d / 2 + 0.012, h - 0.008, h + 0.030, bevel=0.003)
+    p.box(M["black"], 0.10, w - 0.10, d / 2 - 0.014, d / 2 + 0.014, h + 0.022, h + 0.036, bevel=0.006)
+    p.box(M["grey"], w - 0.13, w - 0.03, -0.002, 0.0, 0.050, 0.100, bevel=0.003)          # button strip
+    p.cyl(mat("Glowforge_Button", "#9FE7F2", 0.2, emit=3.0), (w - 0.06, -0.003, 0.075), (w - 0.06, -0.001, 0.075), 0.010, seg=16)
+    _port(p, w / 2, d, 0.075, 0.035)
     return p
 
 
 def epilog(w=1.055, d=0.834, h=0.967):
+    """Epilog Fusion Edge 24 (1055 x 834 x 967), floor standing: black stand on casters with a lower door, charcoal
+    body with a hinged front door, wide smoked viewing window in the lid, sloped touchscreen + joystick on the
+    front right, red Epilog band, rear 4" exhaust."""
     p = Part()
-    base = 0.60
-    p.box(M["black"], 0.02, w - 0.02, 0.02, d - 0.02, 0.09, base, bevel=0.01)                    # cabinet
-    for x in (0.08, w - 0.08):                                                                    # casters
-        for y in (0.08, d - 0.08):
-            p.cyl(M["rubber"], (x - 0.02, y, 0.04), (x + 0.02, y, 0.04), 0.04)
-    p.box(M["grey"], 0, w, 0, d, base, h - 0.06, bevel=0.015)                                    # body
-    # sloped smoked lid over the front 2/3
-    p.box(M["smoke"], 0.03, w - 0.03, 0.02, d * 0.66, h - 0.06, h - 0.035, bevel=0.01)
-    p.box(M["grey"], 0.0, w, d * 0.66, d, h - 0.06, h, bevel=0.012)                              # rear housing
-    p.box(M["red"], 0.0, w, -0.002, 0.004, base + 0.08, base + 0.11)                             # red stripe
-    p.box(M["dark"], w - 0.20, w - 0.05, d * 0.70, d * 0.92, h, h + 0.012, bevel=0.004)         # control panel
-    p.box(M["lcd"], w - 0.18, w - 0.08, d * 0.73, d * 0.80, h + 0.012, h + 0.014)
-    return p
-
-
-def xtool(w=0.493, d=0.253, h=0.373):
-    p = Part()
-    p.box(M["dark"], 0, w, 0, d, 0, h, bevel=0.012)
-    p.box(M["amber"], 0.03, w - 0.03, -0.004, 0.02, 0.08, h - 0.05, bevel=0.006)               # shield window
+    char = mat("Epilog_Charcoal", "#2A2C2F", 0.35, coat=0.2)
+    side = mat("Epilog_SideGrey", "#55595D", 0.4)
+    base = 0.44
+    for x in (0.07, w - 0.07):                                                            # casters
+        for y in (0.07, d - 0.07):
+            p.cyl(M["rubber"], (x - 0.018, y, 0.040), (x + 0.018, y, 0.040), 0.040, seg=20)
+            p.box(M["chrome"], x - 0.025, x + 0.025, y - 0.025, y + 0.025, 0.080, 0.095)
+    _rbox(p, M["black"], 0.02, w - 0.02, 0.03, d - 0.02, 0.095, base, 0.010)             # stand cabinet
+    p.box(M["dark"], 0.05, w - 0.05, 0.028, 0.030, 0.12, base - 0.03)                     # stand door
+    p.box(M["chrome"], w / 2 - 0.08, w / 2 + 0.08, 0.020, 0.028, base - 0.07, base - 0.06)  # door pull
+    _rbox(p, char, 0.0, w, 0.0, d, base, h - 0.050, 0.014)                               # body
+    p.box(side, -0.002, 0.004, 0.06, d - 0.06, base + 0.06, h - 0.10)                     # side panels
+    p.box(side, w - 0.004, w + 0.002, 0.06, d - 0.06, base + 0.06, h - 0.10)
+    p.box(M["black"], 0.04, w - 0.25, -0.0015, 0.0, base + 0.03, base + 0.035)            # front door seams
+    p.box(M["black"], 0.04, w - 0.25, -0.0015, 0.0, h - 0.14, h - 0.135)
+    p.box(M["red"], 0.04, 0.32, -0.002, 0.0, base + 0.10, base + 0.16)                    # Epilog band
+    p.box(M["white"], 0.06, 0.30, -0.0025, -0.002, base + 0.12, base + 0.14)              # wordmark strip
+    _rbox(p, char, 0.0, w, 0.0, d * 0.78, h - 0.052, h, 0.012)                           # lid
+    p.box(M["smoke"], 0.08, w - 0.30, 0.06, d * 0.70, h - 0.002, h + 0.002)               # viewing window
+    p.box(M["black"], w * 0.30, w * 0.55, -0.002, 0.020, h - 0.040, h - 0.022, bevel=0.004)  # lid handle
+    p.box(char, 0.0, w, d * 0.78, d, h - 0.052, h - 0.010, bevel=0.010)                   # rear housing
+    pan = Matrix.Translation((w - 0.15, 0.10, h + 0.020)) @ Matrix.Rotation(math.radians(-25), 4, "X")
+    bm = p.bm(M["black"])
+    bmesh.ops.create_cube(bm, size=1.0, matrix=pan @ Matrix.Diagonal((0.20, 0.14, 0.030, 1)))  # control pod
+    bmesh.ops.create_cube(p.bm(M["lcd"]), size=1.0,
+                          matrix=pan @ Matrix.Translation((-0.025, 0.0, 0.0155)) @ Matrix.Diagonal((0.12, 0.09, 0.001, 1)))
+    p.cyl(M["dark"], (w - 0.075, 0.10, h + 0.03), (w - 0.075, 0.10, h + 0.065), 0.010, seg=12)  # joystick
+    bmesh.ops.create_uvsphere(p.bm(M["red"]), u_segments=12, v_segments=8, radius=0.014,
+                              matrix=Matrix.Translation((w - 0.075, 0.10, h + 0.07)))
+    _port(p, w / 2 + 0.25, d, 0.70, 0.05)                                                 # rear 4" exhaust
     return p
 
 
@@ -560,63 +637,7 @@ def build():
         off = Matrix.Rotation(rot, 4, "Z") @ Vector((-w / 2, -d / 2, 0))
         return part.emit(name, col, Vector((c.x, c.y, z)) + off, rot)
 
-    # ---- laser room: profile laser tables along the SSW glass
-    T_D, T_H = 0.65, 0.78
-    tables = [("LaserTable_250", 2.5, [0.0, 1.23, 2.46], 20.30 + 1.25), ("LaserTable_200", 2.0, [0.0, 1.96], 22.85 + 1.0)]
-    tloc = {}
-    for name, L, legs, cy in tables:
-        part, _ = lib["table_unit"](L, T_D, T_H, legs, lower=(0.16,))
-        loc, rot = unit_on((L, T_D), 32.45 - T_D / 2, cy, "-x")
-        part.emit(name, fcol, loc, rot)
-        tloc[name] = (loc, rot, L)
-        P, B = lib["MAT"]["ply"], lib["MAT"]["bins"]                    # mostly ply, a few acrylic sheets, ply on top
-        st = sheets(7, L - 0.20, T_D - 0.08, [P])
-        put(st, f"{name}_Sheets", loc, rot, (L / 2, T_D / 2), 0.16, L - 0.20, T_D - 0.08)
-    gx = 32.45 - 0.06                                                   # machine backs (room for the manifold)
-    for i, y in enumerate((20.85, 22.00)):
-        place(glowforge(0.965, 0.527, 0.211, M["smoke"]), f"Glowforge_ProHD_{i + 1}", col, gx - 0.527 / 2, y, T_H, 0.965, 0.527, "-x")
-    place(glowforge(0.556, 0.521, 0.127, M["grey"]), "Glowforge_Aura", col, gx - 0.521 / 2, 23.25, T_H, 0.556, 0.521, "-x")
-    place(xtool(), "xTool_F1_Ultra", col, gx - 0.02 - 0.253 / 2, 24.05, T_H, 0.493, 0.253, "-x")
-    place(epilog(), "Epilog_FusionEdge24", col, 29.70 + 0.834 / 2, 20.30 + 1.055 / 2 + 0.05, 0, 1.055, 0.834, "+x")
-    # ---- one central exhaust: every laser plugs into a low manifold on the back edge of the tables (behind the
-    #      machines, below their lids), one riser at the end of the tables, a ceiling collector to the interior
-    #      side where the Epilog branch joins, ONE inline fan, then up through the slab to the building's vent.
-    flex = mat("Flex_Alu", "#B9BDC1", 0.35, metal=1.0)
-    XM, ZM, RM = 32.465, T_H + 0.09, 0.065                              # manifold (Ø130) along the glass
-    YR, ZC, RC = 25.05, 3.55, 0.09                                       # riser + collector (Ø180)
-    XO, XJ = 29.95, 30.90                                                # exit through the slab, Epilog junction
-    ex = Part()
-    ex.cyl(M["galv"], (XM, 20.45, ZM), (XM, YR, ZM), RM, seg=24)
-    ex.cyl(M["galv"], (XM, 20.44, ZM), (XM, 20.45, ZM), RM + 0.004, seg=24)                     # end cap
-    for y in (20.95, 22.35, 23.70, 24.75):                                                        # saddle brackets
-        ex.box(M["galv"], XM - 0.07, 32.45, y - 0.015, y + 0.015, T_H + 0.025, T_H + 0.03)
-    for y, z in ((20.85 - 0.25, T_H + 0.08), (22.00 - 0.25, T_H + 0.08), (23.25, T_H + 0.06), (24.05, T_H + 0.10)):
-        ex.cyl(flex, (gx - 0.01, y, z), (XM - RM + 0.01, y, z), 0.045, seg=20)                  # port -> manifold
-        for xr in (gx + 0.004, XM - RM - 0.002):                                                 # hose clamps
-            ex.cyl(M["galv"], (xr - 0.004, y, z), (xr + 0.004, y, z), 0.048, seg=20)
-    bmesh.ops.create_uvsphere(ex.bm(M["galv"]), u_segments=24, v_segments=12, radius=RC, matrix=Matrix.Translation((XM, YR, ZM)))
-    ex.cyl(M["galv"], (XM, YR, ZM), (XM, YR, ZC), RC, seg=24)                                    # riser
-    bmesh.ops.create_uvsphere(ex.bm(M["galv"]), u_segments=24, v_segments=12, radius=RC, matrix=Matrix.Translation((XM, YR, ZC)))
-    ex.cyl(M["galv"], (XM, YR, ZC), (XO, YR, ZC), RC, seg=24)                                    # collector
-    bmesh.ops.create_uvsphere(ex.bm(M["galv"]), u_segments=24, v_segments=12, radius=RC, matrix=Matrix.Translation((XO, YR, ZC)))
-    ex.cyl(M["galv"], (XO, YR, ZC), (XO, YR, 3.93), RC, seg=24)                                  # up through the slab
-    ex.cyl(M["galv"], (XO, YR, 3.90), (XO, YR, 3.93), RC + 0.04, seg=24)                         # fire collar
-    ex.cyl(M["galv"], (30.22, YR, ZC), (30.62, YR, ZC), 0.16, seg=32)                            # inline fan
-    for xr in (30.22, 30.62):
-        ex.cyl(M["dark"], (xr - 0.01, YR, ZC), (xr + 0.01, YR, ZC), 0.165, seg=32)
-    ex.box(M["dark"], 30.36, 30.48, YR - 0.16, YR - 0.10, ZC - 0.06, ZC + 0.06, bevel=0.005)     # fan controller
-    ye = 20.30 + 1.055 / 2 + 0.05                                                                 # Epilog branch (Ø150)
-    ep = [(29.70 - 0.01, ye + 0.25, 0.80), (29.76, ye + 0.25, 0.80), (29.76, ye + 0.25, ZC), (29.76, 24.70, ZC),
-          (XJ, 24.70, ZC), (XJ, YR, ZC)]
-    for a, b in zip(ep, ep[1:]):
-        ex.cyl(M["galv"], a, b, 0.075, seg=20)
-    for q in ep[1:-1]:
-        bmesh.ops.create_uvsphere(ex.bm(M["galv"]), u_segments=20, v_segments=10, radius=0.075, matrix=Matrix.Translation(q))
-    for z in (1.6, 2.6):                                                                          # wall clips on the riser
-        ex.box(M["galv"], 29.672, 29.70, ye + 0.20, ye + 0.30, z, z + 0.03)
-    for xh, yh in ((31.6, YR), (XJ + 0.4, 24.70), (29.76, 22.8), (29.76, 24.2)):                 # ceiling hangers
-        ex.cyl(M["galv"], (xh, yh, ZC + 0.08), (xh, yh, 3.93), 0.004, seg=8)
-    ex.emit("Exhaust_Central", col, Vector((0, 0, 0)), 0.0)
+    # ---- laser room: machines, benches, storage and the central exhaust live in build_laser_room.py
 
     # ---- print farm outside the laser room (against its NNE partition, x 28.90-29.50)
     PF_D, levels = 0.60, [0.15, 0.73, 1.31, 1.89]
