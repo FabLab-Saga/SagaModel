@@ -119,6 +119,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   swinging leaves (user); painted-steel leaves 2 x 1.10 x 2.40, opening outward (my details). Glass WINDOWS either
   side of it and ABOVE the door frame (user); façade-style dark frames, glazing to 3.60. Outside: concrete pavers
   (the colleague's parquet ran on outdoors).
+  The back hallway's WNW end (x 26.22–27.51, an open gap in the colleague's model) is a GLASS DOOR (user): framed
+  1.0 m glass leaf opening outward + narrow sidelight + fanlight, same dark frames (my details).
   `Cam_CNC` (from the main door), `Cam_CNCRoom` (from the operator corner).
   **Material storage** (`build_material_storage.py`): NO big sheet table; stored VERTICALLY (user, option A):
   upright board rack (2440x1220 boards on their short edge in 10 slots, slide out sideways) in the ex-WC corner against

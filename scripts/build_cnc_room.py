@@ -20,6 +20,7 @@ hallway wall; shop vac by the collector, extinguisher on the WNW wall.
 - WNW end wall: the 2.3 m gap is a LOADING DOOR, classic double door with two swinging leaves (user); steel leaves,
   opening outward (my details); glass windows either side and above the door frame (user), façade-style frames.
 - Outside the end wall the colleague's parquet ran on to y 12.81: concrete pavers there now.
+- The back hallway's WNW end (x 26.22-27.51) is a GLASS DOOR (user): framed glass leaf + sidelight + fanlight (my details).
 """
 import math
 
@@ -264,6 +265,46 @@ def end_windows(col):
     g.emit("CNC_EndWindows_Glass", col, Vector((0, 0, 0)))
 
 
+def hall_end_door(col):
+    """Back hallway's WNW end (x 26.22-27.514, the colleague left it as an open full-height gap): a GLASS DOOR (user).
+    My details: exterior aluminium glass door in the same dark frames as the end windows - 1.0 m leaf (fully glazed,
+    lever + lock, opens outward) with a narrow fixed glass sidelight, glazed fanlight above to 3.60 m, wall above."""
+    n0, n1 = 14.868, 15.075
+    yc = (n0 + n1) / 2
+    a0, a1 = 26.22, 27.514
+    fr, gl = bpy.data.materials["Alu_Frame_Dark"], bpy.data.materials["Glass_Clear"]
+    alu = mat("Alu_Brushed_Door", "#C8CBCE", 0.32, metal=1.0)
+    F, H = 0.06, 2.40
+    d0 = a0 + F                                                      # leaf hinge jamb (by the CNC wall)
+    d1 = d0 + 1.00
+    p, g = Part(), Part()
+    for xa in (a0, d1, a1 - F):                                      # jambs + mullion between leaf and sidelight
+        p.box(fr, xa, xa + F, yc - 0.035, yc + 0.035, 0.0, WIN_TOP)
+    p.box(fr, a0, a1, yc - 0.035, yc + 0.035, H, H + F)              # transom
+    p.box(fr, a0, a1, yc - 0.035, yc + 0.035, WIN_TOP - F, WIN_TOP)  # head
+    p.box(fr, d1 + F, a1 - F, yc - 0.035, yc + 0.035, 0.0, F)        # sidelight sill
+    p.box(bpy.data.materials["Paint_White"], a0, a1, n0, n1, WIN_TOP, SOFFIT)
+    g.box(gl, a0 + F, a1 - F, yc - 0.0005, yc + 0.0005, H + F, WIN_TOP - F)           # fanlight
+    g.box(gl, d1 + F, a1 - F, yc - 0.0005, yc + 0.0005, F, H)                          # sidelight
+    # leaf (closed): 70 mm stiles, deeper bottom rail, glass, lever handles both faces + lock
+    lx0, lx1 = d0 + 0.003, d1 - 0.003
+    for xa, xb in ((lx0, lx0 + 0.07), (lx1 - 0.07, lx1)):
+        p.box(fr, xa, xb, yc - 0.03, yc + 0.03, 0.005, H - 0.003)
+    p.box(fr, lx0, lx1, yc - 0.03, yc + 0.03, 0.005, 0.16)
+    p.box(fr, lx0, lx1, yc - 0.03, yc + 0.03, H - 0.07, H - 0.003)
+    g.box(gl, lx0 + 0.07, lx1 - 0.07, yc - 0.0005, yc + 0.0005, 0.16, H - 0.07)
+    hx = lx1 - 0.035
+    for sgn in (-1, 1):
+        y = yc + sgn * 0.03
+        p.box(alu, hx - 0.018, hx + 0.018, y, y + sgn * 0.008, 0.95, 1.20, bevel=0.003)
+        p.cyl(alu, (hx, y, 1.06), (hx, y + sgn * 0.05, 1.06), 0.009, seg=12)
+        p.cyl(alu, (hx, y + sgn * 0.05, 1.06), (hx - 0.14, y + sgn * 0.05, 1.06), 0.010, seg=12)
+    for z in (0.25, 1.20, 2.10):                                     # hinges on the outside face
+        p.cyl(alu, (d0 + 0.004, n0 + 0.06, z), (d0 + 0.004, n0 + 0.06, z + 0.10), 0.010, seg=12)
+    p.emit("Hall_EndDoor_Frame", col, Vector((0, 0, 0)))
+    g.emit("Hall_EndDoor_Glass", col, Vector((0, 0, 0)))
+
+
 def exterior_paving(col):
     """The colleague's parquet floor runs on outside the WNW end of the building (to y 12.81): cover the outdoor strip
     with concrete pavers (Ground_Pavers, Poly Haven concrete_pavers, CC0), stepped like the building line."""
@@ -325,6 +366,7 @@ def build():
     utilities(col, M)
     loading_door(col, M)
     end_windows(col)
+    hall_end_door(col)
     exterior_paving(col)
     print("CNC room built,", n, "colleague parts deleted,", len(col.objects), "objects")
 
