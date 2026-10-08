@@ -80,6 +80,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `tools/publish.sh`, Blender 5.2.2 headless on GitHub Actions) and deploys it to GitHub Pages. Needs the repo secret
   `SAGA_WEB_DEPLOY_KEY`. Manual run: Actions tab → Web preview → Run workflow. Script-only commits don't trigger it.
 - `PLAN.md` — the review-fix goals G1–G11 (all done). New multi-step work: write a similar plan.
+- `RENDER.md` — render/video phase: final stills, presentation video script, video brand rules, pipeline, budget.
 - `MACHINES.md` — machine register (see above).
 - `refs/` — branding (Fab Lab Ísland brand manual 2021, signs, logos, Roboto fonts), equipment list PDF
   (the machinery list given to the architects for electrical load + airflow), user photos.

@@ -5,3 +5,5 @@ __pycache__/
 renders/tmp/
 assets/polyhaven/hdri/*.exr
 claude_state/
+renders/walk_test/
+renders/walk_test_tmp/
