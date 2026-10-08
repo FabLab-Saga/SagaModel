@@ -4,7 +4,7 @@ Equipment bank = the enclosure at the ESE end (model frame: +X = SSW, +Y = ESE):
   Boxes only - no machinery in the bank (user, 2026-10-07).
   A  back-wall run, y 37.73-38.33, 60 cm deep, x 21.05 -> ~32.4: large-box bays.
   B  south-wall run, y 34.42-34.82, 40 cm deep: small boxes, full height.
-  C  NNE end, x 21.05-21.65, 60 cm deep: biggest boxes.
+  C  NNE end, x 21.05-21.65, 60 cm deep: biggest boxes (C0 = corner unit y 34.40-35.65 next to run B).
   Contents: IKEA SAMLA-style clear boxes (5-130 L) full of random teaching kit.
 Lounge: one small CIRCULAR conversation nook by the SSW glass (centre 30.95, 31.6; 2.85 m across): a 240-degree
   curved sofa (charcoal linen, back to the glass, open towards the path by the spine), felt cushions, a round
@@ -391,6 +391,11 @@ def build():
     loc_c, rot_c = lib["placement"](21.05 + 0.30, 35.66 + Lc / 2, Lc, 0.60, "+x")
     part.emit("Bank_C_Shelving", bank, loc_c, rot_c)
     fill_unit(slots_c, lv_c, H, 0.60).emit("Bank_C_Boxes", bank, loc_c, rot_c)
+    # C0: corner unit closing the gap between run B (south wall) and run C, same levels as C
+    part, slots_c0, Lc0 = lib["shelf_unit"]([1.17], 0.60, H, lv_c)
+    loc_c0, rot_c0 = lib["placement"](21.05 + 0.30, 34.405 + Lc0 / 2, Lc0, 0.60, "+x")
+    part.emit("Bank_C0_CornerShelving", bank, loc_c0, rot_c0)
+    fill_unit(slots_c0, lv_c, H, 0.60).emit("Bank_C0_Boxes", bank, loc_c0, rot_c0)
 
     # ---------------- lounge: circular conversation nook by the SSW glass
     nook(lounge, Vector((30.95, 31.60, 0.0)))
