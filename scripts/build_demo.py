@@ -3,7 +3,8 @@ x ~27.4-32.4, y 37.73-38.33) shows imaginary Fab Lab projects instead of boxes.
 Exec'd from build_bank_lounge.py with `demo_fill(slots, levels, H, depth, loc, rot, col)`.
 Pieces: low-poly 3D-printed busts, a voronoi/geodesic lamp, a stacked-slice acrylic sculpture,
 twisted printed vases, a CNC-milled topographic relief, a laser-cut living-hinge box, plywood
-gears, a little robot arm, PCB badges, a stack of printed shapes. Plus a neon LED sign on the wall.
+gears, a little robot arm, PCB badges, a stack of printed shapes. Above the display: a large wall relief of
+3D-printed hexagonal tiles in the brand colours (replaced the neon sign), lit by one ceiling spotlight.
 """
 import math
 import random
@@ -36,6 +37,7 @@ def _mats(lib):
         pcb=mat("PCB_Green", "#1E6B3A", 0.35), copper=mat("PCB_Copper", "#C88A4B", 0.3, metal=1.0),
         steel=mat("Tool_Steel", "#B9BDC1", 0.25, metal=1.0), black=mat("Tool_Black", "#151515", 0.5),
         neon=glow, warm=warm, mdf=mat("MDF", "#B48C5C", 0.8),
+        led=mat("LED_Red_Small", "#FF3B2F", 0.3, emit=1.5),
     )
 
 
@@ -148,7 +150,7 @@ def pcb_badges(p, m, x, y, z):
         cx, cy = x + (i - 1) * 0.07, y + rng.uniform(-0.02, 0.02)
         p.box(m["pcb"], cx - 0.03, cx + 0.03, cy - 0.04, cy + 0.04, z, z + 0.0016)
         p.box(m["copper"], cx - 0.022, cx + 0.022, cy - 0.032, cy + 0.032, z + 0.0016, z + 0.0018)
-        p.cyl(m["neon"], (cx, cy + 0.02, z + 0.0018), (cx, cy + 0.02, z + 0.004), 0.003, seg=8)
+        p.cyl(m["led"], (cx, cy + 0.02, z + 0.0018), (cx, cy + 0.02, z + 0.004), 0.003, seg=8)
 
 
 def shape_stack(p, m, x, y, z):
@@ -161,6 +163,47 @@ def shape_stack(p, m, x, y, z):
             p.cyl(c, (x, y, zz), (x, y, zz + s), s * 0.6, seg=24); zz += s
         else:
             bmesh.ops.create_icosphere(p.bm(c), subdivisions=1, radius=s, matrix=Matrix.Translation((x, y, zz + s)))
+
+
+def hex_relief(lib, m, col, x0=27.75, x1=32.20, z0=2.62, z1=3.45, wall=38.33, r=0.042):
+    """Wall art above the demo bays: ~700 3D-printed hex tiles, brand-colour gradient across the wall
+    (blue -> green -> yellow -> orange -> red -> pink, noise-blended), depths following a slow wave so the
+    spotlight rakes across it; on a black backing board. Plus the ceiling spot that lights it."""
+    p = lib["Part"]()
+    order = [m["pla"][i] for i in (2, 1, 4, 3, 0, 5)]
+    p.box(m["black"], x0 - 0.05, x1 + 0.05, wall - 0.012, wall - 0.002, z0 - 0.05, z1 + 0.05, bevel=0.003)
+    dx, dz = r * math.sqrt(3), r * 1.5
+    row = 0
+    z = z0 + r
+    while z < z1 - r * 0.5:
+        x = x0 + (dx / 2 if row % 2 else 0) + dx / 2
+        while x < x1 - dx * 0.4:
+            u = (x - x0) / (x1 - x0)
+            t = min(0.999, max(0.0, u + 0.12 * noise.noise(Vector((x * 1.7, z * 1.7, 0.5))) + rng.uniform(-0.045, 0.045)))
+            c = order[int(t * len(order))]
+            wave = 0.5 + 0.5 * math.sin(u * 7.0 + (z - z0) * 4.0 + 0.6 * noise.noise(Vector((x, z, 2.0))))
+            depth = 0.010 + 0.040 * wave + rng.uniform(0, 0.004)
+            yf = wall - 0.012 - depth
+            bmesh.ops.create_cone(p.bm(c), cap_ends=True, segments=6, radius1=r * 0.93, radius2=r * 0.93, depth=depth,
+                                  matrix=Matrix.Translation((x, yf + depth / 2, z)) @ Matrix.Rotation(math.pi / 2, 4, "X")
+                                  @ Matrix.Rotation(math.pi / 6, 4, "Z"))
+            x += dx
+        z += dz
+        row += 1
+    # ceiling spot (black can on a short stem) aimed at the relief
+    sx, sy, sz = (x0 + x1) / 2, wall - 1.6, 3.80
+    p.cyl(m["black"], (sx, sy, 3.93), (sx, sy, sz + 0.06), 0.008, seg=8)
+    aim = Vector(((x0 + x1) / 2, wall, (z0 + z1) / 2)) - Vector((sx, sy, sz))
+    q = aim.to_track_quat("Z", "Y").to_matrix().to_4x4()
+    can = Matrix.Translation((sx, sy, sz)) @ q
+    bmesh.ops.create_cone(p.bm(m["black"]), cap_ends=True, segments=20, radius1=0.045, radius2=0.045, depth=0.14, matrix=can)
+    p.emit("Art_HexRelief", col, Vector((0, 0, 0)))
+    ld = bpy.data.lights.get("Art_Spot") or bpy.data.lights.new("Art_Spot", "SPOT")
+    ld.energy, ld.spot_size, ld.spot_blend, ld.shadow_soft_size = 220.0, math.radians(62), 0.35, 0.03
+    ld.color = (1.0, 0.93, 0.85)
+    lo = bpy.data.objects.new("Art_Spot", ld)
+    col.objects.link(lo)
+    lo.matrix_world = Matrix.Translation(can @ Vector((0, 0, 0.08))) @ aim.to_track_quat("-Z", "Y").to_matrix().to_4x4()
 
 
 def demo_fill(lib, slots, levels, H, depth, loc, rot, col, bays, sign=True, name="Demo_Pieces"):
@@ -196,19 +239,5 @@ def demo_fill(lib, slots, levels, H, depth, loc, rot, col, bays, sign=True, name
     p.emit(name, col, loc, rot)
     if not sign:
         return k
-    # neon sign on the wall above the display
-    cu = bpy.data.curves.get("Demo_NeonSign") or bpy.data.curves.new("Demo_NeonSign", "FONT")
-    cu.body = "make anything"
-    cu.size = 0.30
-    cu.extrude = 0.006
-    cu.bevel_depth = 0.004
-    cu.align_x = "CENTER"
-    cu.materials.clear(); cu.materials.append(m["neon"])
-    ob = bpy.data.objects.new("Demo_NeonSign", cu)
-    col.objects.link(ob)
-    ob.location = (30.45, 38.30, 2.78)
-    ob.rotation_euler = (math.pi / 2, 0, 0)                             # reads left-to-right from the room
-    back = lib["Part"]()
-    back.box(m["acrylic"], 29.15, 31.75, 38.315, 38.325, 2.66, 3.10)
-    back.emit("Demo_NeonBacking", col, Vector((0, 0, 0)))
+    hex_relief(lib, m, col)
     return k

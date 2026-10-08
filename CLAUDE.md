@@ -76,7 +76,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Lounge / entryway** (SSW glass by the entrance): Cleveland-style sofas, profile coffee tables, felt
   poufs, TV on wheels, bookcase spine. No machines here.
 - **Demo display** (back-wall bays visible from the entrance, x ~27.4–32.4): imaginary Fab Lab projects,
-  pink neon "make anything". Spine's workshop side also shows projects.
+  hex-tile art relief above. Spine's workshop side also shows projects.
 - **Búnaðarbankinn** (equipment bank): STAFF ONLY, boxes only (SAMLA-style), enclosed by walls 2.80 m
   high (NOT to the slab); south wall moved to y 34.32–34.40; only entry = SECRET DOOR hidden in the
   birch-fin relief sculpture facing the entrance (y 36.62–37.58). Standing desk = a niche/gap in the
@@ -84,7 +84,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Mural-wall cupboard** (`build_cupboard.py`, x 24.32–25.70 against the mural wall): replaced the
   colleague's sink (hidden). Low 40x40 profile cupboard, birch top 0.905 m, door bay + 3 drawers.
 - Accent wall: generated brand mural (`scripts/mural.py`) on the partition by the small rooms; red arch
-  portal around its door; logo "FAB LAB SAGA". Signs from the manual placed per zone (`build_signs.py`).
+  portal around its door; logo "FAB LAB SAGA".
+- **Art piece** above the demo bays (`hex_relief` in build_demo.py): ~700 3D-printed hex tiles, brand gradient,
+  wave depths, lit by `Art_Spot`. Replaced the "make anything" neon (user: ugly, cliché - no neon signs). Signs from the manual placed per zone (`build_signs.py`).
 
 ## Look rules
 - Photorealism (user's choice). It's a LAB, not a house: no rugs, no indoor plants, no homey décor.

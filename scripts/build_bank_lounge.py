@@ -234,7 +234,10 @@ def clear_collection(name):
         data = o.data
         bpy.data.objects.remove(o)
         if data is not None and data.users == 0:
-            (bpy.data.curves if isinstance(data, bpy.types.Curve) else bpy.data.meshes).remove(data)
+            if isinstance(data, bpy.types.Mesh):
+                bpy.data.meshes.remove(data)
+            elif isinstance(data, bpy.types.Curve):
+                bpy.data.curves.remove(data)                       # lights are kept (re-used by name)
     return col
 
 
