@@ -50,13 +50,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `build_services` → `build_lighting` → `build_machines` → `build_print_farm` → `build_laser_room` → `build_bank_lounge` →
   `build_sofas` (ALWAYS after bank_lounge) → `build_craft_spine` → `build_worktables` → `build_life` (needs WorkTables) →
   `build_microelectronics` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
-  `build_material_storage` → `build_hall_entrance` → `build_welcome` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
+  `build_material_storage` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
   `add_cameras` → `purge_hidden`.
   Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
   exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
   (hides colleague leftovers), `build_material_storage` (CNC room stock), `build_hall_entrance` (hall signage),
   `fix_glass` (thin-glass shader), `build_worktables` (2x2 work tables + chairs), `build_print_farm` (printer wall with
-  cabins), `build_welcome` (on-call desk + Fab Lab TV), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
+  cabins), `build_welcome` (on-call desk + Fab Lab TV), `build_staff_area` (back WC, staff room, `Cut_WC2` boolean on ROOT.geo0 = the demolished second WC), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
   handheld scanner, red clam press, LOKLiK, EasyPress, Mug Press, BEKANT cart) are functions in build_machines.py; zone builders place them.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
@@ -147,6 +147,19 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   side, screen to the sitter, so the door view is clear and visitors never see the screen. Raised birch ledge
   (1.05 m) + modesty panel on the door-facing front, wrapped round the corridor end (tent card "On call", sign-in
   tablet). RULE (user): the on-call person must face the entrance; nobody entering may see their screen.
+- **Back staff area** (`build_staff_area.py`, collection StaffArea; reached by the back hallway x 25.90–27.51, which
+  runs from the main lab to the WNW end). Of the two tiny WCs off the hallway, the northern one (x 24.26–25.74,
+  y 17.89–19.27) was KNOCKED DOWN (user): `Cut_WC2` (Facade_Cutters, boolean on ROOT.geo0) removes its walls, its
+  floor is CNC room and its hallway doorway (y 18.14–18.93) is an OPEN PASSAGE, no door (user). The other WC
+  (x 24.26–25.735, y 19.42–21.66) is a standard WC (user): wall-hung toilet on a tiled cistern box, basin + mirror
+  opposite the door, tiles to 1.2 m, extractor fan, door ajar, "WC" plaque. STAFF ROOM = cafeteria / meeting room /
+  ranting lounge (user) in the room by the laser room (x 27.73–32.44, y 17.65–19.98 + entry bay x 27.73–29.52 to
+  y 21.63, door from the hallway y 20.31–21.35). Contents per user: kitchenette (sink, fridge, coffee machine,
+  microwave, dishwasher, wall cupboards), meeting table for 3–4, whiteboard (NO screen), sofa/armchair corner, coat
+  hooks (NO lockers). Layout is mine: kitchen on the hallway wall, IKEA GLOSTAD (Knisa dark grey) + POÄNG (Kelinge
+  dark yellow) on the WNW wall, table for 4 against the SSW glass, whiteboard on the laser wall, coat hooks on the
+  laser partition in the entry bay. The laser-room wall's gap to the glass (x 32.15–32.52) is closed (user).
+  `Cam_StaffRoom`.
 - **Fab Lab TV**: one 85" panel wall-mounted on the spine above the desk, facing the door - the first thing you see.
   Shows a real capture of FabLabTV (github.com/FabLabReykjavik/FabLabTV, MIT) `/screen`: our print-farm render as the
   local video, Neil Gershenfeld "On Call" (user's choice: the original demo profile, he has humour for it), weather,
