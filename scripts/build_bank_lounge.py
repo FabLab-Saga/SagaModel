@@ -184,8 +184,9 @@ def bror(w=0.85, d=0.55, h=0.88):
 
 
 # ---------------------------------------------------------------- lounge pieces
-def sofa(L, d=0.86, h=0.81):
+def sofa(L, d=0.86, h=0.81, m=None):
     """Cleveland-style sofa: plinth on short legs, seat + back cushions, square arms."""
+    SOFA = m or globals()["SOFA"]
     p = Part()
     arm = 0.16
     for x in (0.06, L - 0.10):
@@ -249,6 +250,71 @@ def soften(root, names, width=0.03):
             sd.levels, sd.render_levels = 1, 2
             for f in k.data.polygons:
                 f.use_smooth = True
+
+
+def conversation_pit(col):
+    """Lounge by the SSW glass (user choice 2026-10-08): two straight 2-seat sofas FACING EACH OTHER across a low
+    birch coffee table, set at right angles to the glass so both sides get the window light, two felt poufs closing
+    the ends (glass end + corridor end) into a ring of 6 - people sit in a circle and face each other.
+    Sofas 1.70 x 0.82 (charcoal linen, black 40x40 profile legs, felt cushions), table 1.10 x 0.60 x 0.40.
+    Footprint x 29.32-32.35, y 30.22-33.62: clay bench (y <= 30.08), on-call desk (x <= 29.92, y >= 33.87) and the
+    1.1 m walkway along the spine kept clear."""
+    char = bpy.data.materials.get("Sofa_Charcoal")
+    if char is None:
+        char = SOFA.copy()
+        char.name = "Sofa_Charcoal"
+        mix = next((n for n in char.node_tree.nodes if n.type == "MIX"), None)
+        if mix:
+            mix.inputs["B"].default_value = lin("#2A2D30")
+            mix.inputs["Factor"].default_value = 0.9
+        char.diffuse_color = lin("#3E4144")
+        bsdf = next(n for n in char.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+        bsdf.inputs["Sheen Weight"].default_value = 0.3
+        bsdf.inputs["Sheen Tint"].default_value = (0.35, 0.36, 0.38, 1)
+    felts = [bpy.data.materials[n] for n in ("Floff_Orange", "Floff_Green", "Floff_Blue")]
+    L, D, X0, CY = 1.70, 0.82, 29.95, 31.92
+    for k, (y_front, facing) in enumerate(((31.04, "+y"), (32.80, "-y"))):
+        p = Part()
+        arm, zs = 0.14, 0.18                                             # raised on legs: lighter, lab-like
+        for x in (0.05, L - 0.09):
+            for y in (0.05, D - 0.09):
+                p.profile(0.04, "z", x, y, 0.0, zs)                      # black profile legs
+        p.box(char, 0, L, 0, D, zs, zs + 0.16, bevel=0.02)               # base
+        p.box(char, 0, arm, 0, D, zs, 0.62, bevel=0.04)                  # arms
+        p.box(char, L - arm, L, 0, D, zs, 0.62, bevel=0.04)
+        p.box(char, arm, L - arm, D - 0.18, D, zs + 0.16, 0.80, bevel=0.05)        # back
+        cw = (L - 2 * arm) / 2
+        for i in range(2):
+            x = arm + i * cw
+            p.box(char, x + 0.006, x + cw - 0.006, 0.0, D - 0.18, zs + 0.16, 0.45, bevel=0.04)   # seats
+            p.box(char, x + 0.01, x + cw - 0.01, D - 0.34, D - 0.16, 0.45, 0.77, bevel=0.06)     # back cushions
+        cu = felts[(k * 2) % 3]                                          # one loose felt cushion each
+        mtx = Matrix.Translation(((0.42 if k else L - 0.42), D - 0.36, 0.62)) @ Matrix.Rotation(math.radians(-12), 4, "X") \
+            @ Matrix.Diagonal((0.40, 0.11, 0.36, 1))
+        bmesh.ops.create_cube(p.bm(cu), size=1.0, matrix=mtx)
+        cx = X0 + L / 2
+        cy = y_front - D / 2 if facing == "+y" else y_front + D / 2
+        loc, rot = lib["placement"](cx, cy, L, D, facing)
+        root = p.emit(f"Lounge_Sofa_{k + 1}", col, loc, rot)
+        soften(root, ("Sofa_Charcoal",) + tuple(f.name for f in felts), 0.03)
+    t = Part()                                                           # low birch coffee table, profile frame
+    TL, TD, TH = 1.10, 0.60, 0.40
+    tx0, ty0 = X0 + L / 2 - TL / 2, CY - TD / 2
+    for x in (tx0, tx0 + TL - 0.04):
+        for y in (ty0, ty0 + TD - 0.04):
+            t.profile(0.04, "z", x, y, 0.0, TH - 0.025)
+    for y in (ty0, ty0 + TD - 0.04):
+        t.profile(0.04, "x", tx0 + 0.04, y, TH - 0.065, TL - 0.08)
+    t.box(MAT["ply"], tx0 + 0.04, tx0 + TL - 0.04, ty0 + 0.02, ty0 + TD - 0.02, 0.10, 0.118)            # magazine shelf
+    t.box(MAT["ply"], tx0 - 0.01, tx0 + TL + 0.01, ty0 - 0.01, ty0 + TD + 0.01, TH - 0.025, TH, bevel=0.003)
+    # what's on it: a sketchbook, a 3D print, two mugs, a demo piece being passed round
+    t.box(mat("Sketchbook", "#F2F0EA", 0.8), tx0 + 0.20, tx0 + 0.50, ty0 + 0.15, ty0 + 0.36, TH, TH + 0.012)
+    t.cyl(STUFF[3], (tx0 + 0.75, ty0 + 0.30, TH), (tx0 + 0.75, ty0 + 0.30, TH + 0.10), 0.035, seg=24)
+    for dx, dy in ((0.95, 0.15), (0.35, 0.47)):
+        t.cyl(mat("Mug_White", "#F4F3EF", 0.3, coat=0.3), (tx0 + dx, ty0 + dy, TH), (tx0 + dx, ty0 + dy, TH + 0.09), 0.04, seg=24)
+    t.emit("Lounge_Table", col, Vector((0, 0, 0)))
+    for k, x in enumerate((32.12, 29.55)):                               # poufs close the glass end + corridor end
+        pouf(felts[(k + 1) % 3]).emit(f"Pouf_{k + 1}", col, Vector((x - 0.23, CY - 0.23, 0)))
 
 
 def nook(col, c, R=1.42, opening=math.radians(190), arc=math.radians(240)):
@@ -417,8 +483,8 @@ def build():
     part.emit("Bank_C0_CornerShelving", bank, loc_c0, rot_c0)
     fill_unit(slots_c0, lv_c, H, 0.60).emit("Bank_C0_Boxes", bank, loc_c0, rot_c0)
 
-    # ---------------- lounge: circular conversation nook by the SSW glass
-    nook(lounge, Vector((30.95, 31.60, 0.0)))
+    # ---------------- lounge: conversation pit (two facing sofas, poufs, coffee table) by the SSW glass
+    conversation_pit(lounge)
     return hidden
 
 

@@ -129,10 +129,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   bench on the SSW glass (x 31.65–32.45, y 28.18–30.08) with the red industrial clam press (Secabo TC7-based),
   Eazao Zero clay printer (stand-in, lab unsure; microwave + clay below) and
   Creality CR-10 Max. Main circulation x 28.0–29.5 stays clear.
-- **Lounge** (by the SSW glass): ONE small circular conversation nook (`nook()` in build_bank_lounge.py, centre
-  30.95/31.60, 2.85 m): 240° curved charcoal sofa (back to the glass, open towards the spine path), felt cushions,
-  round birch table, 2 felt poufs. No TV, no machines. Keep walkways clear (spine path ≥1.2 m, entrance zone,
-  strip along the glass). `build_sofas.py` is now a no-op (no Cleveland sofas left).
+- **Lounge** (by the SSW glass; `conversation_pit()` in build_bank_lounge.py): CONVERSATION PIT - two straight
+  2-seat sofas (1.70 x 0.82, charcoal linen on black profile legs, a felt cushion each) FACING EACH OTHER across a low
+  birch coffee table (1.10 x 0.60, profile frame, shelf), at right angles to the glass so both get the window light;
+  felt poufs close the glass end and the corridor end -> a ring of 6 (people sit in a circle; idea = force
+  interaction). Footprint x 29.32–32.35, y 30.22–33.62. No literal round sofa (user), no TV, no machines; walkway
+  along the spine (~1.1 m), the on-call desk and the clay bench kept clear. `Cam_LoungeLow` looks down the pit axis.
+  `build_sofas.py` is a no-op (no Cleveland sofas left); the old `nook()` is unused.
 - **Entrance / on-call desk** (`build_welcome.py`, collection Welcome): the on-call desk is NOT a reception desk -
   one person's sitting desk (1.6 x 0.7, 0.75 m) with its BACK TO THE SPINE BOOKCASE at x 28.93–29.92, y 33.87–35.77,
   FACING THE DOOR (straight ahead) with the lounge + corridor to the lab in view; the monitor sits on the corridor

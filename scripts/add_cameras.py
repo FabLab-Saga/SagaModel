@@ -13,7 +13,7 @@ CAMS = [
     ("Cam_ShopBot",       (23.55, 22.55, 1.75), (21.9, 18.9, 0.9), 20, 0.2, False, None),
     ("Cam_CNCThroughGlass", (25.2, 25.6, 1.6), (22.6, 20.4, 1.1), 24, 0.3, False, None),
     ("Cam_LaserDetail",   (31.20, 21.30, 1.30), (32.20, 20.85, 0.85), 30, -0.2, False, 4.0),
-    ("Cam_LoungeLow",     (28.75, 30.85, 1.05), (31.35, 31.95, 0.50), 20, 0.1, False, None),   # into the nook from its opening
+    ("Cam_LoungeLow",     (28.85, 31.92, 1.10), (32.40, 31.92, 0.55), 22, 0.1, False, None),   # down the pit axis, sofas left/right
     ("Cam_BookDetail",    (29.05, 35.30, 1.30), (28.22, 34.55, 1.15), 45, 0.4, False, 2.8),
     ("Cam_FeltDetail",    (22.40, 28.70, 1.70), (22.05, 29.75, 2.20), 30, 0.3, False, 4.0),
     ("Cam_MuralFront",    (25.15, 26.25, 1.60), (26.60, 21.84, 1.90), 22, 0.6, False, None),   # from the central aisle
