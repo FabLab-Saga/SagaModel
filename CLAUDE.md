@@ -32,7 +32,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
   `build_services` → `build_machines` → `build_bank_lounge` → `build_sofas` (ALWAYS after bank_lounge) →
   `build_craft_spine` → `build_life` → `build_microelectronics` → `build_textile` → `build_bank_walls` →
-  `build_cupboard` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
+  `build_cupboard` → `cleanup_leftovers` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` → `add_cameras`.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
