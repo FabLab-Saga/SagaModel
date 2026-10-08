@@ -103,7 +103,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   round birch table, 2 felt poufs. No TV, no machines. Keep walkways clear (spine path ≥1.2 m, entrance zone,
   strip along the glass). `build_sofas.py` is now a no-op (no Cleveland sofas left).
 - **Demo display** (back-wall bays visible from the entrance, x ~27.4–32.4): imaginary Fab Lab projects,
-  hex-tile art relief above. Spine's workshop side also shows projects.
+  hex-tile art relief above. Spine's workshop side (faces electronics) = TOOL LIBRARY (`tool_library()` in
+  build_microelectronics.py): cases, drills (Poly Haven Drill_01), rework/measuring gear, drawer cabinets, hand-tool
+  blocks, kit boxes in the 2 visible bays; the bays behind the bank wall hold closed boxes. No demo pieces there.
 - **Búnaðarbankinn** (equipment bank): STAFF ONLY, boxes only (SAMLA-style), enclosed by walls 2.80 m
   high (NOT to the slab); south wall moved to y 34.32–34.40; only entry = SECRET DOOR hidden in the
   birch-fin relief sculpture facing the entrance (y 36.62–37.58). Standing desk = a niche/gap in the
@@ -138,9 +140,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - On-site 360° photo for the window view → `refs/skybox/` (current HDRI is a CC0 stand-in).
 - Colleague to confirm CNC model (list: PRS Alpha 120; his model had 96x60).
 - Brand sign typos in the source files: "VERKÆRI" (missing F), "ELECTRONCS".
-- Spine project shelves past the moved bank wall face the wall (offer: shorten the spine).
+- Spine bays 0-1 (y 34.0-36.4) face the bank wall 5 cm away (closed boxes only; offer: shorten the spine).
 - Upper hotel floors not modelled → keep exterior shots tight.
 - CNC room's WNW end (y ≈15.08) has a 2.3 m unglazed opening (x 22.4–24.7) to outdoors in the colleague's
   model — ask the user: loading door, glazing, or wall?
 - Animated walkthrough (stills done on MPDESKTOP: RTX 4070 Ti SUPER, OptiX; ~10-25 s per 1080p still).
-- Spine has no camera on its workshop face; the demo pieces there are only seen in passing.
+- Spine has no camera on its workshop face (tool library); add one if it should be in the finals.

@@ -460,8 +460,130 @@ def build():
     glass_toolwall(m, col)
     component_storage(m, col)
     electronics_commons(m, col)
+    tool_library(m, col)
     print("microelectronics built; bench length %.2f m" % L)
 
+
+
+def tool_library(m, col):
+    """Tool library on the workshop face of the spine (faces -x, toward electronics). Spine unit: 4 bays x 1.18 m,
+    0.30 deep, levels 0.10..2.00; local x runs toward -y, so bays 3 and 2 (y 31.6-34.0) are the visible ones;
+    bays 1 and 0 sit 5 cm from the bank wall and only get closed boxes."""
+    lv = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]
+    _, slots, L = lib["shelf_unit"]([1.18] * 4, 0.30, 2.42, lv)
+    loc, rot = lib["placement"](27.62 + 0.15, 31.55 + L / 2, L, 0.30, "-x")
+    W = lambda x, y, z: lib["to_world"](loc, rot, (x, y, z))
+    life = {}
+    _l = open(HERE + "build_life.py").read()
+    exec(_l[:_l.index("\ndef build():")], life)
+    p = Part()
+    case_red = mat("Case_Red", "#B3201C", 0.45)
+    case_blk = mat("Case_Black", "#1C1D1F", 0.5)
+    case_grn = mat("Case_Teal", "#1E6E6A", 0.45)
+
+    def case(c, x, z, w=0.40, d=0.27, h=0.16, latch=None):              # systainer-style stackable case
+        p.box(c, x, x + w, 0.02, 0.02 + d, z, z + h, bevel=0.008)
+        p.box(m["black"], x + 0.01, x + w - 0.01, 0.018, 0.02, z + h - 0.03, z + h - 0.025)
+        p.box(latch or m["yellow"], x + w / 2 - 0.03, x + w / 2 + 0.03, 0.012, 0.02, z + h - 0.06, z + h - 0.02, bevel=0.003)
+        p.box(m["black"], x + w * 0.3, x + w * 0.7, 0.10, 0.18, z + h, z + h + 0.02, bevel=0.005)    # handle
+        p.box(m["label"], x + 0.03, x + 0.13, 0.0185, 0.019, z + 0.03, z + 0.07)
+        return z + h
+
+    def labelled_box(x, z, w, h, c):
+        p.box(c, x, x + w, 0.02, 0.28, z, z + h, bevel=0.004)
+        p.box(m["label"], x + w * 0.25, x + w * 0.75, 0.0185, 0.02, z + h * 0.45, z + h * 0.75)
+
+    for bi in (3, 2):
+        xa, xb, _, _, z0 = slots[(bi, 0)]                               # bottom: toolboxes + case stack
+        if bi == 3:
+            z = case(case_blk, xa + 0.05, z0)
+            case(case_red, xa + 0.05, z, latch=m["black"])
+            toolbox(p, m, m["red"], xa + 0.55, 0.03, z0, w=0.50, d=0.24, h=0.24)
+        else:
+            toolbox(p, m, m["blue"], xa + 0.05, 0.03, z0, w=0.45, d=0.24, h=0.22)
+            z = case(case_grn, xa + 0.62, z0)
+            case(case_blk, xa + 0.62, z)
+        xa, xb, _, _, z1 = slots[(bi, 1)]                               # power tools
+        if bi == 3:
+            for k, lx in enumerate((xa + 0.20, xa + 0.48)):
+                w = W(lx, 0.15, z1)
+                life["instance"]("Drill_01", col, f"ToolLib_Drill_{k}", w.x, w.y, w.z, rot + 1.2 + 0.5 * k, target=0.30)
+            p.box(m["black"], xa + 0.70, xa + 0.90, 0.06, 0.20, z1, z1 + 0.07, bevel=0.008)    # charger
+            p.box(m["yellow"], xa + 0.72, xa + 0.88, 0.09, 0.17, z1 + 0.07, z1 + 0.13, bevel=0.006)
+            for k in range(2):                                                                 # spare batteries
+                p.box(m["black"], xa + 0.95 + k * 0.09, xa + 1.03 + k * 0.09, 0.08, 0.20, z1, z1 + 0.08, bevel=0.006)
+                p.box(m["yellow"], xa + 0.95 + k * 0.09, xa + 1.03 + k * 0.09, 0.08, 0.20, z1 + 0.08, z1 + 0.10, bevel=0.004)
+        else:
+            case(case_blk, xa + 0.05, z1, w=0.42, h=0.13)                                      # jigsaw case
+            case(case_red, xa + 0.52, z1, w=0.30, d=0.22, h=0.11, latch=m["black"])           # rotary tool kit
+            for k in range(3):                                                                 # glue guns in a ply rack
+                gx = xa + 0.90 + k * 0.08
+                p.box(m["blue"], gx, gx + 0.03, 0.08, 0.22, z1 + 0.10, z1 + 0.15, bevel=0.006)
+                p.box(m["blue"], gx, gx + 0.03, 0.17, 0.21, z1 + 0.02, z1 + 0.11, bevel=0.005)
+            p.box(MAT["ply"], xa + 0.88, xa + 1.14, 0.05, 0.25, z1, z1 + 0.02, bevel=0.002)
+        xa, xb, _, _, z2 = slots[(bi, 2)]                               # soldering / measuring
+        if bi == 3:
+            p.box(m["grey"], xa + 0.05, xa + 0.30, 0.04, 0.22, z2, z2 + 0.11, bevel=0.008)    # hot-air rework station
+            p.box(m["screen"], xa + 0.07, xa + 0.18, 0.039, 0.04, z2 + 0.05, z2 + 0.09)
+            p.cyl(m["black"], (xa + 0.38, 0.12, z2), (xa + 0.38, 0.12, z2 + 0.16), 0.02, seg=16)  # hot-air wand holder
+            for k in range(2):                                                                 # helping hands
+                hx = xa + 0.52 + k * 0.20
+                p.box(m["black"], hx, hx + 0.12, 0.06, 0.18, z2, z2 + 0.02, bevel=0.004)
+                for a in (-1, 1):
+                    p.cyl(m["steel"], (hx + 0.06, 0.12, z2 + 0.02), (hx + 0.06 + a * 0.05, 0.09, z2 + 0.17), 0.003, seg=6)
+                    p.cyl(m["steel"], (hx + 0.06 + a * 0.05, 0.09, z2 + 0.17), (hx + 0.06 + a * 0.06, 0.07, z2 + 0.19), 0.006, seg=8)
+            p.cyl(m["steel"], (xa + 0.95, 0.12, z2), (xa + 0.95, 0.12, z2 + 0.20), 0.012, seg=12)  # desoldering pump
+            p.cyl(m["blue"], (xa + 0.95, 0.12, z2 + 0.20), (xa + 0.95, 0.12, z2 + 0.24), 0.008, seg=10)
+            for k in range(3):                                                                 # solder spools
+                p.cyl(m["solder"], (xa + 1.03, 0.08 + k * 0.06, z2 + 0.03), (xa + 1.10, 0.08 + k * 0.06, z2 + 0.03), 0.03, seg=20)
+        else:
+            sp_ = scope_and_psu(m)
+            sp_.emit("ToolLib_ScopePSU", col, W(xa + 0.05, 0.03, z2), rot)
+            for k in range(3):                                                                 # multimeters on stands
+                mx = xa + 0.68 + k * 0.15
+                p.box(m["yellow"], mx, mx + 0.09, 0.10, 0.14, z2, z2 + 0.18, bevel=0.01)
+                p.box(m["screen"], mx + 0.015, mx + 0.075, 0.099, 0.10, z2 + 0.12, z2 + 0.165)
+                p.cyl(m["black"], (mx + 0.045, 0.098, z2 + 0.075), (mx + 0.045, 0.10, z2 + 0.075), 0.024, seg=24)
+                p.box(m["black"], mx + 0.02, mx + 0.07, 0.14, 0.20, z2, z2 + 0.012)              # kickstand foot
+        xa, xb, _, _, z3 = slots[(bi, 3)]                               # eye level: small-parts drawer cabinets
+        for k in range(2):
+            cab, cw, ch = drawer_cabinet(m, cols=6, rows=6)
+            cab.emit(f"ToolLib_Cab_{bi}_{k}", col, W(xa + 0.08 + k * 0.54, 0.05, z3), rot)
+        xa, xb, _, _, z4 = slots[(bi, 4)]                               # hand tools standing in ply blocks
+        if bi == 3:
+            p.box(MAT["ply"], xa + 0.05, xa + 0.45, 0.08, 0.20, z4, z4 + 0.05, bevel=0.003)   # screwdriver block
+            for k in range(9):
+                sx = xa + 0.08 + k * 0.042
+                g = (m["red"], m["blue"], m["yellow"], m["black"])[k % 4]
+                p.cyl(m["steel"], (sx, 0.14, z4 + 0.05), (sx, 0.14, z4 + 0.13), 0.0025, seg=8)
+                p.cyl(g, (sx, 0.14, z4 + 0.13), (sx, 0.14, z4 + 0.23), 0.012, seg=12)
+            p.box(MAT["ply"], xa + 0.55, xa + 1.05, 0.08, 0.20, z4, z4 + 0.04, bevel=0.003)   # plier block
+            for k in range(6):
+                px = xa + 0.60 + k * 0.075
+                g = (m["red"], m["blue"], m["black"])[k % 3]
+                p.box(m["steel"], px - 0.008, px + 0.008, 0.13, 0.15, z4 + 0.17, z4 + 0.22, bevel=0.002)
+                for dx in (-0.012, 0.012):
+                    p.box(g, px + dx - 0.006, px + dx + 0.006, 0.13, 0.15, z4 + 0.04, z4 + 0.17, bevel=0.004)
+        else:
+            p.box(m["grey"], xa + 0.05, xa + 0.55, 0.04, 0.26, z4, z4 + 0.04, bevel=0.004)    # tray: tweezers, calipers
+            for k in range(5):
+                tx = xa + 0.10 + k * 0.025
+                p.box(m["steel"], tx, tx + 0.006, 0.07, 0.20, z4 + 0.04, z4 + 0.046)
+            p.box(m["steel"], xa + 0.30, xa + 0.50, 0.10, 0.12, z4 + 0.04, z4 + 0.048)
+            p.box(m["steel"], xa + 0.30, xa + 0.32, 0.07, 0.15, z4 + 0.04, z4 + 0.048)
+            for k in range(8):                                                                 # hex key fan in a holder
+                p.box(m["black"], xa + 0.65 + k * 0.012, xa + 0.655 + k * 0.012, 0.13, 0.135, z4 + 0.03, z4 + 0.08 + k * 0.012)
+            p.box(m["red"], xa + 0.63, xa + 0.77, 0.12, 0.15, z4, z4 + 0.04, bevel=0.004)
+            case(case_grn, xa + 0.85, z4, w=0.28, d=0.22, h=0.10)                              # crimp kit
+        xa, xb, _, _, z5 = slots[(bi, 5)]                               # top: labelled kit boxes
+        for k in range(3):
+            labelled_box(xa + 0.04 + k * 0.38, z5, 0.34, 0.22, (MAT["bins"][(bi + k) % 6] if k == 1 else m["grey"]))
+    for bi in (1, 0):                                                   # behind the bank wall: closed boxes only
+        for li in range(6):
+            xa, xb, _, _, zt = slots[(bi, li)]
+            for k in range(3):
+                labelled_box(xa + 0.04 + k * 0.38, zt, 0.34, 0.25 if li < 5 else 0.22, m["grey"])
+    p.emit("ToolLibrary", col, loc, rot)
 
 
 def whiteboard_schematic(b, ink, yf, col):

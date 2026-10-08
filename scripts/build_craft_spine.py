@@ -234,11 +234,8 @@ def build():
         loc, rot = lib["placement"](xc, 31.55 + L / 2, L, 0.30, facing)
         part.emit(f"Spine_{side}_Shelving", sp, loc, rot)
         fill = Part()
-        if side == "Boxes":                                            # workshop side: projects, no bank boxes (staff-only)
-            demo = {}
-            exec(open(HERE + "build_demo.py").read(), demo)
-            demo["demo_fill"](lib, slots, lv, 2.42, 0.30, loc, rot, sp, {0, 1, 2, 3}, sign=False, name="Spine_Workshop_Projects")
-            fill = Part()
+        if side == "Boxes":                                            # workshop side: tool library, filled by
+            fill = Part()                                              # build_microelectronics.tool_library()
         else:
             tops = lv + [2.42]
             for (bi, li), (xa, xb, _, _, zt) in slots.items():
