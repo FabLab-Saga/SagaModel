@@ -156,10 +156,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   ranting lounge (user) in the room by the laser room (x 27.73–32.44, y 17.65–19.98 + entry bay x 27.73–29.52 to
   y 21.63, door from the hallway y 20.31–21.35). Contents per user: kitchenette (sink, fridge, coffee machine,
   microwave, dishwasher, wall cupboards), meeting table for 3–4, whiteboard (NO screen), sofa/armchair corner, coat
-  hooks (NO lockers). Layout is mine: kitchen on the hallway wall, IKEA GLOSTAD (Knisa dark grey) + POÄNG (Kelinge
-  dark yellow) on the WNW wall, table for 4 against the SSW glass, whiteboard on the laser wall, coat hooks on the
-  laser partition in the entry bay. The laser-room wall's gap to the glass (x 32.15–32.52) is closed (user).
-  `Cam_StaffRoom`.
+  hooks (NO lockers). Layout is mine: kitchen on the hallway wall with the fridge at its open end by the entry bay
+  (RULE: every appliance door must open - keep >= 1 m clear in front of the whole kitchen run), table for 4 in the
+  middle (end on the WNW wall), ranting corner in the window end (IKEA GLOSTAD, Knisa dark grey, on the WNW wall +
+  POÄNG, Kelinge dark yellow, facing it from the laser-wall corner), whiteboard on the laser wall, coat hooks on the
+  laser partition in the entry bay; ~1.1 m route along the laser wall. Signs are in ICELANDIC (user): hallway plaque
+  "KAFFISTOFA / starfsfólk", "WC"; mounted flat on the wall. The laser-room wall's gap to the glass
+  (x 32.15–32.52) is closed (user). `Cam_StaffRoom`.
 - **Fab Lab TV**: one 85" panel wall-mounted on the spine above the desk, facing the door - the first thing you see.
   Shows a real capture of FabLabTV (github.com/FabLabReykjavik/FabLabTV, MIT) `/screen`: our print-farm render as the
   local video, Neil Gershenfeld "On Call" (user's choice: the original demo profile, he has humour for it), weather,

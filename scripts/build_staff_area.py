@@ -11,10 +11,12 @@ Facts (user, 2026-10-08):
   doorway from the hallway at y 20.31-21.35) is the staff cafeteria / meeting room / ranting lounge. Contents (user):
   kitchenette with sink, fridge, coffee machine, microwave, dishwasher and wall cupboards; a meeting table for 3-4;
   whiteboard (no screen); a sofa/armchair corner; coat hooks (no lockers).
-Layout (my choices, not the user's): kitchenette along the hallway wall (fridge in the window-side corner), ranting
-corner on the WNW wall (IKEA GLOSTAD 2-seat sofa + POÄNG armchair angled towards it, small round table), meeting
-table for 4 against the SSW glass (window view for everyone), whiteboard on the laser-room wall (faces the sofa and
-the table), coat hooks + hat shelf on the laser partition in the entry bay. Door into the staff room shown open.
+Layout (my choices, not the user's): kitchenette along the hallway wall, fridge at its open end by the entry bay (its
+door must open: keep >= 1 m clear in front of the whole run); meeting table for 4 in the middle with its end on the
+WNW wall; ranting corner in the window end (IKEA GLOSTAD 2-seat sofa on the WNW wall, POÄNG armchair facing it from the
+laser-wall corner, small round table); whiteboard on the laser-room wall over the route; coat hooks + hat shelf on the
+laser partition in the entry bay. Door into the staff room shown open. Hallway sign in Icelandic: "KAFFISTOFA /
+starfsfólk".
 Real furniture at catalogue size, modelled from IKEA product photos: GLOSTAD 121 x 78 x 68 (seat 41, arm 57, arm
 3.5 cm, 23 cm free under, thin angled black legs); POÄNG 68 x 82 x 100 (seat 42, bentwood birch cantilever frame).
 """
@@ -277,43 +279,47 @@ def wc(col, M):
     # door: hinged at the CNC end of the opening, opens inward, drawn ajar so the room reads from the hallway
     door(col, "WC_Door", (x1, d0 + 0.02), (d1 - d0) - 0.06, (0, 1), 62)
     # "WC" plaque on the hallway side
-    plaque(col, "WC", (HALL_X[0] + 0.002, d1 + 0.12, 1.55), "+x")
+    plaque(col, "WC", "WC", (HALL_X[0], d1 + 0.14, 1.55), (1, 0))
 
 
-def plaque(col, text, pos, facing):
-    cu = bpy.data.curves.get(f"Plaque_{text}") or bpy.data.curves.new(f"Plaque_{text}", "FONT")
-    cu.body, cu.size, cu.align_x, cu.align_y = text, 0.08, "CENTER", "CENTER"
-    font = bpy.path.abspath("//refs/branding/fonts/Roboto-Bold.ttf")
-    cu.font = bpy.data.fonts.load(font, check_existing=True)
-    cu.extrude = 0.001
+def plaque(col, name, text, pos, normal, w=0.18, h=0.18, size=0.08):
+    """Door sign: birch backing + white face flat on the wall at `pos` (point on the wall surface), facing `normal`
+    (unit 2D, out of the wall), black Roboto Bold text; multi-line text with \\n."""
+    n = Vector((normal[0], normal[1], 0)).normalized()
+    rot = math.atan2(n.y, n.x) + math.pi / 2                       # maps local -y (front) onto the normal
+    p = Part()
+    p.box(MAT["ply"], -w / 2 - 0.01, w / 2 + 0.01, -0.010, 0.0, -h / 2 - 0.01, h / 2 + 0.01, bevel=0.003)
+    p.box(bpy.data.materials["Paint_White_Gloss"], -w / 2, w / 2, -0.014, -0.010, -h / 2, h / 2, bevel=0.003)
+    p.emit(f"Plaque_{name}_Board", col, Vector(pos), rot)
+    cu = bpy.data.curves.get(f"Plaque_{name}") or bpy.data.curves.new(f"Plaque_{name}", "FONT")
+    cu.body, cu.size, cu.align_x, cu.align_y = text, size, "CENTER", "CENTER"
+    cu.space_line = 1.1
+    cu.font = bpy.data.fonts.load(bpy.path.abspath("//refs/branding/fonts/Roboto-Bold.ttf"), check_existing=True)
+    cu.extrude = 0.0006
     cu.materials.clear()
     cu.materials.append(bpy.data.materials["Cart_Black"])
-    o = bpy.data.objects.new(f"Plaque_{text}", cu)
+    o = bpy.data.objects.new(f"Plaque_{name}", cu)
     col.objects.link(o)
-    o.location = pos
-    o.rotation_euler = (math.pi / 2, 0, math.pi / 2 if facing == "+x" else 0)
-    p = Part()
-    p.box(bpy.data.materials["Paint_White_Gloss"], -0.08, 0.08, -0.004, 0.0, -0.08, 0.08, bevel=0.004)
-    p.box(MAT["ply"], -0.09, 0.09, -0.010, -0.004, -0.09, 0.09, bevel=0.003)
-    root = p.emit(f"Plaque_{text}_Board", col, Vector(pos), 0)
-    root.rotation_euler = (0, 0, -math.pi / 2 if facing == "+x" else math.pi)
-    o.location = Vector(pos) + (Vector((0.006, 0, 0)) if facing == "+x" else Vector((0, -0.006, 0)))
+    o.location = Vector(pos) + n * 0.0150
+    o.rotation_euler = (math.pi / 2, 0, rot)
 
 
 # ------------------------------------------------------------------ staff room
 def kitchenette(col, M):
-    """Along the hallway wall (x 27.73, faces +x): fridge-freezer in the window-side corner, then dishwasher, sink,
-    drawers (coffee machine + microwave on the worktop), wall cupboards over the run, tiled splashback."""
+    """Along the hallway wall (x 27.73, faces +x): dishwasher, sink, drawers from the WNW corner (coffee machine +
+    microwave on the worktop), fridge-freezer at the open end by the entry bay, wall cupboards, tiled splashback.
+    Keep >= 1.0 m free in front of the whole run (doors, dishwasher, fridge must open)."""
     X, Y0 = ST["x0"], ST["y0"]
     D, H = 0.60, 0.90
-    fy0, fy1 = Y0 + 0.01, Y0 + 0.61                                   # fridge
-    r0, r1 = fy1 + 0.01, fy1 + 0.01 + 1.80                           # base run: DW, sink, drawers
+    r0, r1 = Y0 + 0.01, Y0 + 0.01 + 1.80                             # base run from the WNW corner: DW, sink, drawers
+    fy0, fy1 = r1 + 0.01, r1 + 0.61                                   # fridge at the open end: door swings into the
+                                                                      # entry zone (nothing in front of it)
     p = Part()
     # fridge-freezer, stainless, 1.86 m, two doors, recessed handles
     p.box(M["steel"], X + 0.02, X + 0.67, fy0, fy1, 0.0, 1.86, bevel=0.008)
     p.box(M["black"], X + 0.67, X + 0.672, fy0 + 0.02, fy1 - 0.02, 1.15, 1.152)       # door split
     for z0, z1 in ((1.30, 1.60), (0.80, 1.05)):
-        p.box(M["black"], X + 0.672, X + 0.69, fy1 - 0.06, fy1 - 0.04, z0, z1)           # bar handles
+        p.box(M["black"], X + 0.672, X + 0.69, fy0 + 0.04, fy0 + 0.06, z0, z1)           # handles (hinge at fy1)
     # carcasses on a black plinth
     p.box(M["black"], X + 0.06, X + D - 0.06, r0, r1, 0.0, 0.10)
     ply = MAT["ply"]
@@ -440,28 +446,9 @@ def staff_room(col, M):
     p.box(M["black"], 32.515, 32.522, 19.984, 20.14, 0.0, SOFFIT)
     p.emit("Staff_LaserWall_Infill", col, Vector((0, 0, 0)))
     kitchenette(col, M)
-    # ranting corner on the WNW wall: GLOSTAD facing +y, POÄNG angled in towards it, small round table
-    p, W, D = glostad(M)
-    sx0 = X0 + 0.70
-    root = put(p, "Staff_Sofa_GLOSTAD", col, sx0 + W / 2, Y0 + 0.01 + D / 2, W, D, "+y")
-    soften(root, ("Knisa_DarkGrey",), 0.015)
-    p, W2, D2 = poang(M)
-    ang = math.radians(180 - 38)                                      # front turned from +y towards the sofa (-x)
-    c = Vector((sx0 + W + 0.62, Y0 + 0.50, 0))
-    loc = c + Matrix.Rotation(ang, 4, "Z") @ Vector((-W2 / 2, -D2 / 2, 0))
-    root = p.emit("Staff_Armchair_POANG", col, loc, ang)
-    soften(root, ("Kelinge_DarkYellow",), 0.015)
-    t = Part()
-    tx, ty = sx0 + W - 0.20, Y0 + 1.15
-    t.cyl(MAT["ply"], (tx, ty, 0.43), (tx, ty, 0.45), 0.25, seg=40)
-    t.cyl(M["black"], (tx, ty, 0.0), (tx, ty, 0.43), 0.02, seg=12)
-    t.cyl(M["black"], (tx, ty, 0.0), (tx, ty, 0.012), 0.17, seg=32)
-    t.cyl(M["mugs"][2], (tx + 0.08, ty - 0.05, 0.45), (tx + 0.08, ty - 0.05, 0.545), 0.04, seg=24)
-    t.box(bpy.data.materials.get("Sketchbook") or mat("Sketchbook", "#F2F0EA", 0.8),
-          tx - 0.16, tx + 0.02, ty - 0.02, ty + 0.12, 0.45, 0.462)
-    t.emit("Staff_SideTable", col, Vector((0, 0, 0)))
-    # meeting table for 4 against the glass: long axis along y, 2 chairs on the room side + 1 at each end
-    TX0, TX1, TY0, TY1, TH = X1 - 0.88, X1 - 0.08, 18.21, 19.41, 0.74
+    # meeting table for 4 in the middle, its end against the WNW wall, a chair pair each side; the kitchen keeps
+    # >= 1 m in front, the route bay -> window runs along the laser wall (y 18.87-19.98, ~1.1 m)
+    TX0, TX1, TY0, TY1, TH = 29.80, 30.60, Y0 + 0.02, Y0 + 1.22, 0.74
     t = Part()
     for x in (TX0 + 0.03, TX1 - 0.07):
         for y in (TY0 + 0.03, TY1 - 0.07):
@@ -472,17 +459,37 @@ def staff_room(col, M):
     for y in (TY0 + 0.03, TY1 - 0.07):
         t.profile(0.04, "x", TX0 + 0.07, y, TH - 0.065, TX1 - TX0 - 0.14)
     t.box(MAT["ply"], TX0, TX1, TY0, TY1, TH - 0.025, TH, bevel=0.003)
-    t.box(bpy.data.materials["Sketchbook"], TX0 + 0.15, TX0 + 0.45, TY0 + 0.30, TY0 + 0.52, TH, TH + 0.008)
-    t.cyl(M["mugs"][0], (TX0 + 0.25, TY1 - 0.30, TH), (TX0 + 0.25, TY1 - 0.30, TH + 0.095), 0.04, seg=24)
-    t.cyl(M["mugs"][1], (TX0 + 0.55, TY0 + 0.25, TH), (TX0 + 0.55, TY0 + 0.25, TH + 0.095), 0.04, seg=24)
+    sk = bpy.data.materials.get("Sketchbook") or mat("Sketchbook", "#F2F0EA", 0.8)
+    t.box(sk, TX0 + 0.25, TX0 + 0.55, TY0 + 0.40, TY0 + 0.62, TH, TH + 0.008)
+    t.cyl(M["mugs"][0], (TX0 + 0.20, TY1 - 0.25, TH), (TX0 + 0.20, TY1 - 0.25, TH + 0.095), 0.04, seg=24)
+    t.cyl(M["mugs"][1], (TX1 - 0.18, TY0 + 0.25, TH), (TX1 - 0.18, TY0 + 0.25, TH + 0.095), 0.04, seg=24)
     t.emit("Staff_MeetingTable", col, Vector((0, 0, 0)))
     cw = 0.44
-    for k, (cx, cy, facing) in enumerate(((TX0 - 0.20, TY0 + 0.32, "+x"), (TX0 - 0.20, TY1 - 0.32, "+x"),
-                                          ((TX0 + TX1) / 2, TY0 - 0.21, "+y"), ((TX0 + TX1) / 2, TY1 + 0.25, "-y"))):
+    for k, (cx, cy, facing) in enumerate(((TX0 - 0.19, TY0 + 0.32, "+x"), (TX0 - 0.19, TY1 - 0.30, "+x"),
+                                          (TX1 + 0.19, TY0 + 0.32, "-x"), (TX1 + 0.19, TY1 - 0.30, "-x"))):
         put(tex["chair"](), f"Staff_Chair_{k + 1}", col, cx, cy, cw, cw, facing)
+    # ranting corner in the window end: GLOSTAD on the WNW wall (side to the glass), POÄNG facing it from the
+    # laser-wall corner, small round table on the open side
+    p, W, D = glostad(M)
+    sx1 = X1 - 0.04
+    root = put(p, "Staff_Sofa_GLOSTAD", col, sx1 - W / 2, Y0 + 0.01 + D / 2, W, D, "+y")
+    soften(root, ("Knisa_DarkGrey",), 0.015)
+    p, W2, D2 = poang(M)
+    ang = math.radians(20)                                            # front faces -y, turned a little to the room
+    c = Vector((sx1 - W / 2 + 0.05, Y1 - 0.51, 0))
+    loc = c + Matrix.Rotation(ang, 4, "Z") @ Vector((-W2 / 2, -D2 / 2, 0))
+    root = p.emit("Staff_Armchair_POANG", col, loc, ang)
+    soften(root, ("Kelinge_DarkYellow",), 0.015)
+    t = Part()
+    tx, ty = sx1 - W - 0.035, Y0 + 1.375
+    t.cyl(MAT["ply"], (tx, ty, 0.43), (tx, ty, 0.45), 0.20, seg=40)
+    t.cyl(M["black"], (tx, ty, 0.0), (tx, ty, 0.43), 0.02, seg=12)
+    t.cyl(M["black"], (tx, ty, 0.0), (tx, ty, 0.012), 0.16, seg=32)
+    t.cyl(M["mugs"][2], (tx + 0.06, ty - 0.04, 0.45), (tx + 0.06, ty - 0.04, 0.545), 0.04, seg=24)
+    t.emit("Staff_SideTable", col, Vector((0, 0, 0)))
     # whiteboard on the laser-room wall (faces -y), seen from the sofa and the table
     p = Part()
-    wx0, wx1 = 29.95, 31.35
+    wx0, wx1 = 29.55, 30.95
     p.box(M["board"], wx0, wx1, Y1 - 0.02, Y1, 0.95, 1.90)
     for z0, z1 in ((0.93, 0.95), (1.90, 1.92)):
         p.box(M["alu"], wx0 - 0.02, wx1 + 0.02, Y1 - 0.025, Y1, z0, z1)
@@ -540,7 +547,7 @@ def staff_room(col, M):
     # door from the hallway: hinged at the far (y 21.35) jamb, opens into the bay, drawn open
     d0, d1 = ST["door"]
     door(col, "Staff_Door", (X0 - 0.02, d1 - 0.02), (d1 - d0) - 0.06, (0, -1), 80)
-    plaque(col, "STARFSFÓLK", (HALL_X[1] - 0.002, d0 - 0.20, 1.55), "-x")
+    plaque(col, "Kaffistofa", "KAFFISTOFA\nstarfsfólk", (HALL_X[1], d0 - 0.24, 1.55), (-1, 0), w=0.30, h=0.14, size=0.042)
 
 
 def lights(col):
