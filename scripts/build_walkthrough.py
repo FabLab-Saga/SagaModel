@@ -1,62 +1,91 @@
-"""Presentation walkthrough: keyframed shot cameras on one 30 fps timeline (RENDER.md, script v2).
+"""Presentation walkthrough v1: keyframed shot cameras on one 30 fps timeline (RENDER.md, script v2).
 Re-runnable inside Blender (rebuilds collection "Walkthrough"). Each shot = one camera "Walk_<NN>_<name>";
-timeline markers bind the cameras, so rendering the scene frame range renders the whole film body
-(0:04-1:25 of the script; intro/outro/titles are made outside Blender).
+timeline markers bind the cameras, so rendering the scene frame range renders the whole film body.
 
-Shot poses are derived from zone geometry in CLAUDE.md, NOT from the old Cam_* stills cameras (many are stale).
-KEYS: (t 0..1 within the shot, eye xyz, target xyz, lens mm). Interpolation: smooth (Bezier, auto-clamped).
-Frame 1 = 0:04 of the film.
+Directing rules (presentation-video-production skill, references/cinematography.md):
+- ONE motion per shot: a straight-line move (dolly / truck / pedestal or a straight diagonal) at CONSTANT speed
+  (linear keys, no easing), with a FIXED view direction. No rotation while moving, no pans, no S-curves.
+- Cameras are LEVEL (pitch 0, roll 0); up/down framing comes from lens shift (two-point perspective).
+- Cuts land on bar lines of the music (Stairwell Harmony, 103.4 BPM -> 1 bar = 2.322 s).
+Shot poses come from zone geometry (CLAUDE.md), NOT from the old Cam_* stills cameras.
+
+SHOTS: (name, bars, title or None, eye_start, eye_end, look_target, lens). The look target only sets the
+fixed yaw and the lens shift (from the target's height); it is not tracked.
 """
+import math
+
 import bpy
 from mathutils import Vector
 
 FPS = 30
+BAR = 4 * 60 / 103.36            # s per bar
+INTRO_BARS = 2                   # film starts with the intro card; Blender frame 1 = end of the intro
 COL = "Walkthrough"
+SENSOR = 36.0
 
-# name, seconds, title (None = no title), keys
 SHOTS = [
-    ("Hall", 8, "FAB LAB SAGA // Hagatorg 1", [
-        (0.0, (35.4, 37.0, 1.65), (32.6, 35.8, 1.75), 26),
-        (1.0, (33.4, 35.75, 1.65), (32.0, 35.66, 1.55), 26)]),
-    ("Spine1", 12, None, [
-        (0.00, (33.2, 35.66, 1.62), (28.3, 35.0, 1.95), 22),   # at the door: TV + desk ahead
-        (0.30, (31.6, 35.2, 1.62), (28.3, 34.9, 1.85), 22),
-        (0.55, (30.2, 33.5, 1.62), (29.7, 30.0, 1.40), 22),    # between desk corner and the pit
-        (0.80, (30.0, 30.6, 1.62), (28.8, 26.8, 1.30), 22),
-        (1.00, (29.4, 28.4, 1.65), (25.5, 25.5, 1.10), 22)]),
-    ("Reveal", 6, None, [
-        (0.0, (28.6, 28.9, 1.70), (25.0, 26.0, 1.00), 20),
-        (1.0, (28.8, 29.8, 3.35), (23.0, 23.5, 0.80), 18)]),
-    ("Laser", 6, "FAB LAB SAGA // Geislaskeri", [
-        (0.0, (30.6, 25.9, 1.50), (32.2, 24.2, 1.00), 24),
-        (1.0, (30.6, 22.6, 1.50), (32.2, 20.9, 1.00), 24)]),
-    ("PrintFarm", 5, "FAB LAB SAGA // Þrívíddarprentari", [
-        (0.0, (27.95, 25.5, 1.50), (28.9, 24.9, 1.35), 24),
-        (1.0, (27.95, 22.8, 1.50), (28.9, 22.4, 1.35), 24)]),
-    ("CNC", 8, "FAB LAB SAGA // Fræsivél", [
-        (0.0, (21.6, 24.2, 1.65), (22.8, 19.6, 1.10), 20),
-        (1.0, (21.4, 21.2, 1.65), (22.9, 18.6, 1.10), 20)]),
-    ("Electronics", 6, "FAB LAB SAGA // Rafeindaverkstæði", [
-        (0.0, (24.0, 31.6, 1.40), (23.4, 30.4, 1.00), 28),
-        (1.0, (22.2, 31.6, 1.40), (21.6, 30.4, 1.00), 28)]),
-    ("Craft", 5, "FAB LAB SAGA // Textílsvæði", [
-        (0.0, (29.4, 29.8, 1.55), (31.0, 27.4, 1.00), 24),
-        (1.0, (30.4, 29.6, 1.50), (32.0, 28.6, 1.00), 24)]),
-    ("ToolWall", 5, "FAB LAB SAGA // Verkfæri", [
-        (0.0, (23.4, 27.2, 1.60), (21.0, 24.5, 1.30), 22),
-        (1.0, (23.0, 25.8, 1.60), (21.2, 29.0, 1.50), 22)]),
-    ("Bank", 7, "Búnaðarbanki SFS", [
-        (0.0, (31.5, 36.4, 1.60), (27.8, 37.1, 1.30), 24),
-        (1.0, (30.0, 36.9, 1.55), (27.8, 37.1, 1.30), 24)]),
-    ("LoungeSpine2", 13, None, [              # lounge (no title) rising into the closing pull-back
-        (0.00, (29.0, 31.7, 1.05), (32.3, 31.7, 0.60), 24),
-        (0.50, (30.0, 31.7, 1.00), (32.3, 31.7, 0.60), 24),
-        (1.00, (31.9, 34.4, 3.35), (24.0, 25.0, 0.80), 18)]),
+    ("Hall", 3, "FAB LAB SAGA // Hagatorg 1",
+     (38.0, 35.66, 1.65), (33.6, 35.66, 1.65), (32.6, 35.66, 1.75), 24),
+    ("Entrance", 2, None,
+     (32.30, 35.20, 1.62), (30.35, 35.05, 1.62), (28.3, 34.95, 1.95), 22),
+    ("Corridor", 2, None,
+     (30.05, 33.30, 1.62), (30.05, 29.60, 1.62), (29.6, 22.0, 1.40), 22),
+    ("Reveal", 3, None,
+     (29.20, 29.30, 1.60), (29.20, 29.30, 2.85), (24.0, 25.0, 1.20), 20),
+    ("Laser", 2, "FAB LAB SAGA // Geislaskeri",
+     (30.45, 25.30, 1.50), (30.45, 23.00, 1.50), (32.3, 24.15, 1.00), 24),
+    ("LaserDetail", 2, None,
+     (30.85, 24.20, 1.35), (31.50, 23.80, 1.32), (32.2, 23.38, 1.05), 35),
+    ("PrintFarm", 2, "FAB LAB SAGA // Þrívíddarprentari",
+     (27.00, 25.30, 1.55), (27.00, 23.00, 1.55), (28.8, 24.15, 1.45), 22),
+    ("CNCGlass", 2, "FAB LAB SAGA // Fræsivél",
+     (22.90, 24.60, 1.60), (22.90, 22.50, 1.60), (22.9, 19.7, 1.10), 20),
+    ("CNCRoom", 2, None,
+     (22.70, 15.50, 1.90), (22.70, 17.40, 1.90), (22.9, 20.0, 1.00), 20),
+    ("Electronics", 2, "FAB LAB SAGA // Rafeindaverkstæði",
+     (24.30, 31.75, 1.40), (22.10, 31.75, 1.40), (23.2, 30.40, 1.00), 28),
+    ("Craft", 2, "FAB LAB SAGA // Textílsvæði",
+     (30.80, 30.20, 1.50), (30.80, 28.30, 1.50), (30.8, 27.00, 1.00), 22),
+    ("ToolWall", 2, "FAB LAB SAGA // Verkfæri",
+     (23.10, 24.20, 1.60), (23.10, 26.60, 1.60), (21.0, 25.40, 1.30), 22),
+    ("Bank", 3, "Búnaðarbanki SFS",
+     (32.30, 37.10, 1.60), (29.40, 37.10, 1.60), (27.8, 37.10, 1.30), 24),
+    ("Lounge", 2, None,
+     (28.10, 31.70, 1.05), (29.70, 31.70, 1.05), (32.3, 31.70, 0.60), 24),
+    ("Closing", 3, None,
+     (29.80, 29.20, 1.70), (30.40, 33.00, 2.75), (27.5, 22.0, 1.00), 18),
 ]
 
 
-def look(eye, tgt):
-    return (Vector(tgt) - Vector(eye)).to_track_quat("-Z", "Y")
+def level_pose(eye, tgt, lens):
+    """Level camera looking toward tgt in plan; vertical aim via lens shift (clamped)."""
+    e, t = Vector(eye), Vector(tgt)
+    d = t - e
+    yaw = math.atan2(d.y, d.x)
+    pitch = math.atan2(d.z, d.xy.length)
+    rot = (math.pi / 2, 0.0, yaw - math.pi / 2)                  # camera looks along local -Z
+    shift = max(-0.3, min(0.3, lens * math.tan(pitch) / SENSOR))
+    return rot, shift
+
+
+def frame_at(bars):
+    return round(bars * BAR * FPS)
+
+
+def linearize(ob):
+    """LINEAR interpolation on every key of the object's action (Blender 5 layered actions)."""
+    act = ob.animation_data.action
+    curves = []
+    for layer in getattr(act, "layers", []):
+        for strip in layer.strips:
+            for bag in getattr(strip, "channelbags", []):
+                curves.extend(bag.fcurves)
+    if not curves and hasattr(act, "fcurves"):
+        curves = list(act.fcurves)
+    for fc in curves:
+        for k in fc.keyframe_points:
+            k.interpolation = "LINEAR"
+    return len(curves)
 
 
 def build():
@@ -71,36 +100,35 @@ def build():
             bpy.data.cameras.remove(cam)
     for m in [m for m in sc.timeline_markers if m.name.startswith("Walk_")]:
         sc.timeline_markers.remove(m)
+    for a in [a for a in bpy.data.actions if a.name.startswith("Walk_") and a.users == 0]:
+        bpy.data.actions.remove(a)
 
     sc.render.fps, sc.render.fps_base = FPS, 1.0
-    f = 1
-    for i, (name, secs, title, keys) in enumerate(SHOTS):
-        n = round(secs * FPS)
+    b = 0
+    for i, (name, bars, title, e0, e1, tgt, lens) in enumerate(SHOTS):
+        f0, f1 = frame_at(b) + 1, frame_at(b + bars)
         cname = f"Walk_{i + 1:02d}_{name}"
         cam = bpy.data.cameras.new(cname)
-        cam.clip_start = 0.05
+        cam.clip_start, cam.lens = 0.05, lens
         ob = bpy.data.objects.new(cname, cam)
         col.objects.link(ob)
-        ob.rotation_mode = "QUATERNION"
-        ob["title"] = title or ""
-        ob["frames"] = (f, f + n - 1)
-        prev = None
-        for t, eye, tgt, lens in keys:
-            fr = f + round(t * (n - 1))
-            q = look(eye, tgt)
-            if prev is not None and prev.dot(q) < 0:      # keep quaternion keys on one hemisphere
-                q.negate()
-            prev = q
-            ob.location, ob.rotation_quaternion, cam.lens = eye, q, lens
+        rot, shift = level_pose(e0, tgt, lens)
+        ob.rotation_euler, cam.shift_y = rot, shift
+        secs = (f1 - f0 + 1) / FPS
+        speed = (Vector(e1) - Vector(e0)).length / secs
+        ob["title"], ob["frames"], ob["bars"], ob["speed_mps"] = title or "", (f0, f1), bars, round(speed, 2)
+        for fr, e in ((f0, e0), (f1 + 1, e1)):                   # e1 one frame past the cut: constant speed
+            ob.location = e
             ob.keyframe_insert("location", frame=fr)
-            ob.keyframe_insert("rotation_quaternion", frame=fr)
-            cam.keyframe_insert("lens", frame=fr)
-        m = sc.timeline_markers.new(cname, frame=f)
+        assert linearize(ob) == 3, cname
+        m = sc.timeline_markers.new(cname, frame=f0)
         m.camera = ob
-        f += n
-    sc.frame_start, sc.frame_end = 1, f - 1
+        print(f"{cname:22s} frames {f0:4d}-{f1:4d}  {secs:4.2f} s  {speed:4.2f} m/s  shift {shift:+.2f}")
+        b += bars
+    sc.frame_start, sc.frame_end = 1, frame_at(b)
     sc.camera = col.objects[0]
-    print(f"walkthrough: {len(SHOTS)} shots, frames 1-{f - 1} ({(f - 1) / FPS:.1f} s)")
+    print(f"walkthrough v1: {len(SHOTS)} shots, {b} bars, frames 1-{sc.frame_end} ({sc.frame_end / FPS:.1f} s)"
+          f" + intro {INTRO_BARS} bars")
 
 
 build()
