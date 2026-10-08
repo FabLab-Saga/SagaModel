@@ -60,7 +60,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   LaserRoom; machine MODELS in build_machines.py, checked against the equipment list): 4.86 m profile laser bench on the
   SSW glass (flat-file sheet drawers under) with 2× Glowforge Pro HD, Glowforge Aura (orange lid), xTool F1 Ultra (UPRIGHT
   green-shield galvo tower 273x373x492 + separate touchscreen controller; checked against xTool photos) +
-  1.3 m staging; Epilog Fusion Edge 24 floor unit at the NNE/WNW corner (0.20 m off the partition, riser behind);
+  1.3 m staging; Epilog Fusion Edge 24 (WHITE, navy lid band, on its white open stand; photo-checked) at the NNE/WNW corner (0.20 m off the partition, riser behind);
   laser stock rack (upright sheet slots, 0.98 m worktop, bins/rolls) on the NNE partition; 2 m standing prep counter
   under the interior window; safety station + 3 offcut bins on the WNW wall. ONE central exhaust (`Exhaust_Central`):
   rear ports → manifold behind the bench → riser (y 25.17) → ceiling collector (Epilog branch joins) → inline fan →

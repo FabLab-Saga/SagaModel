@@ -259,40 +259,49 @@ def xtool_controller():
 
 
 def epilog(w=1.055, d=0.834, h=0.967):
-    """Epilog Fusion Edge 24 (1055 x 834 x 967), floor standing: black stand on casters with a lower door, charcoal
-    body with a hinged front door, wide smoked viewing window in the lid, sloped touchscreen + joystick on the
-    front right, red Epilog band, rear 4" exhaust."""
+    """Epilog Fusion Edge 24 (1055 x 834 x 967 incl. stand; checked against Epilog product photos): WHITE machine on
+    a white open-front stand with a shelf, casters with orange rings; light-grey full-height corner pillars; pale
+    grey front door panel, yellow warning label; navy band across the lid front (logo + "Fusion Edge" text are
+    separate font objects); lid with a big dark viewing window; small raised housings top-left and top-right
+    (control screen); rear 4" exhaust."""
     p = Part()
-    char = mat("Epilog_Charcoal", "#2A2C2F", 0.35, coat=0.2)
-    side = mat("Epilog_SideGrey", "#55595D", 0.4)
-    base = 0.44
-    for x in (0.07, w - 0.07):                                                            # casters
-        for y in (0.07, d - 0.07):
-            p.cyl(M["rubber"], (x - 0.018, y, 0.040), (x + 0.018, y, 0.040), 0.040, seg=20)
-            p.box(M["chrome"], x - 0.025, x + 0.025, y - 0.025, y + 0.025, 0.080, 0.095)
-    _rbox(p, M["black"], 0.02, w - 0.02, 0.03, d - 0.02, 0.095, base, 0.010)             # stand cabinet
-    p.box(M["dark"], 0.05, w - 0.05, 0.028, 0.030, 0.12, base - 0.03)                     # stand door
-    p.box(M["chrome"], w / 2 - 0.08, w / 2 + 0.08, 0.020, 0.028, base - 0.07, base - 0.06)  # door pull
-    _rbox(p, char, 0.0, w, 0.0, d, base, h - 0.050, 0.014)                               # body
-    p.box(side, -0.002, 0.004, 0.06, d - 0.06, base + 0.06, h - 0.10)                     # side panels
-    p.box(side, w - 0.004, w + 0.002, 0.06, d - 0.06, base + 0.06, h - 0.10)
-    p.box(M["black"], 0.04, w - 0.25, -0.0015, 0.0, base + 0.03, base + 0.035)            # front door seams
-    p.box(M["black"], 0.04, w - 0.25, -0.0015, 0.0, h - 0.14, h - 0.135)
-    p.box(M["red"], 0.04, 0.32, -0.002, 0.0, base + 0.10, base + 0.16)                    # Epilog band
-    p.box(M["white"], 0.06, 0.30, -0.0025, -0.002, base + 0.12, base + 0.14)              # wordmark strip
-    _rbox(p, char, 0.0, w, 0.0, d * 0.78, h - 0.052, h, 0.012)                           # lid
-    p.box(M["smoke"], 0.08, w - 0.30, 0.06, d * 0.70, h - 0.002, h + 0.002)               # viewing window
-    p.box(M["black"], w * 0.30, w * 0.55, -0.002, 0.020, h - 0.040, h - 0.022, bevel=0.004)  # lid handle
-    p.box(char, 0.0, w, d * 0.78, d, h - 0.052, h - 0.010, bevel=0.010)                   # rear housing
-    pan = Matrix.Translation((w - 0.15, 0.10, h + 0.020)) @ Matrix.Rotation(math.radians(-25), 4, "X")
-    bm = p.bm(M["black"])
-    bmesh.ops.create_cube(bm, size=1.0, matrix=pan @ Matrix.Diagonal((0.20, 0.14, 0.030, 1)))  # control pod
-    bmesh.ops.create_cube(p.bm(M["lcd"]), size=1.0,
-                          matrix=pan @ Matrix.Translation((-0.025, 0.0, 0.0155)) @ Matrix.Diagonal((0.12, 0.09, 0.001, 1)))
-    p.cyl(M["dark"], (w - 0.075, 0.10, h + 0.03), (w - 0.075, 0.10, h + 0.065), 0.010, seg=12)  # joystick
-    bmesh.ops.create_uvsphere(p.bm(M["red"]), u_segments=12, v_segments=8, radius=0.014,
-                              matrix=Matrix.Translation((w - 0.075, 0.10, h + 0.07)))
-    _port(p, w / 2 + 0.25, d, 0.70, 0.05)                                                 # rear 4" exhaust
+    navy = mat("Epilog_Navy", "#21457E", 0.35, coat=0.3)
+    pil = mat("Epilog_Pillar", "#D5D8DB", 0.35, coat=0.2)
+    door = mat("Epilog_Door", "#E4E6E8", 0.4)
+    ring = mat("Epilog_CasterRing", "#E07B24", 0.4)
+    sticker = mat("Safety_Yellow", "#F2C200", 0.4)
+    wh = M["white"]
+    pw, zs, zb, zl = 0.085, 0.40, 0.80, 0.93                              # pillar width, stand top, band, lid
+    for x in (0.08, w - 0.08):                                            # casters
+        for y in (0.08, d - 0.08):
+            p.cyl(M["rubber"], (x - 0.016, y, 0.035), (x + 0.016, y, 0.035), 0.035, seg=20)
+            p.cyl(ring, (x, y, 0.062), (x, y, 0.075), 0.030, seg=20)
+    # stand: open front box with a shelf
+    p.box(wh, pw, w - pw, d - 0.03, d, 0.075, zs)                         # back
+    p.box(wh, pw, w - pw, 0.02, d - 0.03, 0.075, 0.095)                   # bottom
+    p.box(wh, pw, w - pw, 0.05, d - 0.03, 0.20, 0.215)                    # shelf
+    p.box(M["dark"], pw, w - pw, 0.10, d - 0.031, 0.095, 0.20)            # shadowed interior back
+    # corner pillars, full height
+    for x0 in (0.0, w - pw):
+        _rbox(p, pil, x0, x0 + pw, 0.0, d, 0.075, zl, 0.008)
+    # body between the pillars
+    p.box(wh, pw, w - pw, 0.012, d, zs, zb)                               # body shell
+    p.box(door, pw + 0.01, w - pw - 0.01, 0.0, 0.014, zs + 0.02, zb - 0.09)   # front door panel
+    p.box(M["grey"], pw + 0.01, w - pw - 0.01, -0.001, 0.0, zb - 0.092, zb - 0.088)  # door seam
+    p.box(sticker, w * 0.60, w * 0.65, -0.002, 0.0, zb - 0.07, zb - 0.035)    # warning label
+    p.box(M["black"], w * 0.66, w * 0.71, -0.002, 0.0, zb - 0.07, zb - 0.035)
+    # lid: navy front band + white top with the dark window
+    p.box(navy, pw, w - pw, 0.0, 0.03, zb, zl, bevel=0.004)
+    p.box(wh, pw, w - pw, 0.03, d, zb, zl - 0.004)
+    _rbox(p, wh, 0.0, w, 0.0, d * 0.82, zl, h - 0.012, 0.010)
+    p.box(M["smoke"], 0.13, w - 0.13, 0.05, d * 0.72, h - 0.012, h - 0.009)    # viewing window
+    p.box(navy, 0.11, w - 0.11, 0.035, 0.05, h - 0.013, h - 0.010)            # window frame lip (front)
+    p.box(wh, 0.0, w, d * 0.82, d, zl, h - 0.020, bevel=0.008)               # rear hinge housing
+    _rbox(p, wh, 0.03, 0.17, 0.05, 0.22, h - 0.012, h + 0.020, 0.008)        # top-left housing
+    _rbox(p, wh, w - 0.20, w - 0.03, 0.04, 0.24, h - 0.012, h + 0.024, 0.008)  # control housing
+    p.box(M["black"], w - 0.18, w - 0.05, 0.06, 0.15, h + 0.024, h + 0.026)    # control screen
+    p.box(M["lcd"], w - 0.17, w - 0.06, 0.07, 0.14, h + 0.026, h + 0.027)
+    _port(p, w / 2 + 0.25, d, 0.70, 0.05)                                     # rear 4" exhaust
     return p
 
 

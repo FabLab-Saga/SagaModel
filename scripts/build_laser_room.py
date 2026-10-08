@@ -1,7 +1,7 @@
 """Laser room (glazed room x 29.67-32.53, y 20.14-26.92). Re-runnable (collection "LaserRoom").
 
 Machines from the equipment list, models in build_machines.py:
-  Epilog Fusion Edge 24 (1055x834x967, floor), 2x Glowforge Pro HD (965x527x211), Glowforge Aura (556x521x127),
+  Epilog Fusion Edge 24 (1055x834x967 incl. stand, white + navy band), 2x Glowforge Pro HD (965x527x211), Glowforge Aura (556x521x127),
   xTool F1 Ultra (273x373x492 upright galvo tower, green shield).
 Layout (user brief 2026-10-08: material storage + work surfaces, lots of room):
   - SSW glass: one 4.86 m profile laser bench (y 20.24-25.10, 0.70 deep, 0.78 high) carrying the Glowforges and
@@ -128,6 +128,16 @@ def machines(col):
     mach["place"](mach["xtool_controller"](), "xTool_F1_Ultra_Controller", col, GX - 0.30, cy + w / 2 + 0.10, T_H, 0.13, 0.032, "-x")
     ex, ey = 29.87 + 0.834 / 2, 20.35 + 1.055 / 2
     mach["place"](mach["epilog"](), "Epilog_FusionEdge24", col, ex, ey, 0.0, 1.055, 0.834, "+x")
+    fr = bpy.data.fonts.get("Roboto-Bold") or bpy.data.fonts.load(bpy.path.abspath("//refs/branding/fonts/Roboto-Bold.ttf"))
+    xf = ex + 0.834 / 2 + 0.0015                                          # front face of the navy band
+    for name, body, size, ly in (("Epilog_Logo", "Epilog Laser", 0.032, 0.14), ("Epilog_Model", "Fusion Edge", 0.034, 0.66)):
+        cu = bpy.data.curves.new(name, "FONT")
+        cu.body, cu.size, cu.font, cu.extrude = body, size, fr, 0.0
+        cu.materials.append(mat("Mach_White", "#EEEEEC", 0.35))
+        ob = bpy.data.objects.new(name, cu)
+        col.objects.link(ob)
+        ob.matrix_world = Matrix.Translation((xf, ey - 1.055 / 2 + ly, 0.85)) @ Matrix.Rotation(math.pi / 2, 4, "Z") \
+            @ Matrix.Rotation(math.pi / 2, 4, "X")
     return pos, ey
 
 
