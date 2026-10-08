@@ -106,7 +106,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   cupboard on the door-wall side, round columns at x 44.8, stone floor, 600 acoustic ceiling at 3.10 (finishes are my
   inference from lobby photos). Hall-side signage in `build_hall_entrance.py` (fascia sign, plaque, fire-glass vinyl).
   The drawing also shows a lab escape door (pair, "ÚT") in the SSW glazing at y ~32.4–34.3 (behind the lounge pit; not
-  modelled) and labels the lounge/desk area "fjölnota kennslurými 110.8 m²". Sun: 22 Sep 15:30 UTC (az 215°, el 22°) so light
+  modelled) and labels the lounge/desk area "fjölnota kennslurými 110.8 m²" (Magnús: close enough to the lounge +
+  on-call area as modelled). Sun: 22 Sep 15:30 UTC (az 215°, el 22°) so light
   reaches under the ~1.9 m upper-floor overhang. HDRI rotation aligned to the sun lamp.
 
 ## Zones (current layout, user-approved)
@@ -255,13 +256,15 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which
   re-letters them with Magnús's names (GEISLASKERI, ÞRÍVÍDDARPRENTARI, FRÆSIVÉL, RAFEINDAVERKSTÆÐI, TEXTÍLSVÆÐI,
   VERKFÆRI; VÍNYLSKERI kept). Source PDFs unchanged.
-- Open from the drawings: the lab escape door in the SSW glazing (y ~32.4–34.3) where the lounge pit stands; whether
-  the "fjölnota kennslurými" label is the architects' current layout for the lounge/desk area.
+- Open from the drawings: the lab escape door in the SSW glazing (y ~32.4–34.3) where the lounge pit stands.
 - Spine bays 0-1 (y 34.0-36.4) face the bank wall 5 cm away (closed boxes only; offer: shorten the spine).
 - Upper hotel floors not modelled → keep exterior shots tight.
 - Presentation video: plan, script, brand rules, budget in RENDER.md. `build_walkthrough.py` (shot cameras on music
   bars, one straight constant-speed move per shot, level cameras + lens shift), `render_walk_test.py` (animatic,
-  ~0.15 s/frame), `assemble_walk_test.py` (system python3; titles + music). Walkthrough timeline markers bind cameras:
+  ~0.15 s/frame, 640x360 Cycles), `render_walk_flat.py` (1080p flat Workbench draft via OpenGL in its own windowed
+  Blender, ~0.17 s/frame, the user's preferred quick review), `make_titles.py` + `assemble_film.py` (system python3;
+  brand titles, logo bug, partner outro, music, loudnorm), `render_walk_final.py` (resumable PNG sequence; NOT started
+  until the user says so). Walkthrough timeline markers bind cameras:
   peek/render_cams/render_finals remove markers with cameras first, else sc.camera is overridden.
 - Cameras Entrance/Lounge/SecretDoor still frame the old view; a dedicated entrance hero shot of the TV + desk
   would help the finals.

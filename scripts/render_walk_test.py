@@ -23,9 +23,20 @@ sc.cycles.device = "GPU"
 sc.cycles.samples, sc.cycles.use_denoising, sc.cycles.denoiser = 8, True, "OPTIX"
 sc.cycles.use_adaptive_sampling = False
 sc.render.resolution_x, sc.render.resolution_y, sc.render.resolution_percentage = 640, 360, 100
+if os.environ.get("SAGA_ENGINE", "").upper() == "WORKBENCH":      # flat/solid draft at 1080p, no path tracing
+    sc.render.engine = "BLENDER_WORKBENCH"
+    sh = sc.display.shading
+    sh.light, sh.color_type = "STUDIO", "MATERIAL"
+    sh.show_shadows, sh.show_cavity, sh.cavity_type = True, True, "BOTH"
+    sh.show_object_outline = False
+    sc.display.render_aa = "8"
+    sc.render.resolution_x, sc.render.resolution_y = 1920, 1080
+    for o in sc.objects:                                         # keep boolean cutters / hidden helpers out
+        if o.hide_render:
+            o.hide_viewport = True
 sc.render.use_persistent_data = True
 sc.render.image_settings.file_format = "JPEG"
-out = os.path.join(bpy.path.abspath("//"), "renders/walk_test")
+out = os.path.join(bpy.path.abspath("//"), os.environ.get("SAGA_TESTDIR", "renders/walk_test"))
 os.makedirs(out, exist_ok=True)
 t0 = time.time()
 n = 0

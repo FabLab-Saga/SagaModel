@@ -71,6 +71,11 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
 - Kdenlive 26.08 (Flatpak; bundles melt): the cut is also written as a .kdenlive project for hand edits.
 - Inkscape 1.4.4, GIMP 3.2, ImageMagick 7 (`magick`): SVG/logo rasterising, contact sheets, frame checks.
 
+## Drafts (user wants quick drafts until he approves the cut)
+- `renders/walk_flat.mp4`: 1080p flat-shaded Workbench draft, whole film in ~7 min (`render_walk_flat.py`).
+- `renders/walk_test.mp4`: 640x360 Cycles 8 spp animatic (~5 min).
+No final-quality render until Magnús says so.
+
 ## Render budget (measured 2026-10-08, Cam_WorkshopLong, 1920x1080, persistent data)
     64 spp + OptiX denoiser   ~4.7 s/frame   (first frame 6.9 s)
     64 spp + OIDN             ~9.3 s/frame
