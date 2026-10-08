@@ -121,6 +121,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (the colleague's parquet ran on outdoors).
   The back hallway's WNW end (x 26.22–27.51, an open gap in the colleague's model) is a GLASS DOOR (user): framed
   1.0 m glass leaf opening outward + narrow sidelight + fanlight, same dark frames (my details).
+  The room behind the staff room (x > 27.73, door from the hallway at y 15.12–16.03) is ELECTRICAL + general storage
+  (user; NOT a stairway): plain solid door, closed (`Store_Door`, build_staff_area.py); interior not modelled.
   `Cam_CNC` (from the main door), `Cam_CNCRoom` (from the operator corner).
   **Material storage** (`build_material_storage.py`): NO big sheet table; stored VERTICALLY (user, option A):
   upright board rack (2440x1220 boards on their short edge in 10 slots, slide out sideways) in the ex-WC corner against

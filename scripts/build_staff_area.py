@@ -7,6 +7,8 @@ Facts (user, 2026-10-08):
   down and is now part of the CNC room; its hallway doorway (y 18.14-18.93) stays as an OPEN PASSAGE, no door.
   The other (x 24.26-25.735, y 19.42-21.66, door y 19.58-20.57) stays: standard WC - wall-hung toilet on a tiled
   cistern box, small basin + mirror, wall tiles to 1.2 m, floor tiles, extractor fan, roll holder, brush, towels.
+- The room behind the staff room (off the hallway, door opening y 15.12-16.03 in its ESE wall) is ELECTRICAL + general
+  storage (user; not the stairwell): plain solid door, closed. Room not fitted out.
 - The large room next to the laser room (x 27.73-32.44, y 17.65-19.98 + an entry bay x 27.73-29.52, y 19.98-21.63,
   doorway from the hallway at y 20.31-21.35) is the staff cafeteria / meeting room / ranting lounge. Contents (user):
   kitchenette with sink, fridge, coffee machine, microwave, dishwasher and wall cupboards; a meeting table for 3-4;
@@ -595,6 +597,10 @@ def staff_room(col, M):
     # door from the hallway: hinged at the far (y 21.35) jamb, opens into the bay, drawn open
     d0, d1 = ST["door"]
     door_in_wall(col, "Staff_Door", "y", 27.62, 0.22, d0, d1, +1, 1, angle=80)
+    # electrical + general storage room off the hallway (x > 27.73, behind the staff room; NOT the stairwell - user
+    # correction), opening y 15.122-16.032 (full height in the colleague's model): a plain solid door, CLOSED (user);
+    # 0.91 m opening -> 81 cm leaf, frame + wall above like the other doors, opens into the store room
+    door_in_wall(col, "Store_Door", "y", 27.62, 0.22, 15.122, 16.032, +1, 0, angle=0)
     plaque(col, "Kaffistofa", "KAFFISTOFA\nstarfsfólk", (HALL_X[1], d0 - 0.24, 1.55), (-1, 0), w=0.30, h=0.14, size=0.042)
 
 
