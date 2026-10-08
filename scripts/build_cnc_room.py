@@ -17,6 +17,8 @@ the glass, opening onto the 1.1 m glass-side aisle; sheet cart at the bed's WNW 
 the far glass corner; operator corner in the ex-WC bay: ShopBot PC station (standing desk, control box under it) on
 the WC partition + tool bench with drawers and a pegboard (bits, collets, wrenches, hearing/eye protection) on the
 hallway wall; shop vac by the collector, extinguisher on the WNW wall.
+- WNW end wall: the 2.3 m gap is a LOADING DOOR, classic double door with two swinging leaves (user); steel leaves,
+  opening outward, wall closed above (my details).
 """
 import math
 
@@ -227,6 +229,48 @@ def utilities(col, M):
     p.emit("CNC_Utilities", col, Vector((0, 0, 0)))
 
 
+def loading_door(col, M):
+    """WNW end wall (y 14.868-15.075): the colleague's 2.32 m full-height gap (x 22.397-24.721) is a LOADING DOOR - a
+    classic double door, two swinging leaves (user). My details: painted-steel leaves 2 x 1.10 x 2.40 m in a steel
+    frame, wall closed above up to the slab, opening OUTWARD (exterior door; the sheet cart stands 0.7 m inside),
+    fixed leaf with flush bolts, active leaf with a lever handle + lock, drawn ajar so the door reads as a door."""
+    a0, a1, n0, n1 = 22.397, 24.721, 14.868, 15.075
+    H, FW = 2.40, 0.06
+    wall = bpy.data.materials["Paint_White"]
+    steel = mat("Door_Steel_Grey", "#C9CCCE", 0.45, metal=0.2)
+    frame = mat("Door_Frame_Grey", "#8A8F93", 0.4, metal=0.4)
+    alu = mat("Alu_Brushed_Door", "#C8CBCE", 0.32, metal=1.0)
+    p = Part()
+    p.box(wall, a0, a1, n0, n1, H + FW, SOFFIT)                      # wall above the door
+    p.box(frame, a0, a0 + FW, n0 - 0.005, n1 + 0.005, 0.0, H + FW)  # frame
+    p.box(frame, a1 - FW, a1, n0 - 0.005, n1 + 0.005, 0.0, H + FW)
+    p.box(frame, a0, a1, n0 - 0.005, n1 + 0.005, H, H + FW)
+    p.box(frame, a0 + FW, a1 - FW, n0 + 0.02, n1 - 0.02, 0.0, 0.012)  # threshold
+    p.emit("CNC_LoadingDoor_Frame", col, Vector((0, 0, 0)))
+    LW = (a1 - a0 - 2 * FW) / 2 - 0.004
+    T = 0.055
+    yo = n0 + 0.03                                                   # leaves sit near the outer face
+    for k, (hx, sgn, ang) in enumerate(((a0 + FW + 0.002, 1, 0.0), (a1 - FW - 0.002, -1, 35.0))):
+        q = Part()
+        q.box(steel, 0.0, LW, -T / 2, T / 2, 0.012, H - 0.004, bevel=0.003)
+        for z0 in (0.95, 1.85):                                      # pressed stiffener lines
+            q.box(steel, 0.08, LW - 0.08, -T / 2 - 0.002, -T / 2, z0, z0 + 0.01)
+            q.box(steel, 0.08, LW - 0.08, T / 2, T / 2 + 0.002, z0, z0 + 0.01)
+        for z in (0.20, 1.20, 2.15):                                 # hinges
+            q.cyl(frame, (-0.006, -T / 2 - 0.005, z), (-0.006, -T / 2 - 0.005, z + 0.12), 0.012, seg=12)
+        if k == 1:                                                    # active leaf: levers both sides + lock
+            for side in (-1, 1):
+                y = side * (T / 2 + 0.05)
+                q.box(alu, LW - 0.10, LW - 0.06, side * T / 2, side * (T / 2 + 0.008), 0.96, 1.18, bevel=0.003)
+                q.cyl(alu, (LW - 0.08, side * T / 2, 1.05), (LW - 0.08, y, 1.05), 0.009, seg=12)
+                q.cyl(alu, (LW - 0.08, y, 1.05), (LW - 0.22, y, 1.05), 0.010, seg=12)
+        else:                                                         # fixed leaf: flush bolts top + bottom
+            q.box(alu, LW - 0.04, LW - 0.015, T / 2, T / 2 + 0.006, 0.05, 0.25)
+            q.box(alu, LW - 0.04, LW - 0.015, T / 2, T / 2 + 0.006, H - 0.25, H - 0.05)
+        rot = (0.0 if sgn > 0 else math.pi) - sgn * math.radians(ang)   # opens outward (towards -y)
+        q.emit(f"CNC_LoadingDoor_Leaf_{k + 1}", col, Vector((hx, yo, 0)), rot)
+
+
 def build():
     col = clear_collection("CNCRoom")
     M = sa["mats"]()
@@ -234,6 +278,7 @@ def build():
     walls(col)
     operator_corner(col, M)
     utilities(col, M)
+    loading_door(col, M)
     print("CNC room built,", n, "colleague parts deleted,", len(col.objects), "objects")
 
 

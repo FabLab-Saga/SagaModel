@@ -114,6 +114,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`). Operator corner in the ex-WC bay:
   standing PC station (control box under it, e-stop pendant) + tool bench with drawers and pegboard (bits, wrenches,
   ear defenders, glasses). Shop vac + extinguisher by the WNW wall. (Clearance ignored per user.) No SRM-20s here.
+  WNW end wall (y 14.87–15.08): the 2.32 m gap (x 22.40–24.72) is a LOADING DOOR - classic double door, two
+  swinging leaves (user); painted-steel leaves 2 x 1.10 x 2.40, opening outward, wall closed above (my details).
   `Cam_CNC` (from the main door), `Cam_CNCRoom` (from the operator corner).
   **Material storage** (`build_material_storage.py`): rolling sheet cart (ply/MDF/acrylic) at the ShopBot's
   loading end (x 21.95–24.50, y 15.75–17.05), offcut slot rack + cantilever rod rack on the side wall x 25.74.
@@ -217,8 +219,6 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Brand sign typos in the source files: "VERKÆRI" (missing F), "ELECTRONCS".
 - Spine bays 0-1 (y 34.0-36.4) face the bank wall 5 cm away (closed boxes only; offer: shorten the spine).
 - Upper hotel floors not modelled → keep exterior shots tight.
-- CNC room's WNW end (y ≈15.08) has a 2.3 m unglazed opening (x 22.4–24.7) to outdoors in the colleague's
-  model — ask the user: loading door, glazing, or wall?
 - Animated walkthrough (stills done on MPDESKTOP: RTX 4070 Ti SUPER, OptiX; ~10-25 s per 1080p still).
 - Cameras Entrance/Lounge/SecretDoor still frame the old view; a dedicated entrance hero shot of the TV + desk
   would help the finals.
