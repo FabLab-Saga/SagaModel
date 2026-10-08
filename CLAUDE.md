@@ -151,16 +151,3 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   model — ask the user: loading door, glazing, or wall?
 - Animated walkthrough (stills done on MPDESKTOP: RTX 4070 Ti SUPER, OptiX; ~10-25 s per 1080p still).
 - Spine has no camera on its workshop face (tool library); add one if it should be in the finals.
-- Weak final: `18_feltdetail` is just felt arches against the ceiling (no context); reframe or drop.
-
-## Repo & tooling health (checked 2026-10-08)
-- Agents on MPDESKTOP: Hermes (and Claude Code) both drive the live GUI through `scripts/bmcp.py`; the add-on
-  socket 127.0.0.1:9876 must be up (Blender GUI open with the work file).
-- Scene: 8,839 objects, 3,107 renderable; 7,270 still in the colleague's `Untagged` collection (+ his `Кухня`,
-  `мебели`). 35 cameras, 20 with `shot_order` + the fixed SHOTS list in render_finals.py = 29 finals.
-- Git size: every .blend commit stores a full ~20–30 MB blob (.git = 1.7 GB, 68 .blend versions = 1.4 GB). GitHub
-  repos get uncomfortable past a few GB; batch .blend commits per step, or decide on Git LFS (CI checkout would
-  need `lfs: true`, LFS bandwidth quota applies) or a history squash before it grows much further.
-- `SETUP.md`/`setup.sh` describe the old laptop (`/home/gnus/...`, Claude Code MCP + transcript restore); on
-  MPDESKTOP Blender 5.2.2 is `~/.local/bin/blender` and the HDRI is present.
-- A live file showing dirty with only orphan materials (unused datablocks left by rebuilds) is not a real change.
