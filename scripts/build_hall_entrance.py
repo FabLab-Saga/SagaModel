@@ -1,4 +1,4 @@
-"""Entrance from the hotel's main hall (the SSW door at y 35.11-36.21 opens onto Bændahöllin's hall, not the
+"""Entrance from the hotel's main hall (door moved to the corner bay, build_entrance_bay.py; it opens onto HÍ - Saga's university hall, not the
 street). Fab Lab signage on the hall side. Re-runnable (collection "HallEntrance").
 
 - Fascia sign above the door + fire-glass panel (hall face of the corner-bay wall x 34.44, z ~2.45-2.88; door moved

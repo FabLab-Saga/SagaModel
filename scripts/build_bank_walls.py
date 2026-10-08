@@ -5,9 +5,12 @@ facing the entrance hidden in a sculpture. Re-runnable ("BankWalls" collection).
   colleague's single OSB sheet that stopped at 3.05 m with a gap underneath).
 - East wall (entrance side): plastered stud wall x 27.49-27.57, y 34.32-38.35, 2.80 m.
   Door opening y 36.62-37.58, 2.40 m high.
-- Secret door: a parametric "fin wall" relief of 18 mm birch-ply fins (CNC-cut, 55 mm pitch)
-  spanning y 36.50-37.70, rippling in depth; the fins over the opening ride on the door leaf, so the
-  door seam disappears between two fins. Front edges of the fins carry a brand-colour sweep.
+- Secret door (Magnús, 2026-10-08: a BOOKCASE door, so it vanishes into the shelf language around it; replaced the
+  birch-fin relief, which read as a door-shaped object and clipped its frame when opened): one bay of the spine's
+  black-profile + birch shelving, filled with books like the spine's lounge face, on a CENTRE PIVOT. The slot between
+  the spine end (y 36.47) and the demo shelving (y 37.70) is 1.23 m and the hex art above starts at z 2.57, so the leaf
+  is 1.16 x 0.30 m (swept radius 0.61 m < 0.615 to both neighbours and < 0.625 to the jambs), 2.45 m high; the wall
+  opening is y 36.46-37.71 x 2.46. White back panel on the bank side. Animated open in build_walkthrough.py.
 - Privacy backs (user): shelf-high (2.42 m) birch-ply panels on the backs of the bank shelving wherever
   outsiders could look in - along the NNE glass (behind run C and across the gaps either side of it) and
   along the ESE back wall (behind runs A1/A2, which has an opening at x 25.7-26.5). The south run B
@@ -30,8 +33,9 @@ WALL_H = 2.80                       # stops short of the slab (user): light + ai
 XW0, XW1 = 27.49, 27.57            # east wall
 YS0, YS1 = 34.32, 34.40            # south wall (moved 0.8 m into the electronics area, user)
 YN = 38.35                          # back (exterior) wall line
-D0, D1, DH = 36.62, 37.58, 2.40     # door opening
-F0, F1 = 36.50, 37.70               # sculpture extent
+D0, D1, DH = 36.46, 37.71, 2.46     # door opening (bookcase pivot leaf, see docstring)
+F0, F1 = 36.50, 37.70               # sculpture extent (= the pivot leaf)
+PIVOT = (27.68, 37.085)             # leaf centre in plan: back panel 27.49 .. shelf front 27.87
 
 
 def fin_depth(t, u):
@@ -104,26 +108,39 @@ def build():
         for k in (o, *o.children_recursive):
             k.hide_render = k.hide_viewport = True
 
-    # door leaf (plaster panel flush with the wall) + the fins that ride on it
-    leaf = Part()
-    leaf.box(paint, XW0 + 0.005, XW1, D0 + 0.003, D1 - 0.003, 0.003, DH - 0.003)
-    sculpt = Part()
-    pitch = 0.055
-    n = int((F1 - F0) / pitch)
-    for i in range(n + 1):
-        y = F0 + i * pitch
-        t = i / n
-        edge = sweep[min(4, int(t * 5))]
-        target = leaf if D0 + 0.01 < y < D1 - 0.03 else sculpt
-        fin(target, ply, y, t, 0.06, 2.62, XW1, edge=edge)
-    sculpt.emit("SecretDoor_Sculpture", col, Vector((0, 0, 0)))
-    leaf.emit("SecretDoor_Leaf", col, Vector((0, 0, 0)))
-    # plinth and top cap tie the fins together like a gallery piece
-    cap = Part()
-    cap.box(MAT["profile"], XW1, XW1 + 0.04, F0 - 0.01, F1 + 0.03, 0.0, 0.06)
-    cap.box(MAT["profile"], XW1, XW1 + 0.04, F0 - 0.01, F1 + 0.03, 2.62, 2.66)
-    cap.emit("SecretDoor_Frame", col, Vector((0, 0, 0)))
-    print("bank walls + secret door built:", n + 1, "fins")
+    # bookcase pivot leaf: everything built in world space, then parented to the pivot empty "SecretDoor_Leaf"
+    px, py = PIVOT
+    for o in ("SecretDoor_Leaf", "SecretDoor_Sculpture", "SecretDoor_Frame", "SecretDoor_Hinge"):
+        ob = bpy.data.objects.get(o)
+        if ob:
+            for k in list(ob.children_recursive) + [ob]:
+                if k.name in bpy.data.objects:
+                    bpy.data.objects.remove(k)
+    sp = {}
+    _c = open(HERE + "build_craft_spine.py").read()
+    exec(_c[:_c.index("\ndef build():")], sp)                    # book(), books_and_plants(), shelf language
+    lv = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]                        # = the spine's shelf levels
+    part, slots, L = lib["shelf_unit"]([1.08], 0.30, 2.42, lv)        # L = 1.16
+    loc, rot = lib["placement"](XW1 + 0.15, py, L, 0.30, "+x")
+    fill = sp["Part"]()
+    tops = lv + [2.42]
+    for (bi, li), (xa, xb, _, _, zt) in slots.items():
+        sp["books_and_plants"](fill, xa, xb, 0.30, zt, tops[li + 1] - zt - 0.06, (loc, rot))
+    back = Part()
+    back.box(paint, XW0 + 0.002, XW1, py - L / 2, py + L / 2, 0.003, DH - 0.006)            # bank-side face
+    back.box(ply, XW1, XW1 + 0.012, py - L / 2 + 0.04, py + L / 2 - 0.04, 0.04, 2.40)       # birch back of the bay
+    piv = bpy.data.objects.new("SecretDoor_Leaf", None)
+    col.objects.link(piv)
+    piv.location, piv.empty_display_size = (px, py, 0.0), 0.3
+    roots = [part.emit("SecretDoor_Shelf", col, loc, rot), fill.emit("SecretDoor_Books", col, loc, rot),
+             back.emit("SecretDoor_Back", col, Vector((0, 0, 0)))]
+    bpy.context.view_layer.update()
+    for r in roots:
+        mw = r.matrix_world.copy()
+        r.parent = piv
+        r.matrix_parent_inverse = piv.matrix_world.inverted()
+        r.matrix_world = mw
+    print("bank walls + bookcase secret door built")
 
 
 build()

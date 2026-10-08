@@ -37,12 +37,12 @@ SHOTS = [
      (22.90, 25.40, 1.60), (22.90, 23.90, 1.60), (22.9, 19.7, 1.10), 20),
     ("CNCRoom", 2, None,
      (22.70, 16.40, 1.90), (22.70, 15.40, 1.90), (22.9, 20.0, 1.00), 20),     # pull-back from the ShopBot
-    ("ElectronicsWide", 2, "FAB LAB SAGA // Rafeindaverkstæði",
+    ("ToolWide", 2, "FAB LAB SAGA // Vinnurými",
+     (25.15, 22.90, 1.70), (25.15, 24.30, 1.70), (21.2, 27.8, 1.10), 20),    # tool wall + cutters + felt from the aisle
+    ("ElectronicsWide", 2, None,
      (27.25, 34.00, 1.70), (26.05, 34.00, 1.70), (21.4, 30.7, 1.00), 18),    # whole commons in context
     ("Electronics", 2, None,
      (24.70, 32.70, 1.50), (22.50, 32.70, 1.50), (24.70, 30.20, 1.05), 24),
-    ("ToolWide", 2, "FAB LAB SAGA // Verkfæri",
-     (25.15, 22.90, 1.70), (25.15, 24.30, 1.70), (21.2, 27.8, 1.10), 20),    # tool wall + cutters + felt from the aisle
     ("Craft", 2, "FAB LAB SAGA // Textílsvæði",
      (30.70, 29.10, 1.50), (30.70, 30.00, 1.50), (30.8, 27.00, 1.00), 20),     # pull-back from the wall bench
     ("Bank", 3, "Búnaðarbanki SFS",
@@ -92,27 +92,17 @@ def linearize(ob):
     return len(curves)
 
 
-def secret_door(fa, fb, angle=75.0):
-    """Bank shot: the secret door in the birch-fin relief swings open into the bank (hinge at the WNW face of the
-    wall, y 36.62 jamb; build_bank_walls.py). Eased (a real door accelerates/decelerates); closed outside the shot."""
+def secret_door(fa, fb, angle=85.0):
+    """Bank shot: the fin-sculpture PIVOT door turns open about its centre (build_bank_walls.py builds the leaf with
+    its origin on the pivot). Eased like a real heavy door; closed outside the shot."""
     leaf = bpy.data.objects.get("SecretDoor_Leaf")
     if not leaf:
         return
-    hinge = bpy.data.objects.get("SecretDoor_Hinge") or bpy.data.objects.new("SecretDoor_Hinge", None)
-    if hinge.name not in bpy.data.collections["EquipmentBank"].objects:
-        bpy.data.collections["EquipmentBank"].objects.link(hinge)
-    hinge.animation_data_clear()
-    hinge.location, hinge.rotation_euler = (27.495, 36.625, 0.0), (0.0, 0.0, 0.0)
-    hinge.empty_display_size = 0.2
-    bpy.context.view_layer.update()
-    if leaf.parent != hinge:
-        mw = leaf.matrix_world.copy()
-        leaf.parent = hinge
-        leaf.matrix_parent_inverse = hinge.matrix_world.inverted()
-        leaf.matrix_world = mw
+    leaf.animation_data_clear()
     for fr, a in ((fa, 0.0), (fb, angle)):
-        hinge.rotation_euler.z = math.radians(a)
-        hinge.keyframe_insert("rotation_euler", index=2, frame=fr)
+        leaf.rotation_euler.z = math.radians(a)
+        leaf.keyframe_insert("rotation_euler", index=2, frame=fr)
+    leaf.rotation_euler.z = 0.0
 
 
 def cutaway_keys(f0, f1):

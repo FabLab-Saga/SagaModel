@@ -12,7 +12,8 @@ this file is the summary of record.
 
 ## What this is
 Photoreal architectural model of **Fab Lab SAGA**, a new university Fab Lab (HÍ + Reykjavík/Mixtúra)
-opening on the ground floor of **Bændahöllin / old Hótel Saga, Hagatorg 1, 107 Reykjavík**, west end of
+opening on the ground floor of **HÍ - Saga (the University of Iceland's Saga building, old Hótel Saga; "Bændahöllin" is
+an antiquated name - never use it in visible text), Hagatorg 1, 107 Reykjavík**, west end of
 the T-shaped building's top bar. Started from a colleague's SketchUp model (`source/SagaV2.skp`,
 converted with openskp → `export/`). The user despises SketchUp; all work continues in Blender.
 Purpose: impressive presentation renders (stills now; animated walkthrough later on a strong machine).
@@ -95,6 +96,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Scale verified: column grid 8.40 m = architects' elevation 8.398 m; width 14.99 m = OSM 15 m.
 - Heights from Reykjavík drawing archive (Hagatorg 1, 2024 set by Andrúm): floor K13.00, next floor
   K17.20, concrete soffit ≈ 3.93 m clear, glazing to 3.6 m, transom ~3.30.
+- Búnaðarbanki SFS secret door = a BOOKCASE door (Magnús): one 1.16 x 0.30 x 2.42 bay of the spine's shelving with
+  books, on a centre pivot (27.68, 37.085) in the wall slot between the spine end and the demo shelving
+  (build_bank_walls.py; swept radius 0.61 clears spine, demo shelving, jambs and the hex art above). Animated open
+  in the bank shot. The birch-fin relief is gone.
 - Main entrance (city drawings, Andrúm SAGA AT 20-10-02 ground-floor plan, approved 2026-06-30, USK26040333; research
   in ~/Documents/AgentWork/saga-video/hall/HALL.md): the lab includes the CORNER BAY x 32.6–34.3, y 34.7–38.3 (the
   colleague's model had it as outdoor paving + an entrance wall at x 32.63 that does not exist). The door is a single
@@ -218,8 +223,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   build_microelectronics.py): cases, drills (Poly Haven Drill_01), rework/measuring gear, drawer cabinets, hand-tool
   blocks, kit boxes in the 2 visible bays; the bays behind the bank wall hold closed boxes. No demo pieces there.
 - **Búnaðarbankinn** (equipment bank): STAFF ONLY, boxes only (SAMLA-style), enclosed by walls 2.80 m
-  high (NOT to the slab); south wall moved to y 34.32–34.40; only entry = SECRET DOOR hidden in the
-  birch-fin relief sculpture facing the entrance (y 36.62–37.58). Standing desk = a niche/gap in the
+  high (NOT to the slab); south wall moved to y 34.32–34.40; only entry = SECRET BOOKCASE DOOR (was: hidden in the
+  birch-fin relief), y 36.46–37.71, facing the entrance. Standing desk = a niche/gap in the
   back-wall shelving (no chairs). Nothing from the bank accessible outside it. Shelf-high (2.42 m) birch privacy
   backs behind the shelving along the NNE glass and the ESE back wall (`Bank_PrivacyBacks`): no looking in.
   Packing table (`Bank_PackingTable`, 3.0x0.70 m, 0.92 m standing, no stools) centred at (24.50, 36.275). RULE: keep

@@ -75,7 +75,7 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
 - Titles: Geislaskerar (shot shows the Epilog), Þrívíddarprentarar, ShopBot Fræsir; 'Hagatorg 1' removed (Magnús).
 - fframes title card (3 bars): ~/Documents/AgentWork/saga-video/fframes-title/ (6x6 brand grid draws on, brand-colour
   cells flash on the beats, white lockup fades in, tagline 'SKÖPUNAR- OG TÆKNISMIÐJA' + 'BÆNDAHÖLLIN · REYKJAVÍK'
-  (my wording, from the poster)). assemble_film.py uses it when present.
+  (tagline my wording from the poster; location line "HÍ - Saga" per Magnús: HÍ's Saga building, never "Bændahöllin")). assemble_film.py uses it when present.
 - Context shots (Magnús: show the whole space and where areas sit): dollhouse cutaway orbit 'Overview' (slab,
   services, fixtures hidden by keyed hide_render/hide_viewport for that shot), ElectronicsWide, ToolWide (replaces
   the close tool wall), LoungeWide; Reveal, Corridor, LaserDetail dropped.
