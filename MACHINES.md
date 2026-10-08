@@ -45,7 +45,7 @@ model was used and should be confirmed.
 ## Not modelled
 Also on the list, not machines: podcast sets 2, photo sets 2, sound systems 3 (bank, in cases); furniture: IKEA Bekant
 carts (2 of the 5 large ones modelled, above), Bror carts 2, Cleveland sofas (3-seat x2, 2-seat x1; retired from the model), TV screens on
-wheels 2 (80-90"), vertical info screens 2, 5 black electric sit-stand tables (120/200/200/200/250 x 60 cm,
+wheels 2 (80-90"; ONE is modelled, wall-mounted above the on-call desk showing Fab Lab TV), vertical info screens 2, 5 black electric sit-stand tables (120/200/200/200/250 x 60 cm,
 h 80-100; suggested for the laser room or a meeting room). Not modelled.
 
 Not on the list but in the model: soldering stations x3, fume extractors x3, oscilloscope/PSU sets, cordless drills

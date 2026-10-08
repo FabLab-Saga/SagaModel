@@ -47,13 +47,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `build_services` → `build_lighting` → `build_machines` → `build_print_farm` → `build_laser_room` → `build_bank_lounge` →
   `build_sofas` (ALWAYS after bank_lounge) → `build_craft_spine` → `build_worktables` → `build_life` (needs WorkTables) →
   `build_microelectronics` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
-  `build_material_storage` → `build_hall_entrance` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
+  `build_material_storage` → `build_hall_entrance` → `build_welcome` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
   `add_cameras` → `purge_hidden`.
   Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
   exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
   (hides colleague leftovers), `build_material_storage` (CNC room stock), `build_hall_entrance` (hall signage),
   `fix_glass` (thin-glass shader), `build_worktables` (2x2 work tables + chairs), `build_print_farm` (printer wall with
-  cabins), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
+  cabins), `build_welcome` (on-call desk + Fab Lab TV), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
   handheld scanner, red clam press, LOKLiK, EasyPress, Mug Press, BEKANT cart) are functions in build_machines.py; zone builders place them.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
@@ -133,6 +133,17 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   30.95/31.60, 2.85 m): 240° curved charcoal sofa (back to the glass, open towards the spine path), felt cushions,
   round birch table, 2 felt poufs. No TV, no machines. Keep walkways clear (spine path ≥1.2 m, entrance zone,
   strip along the glass). `build_sofas.py` is now a no-op (no Cleveland sofas left).
+- **Entrance / on-call desk** (`build_welcome.py`, collection Welcome): the on-call desk is NOT a reception desk -
+  one person's sitting desk (1.6 x 0.7, 0.75 m) with its BACK TO THE SPINE BOOKCASE at x 28.93–29.92, y 33.87–35.77,
+  FACING THE DOOR (straight ahead) with the lounge + corridor to the lab in view; the monitor sits on the corridor
+  side, screen to the sitter, so the door view is clear and visitors never see the screen. Raised birch ledge
+  (1.05 m) + modesty panel on the door-facing front, wrapped round the corridor end (tent card "On call", sign-in
+  tablet). RULE (user): the on-call person must face the entrance; nobody entering may see their screen.
+- **Fab Lab TV**: one 85" panel wall-mounted on the spine above the desk, facing the door - the first thing you see.
+  Shows a real capture of FabLabTV (github.com/FabLabReykjavik/FabLabTV, MIT) `/screen`: our print-farm render as the
+  local video, Neil Gershenfeld "On Call" (user's choice: the original demo profile, he has humour for it), weather,
+  clock. Re-capture: run FabLabTV (`npm start`), put a render in `videos/`, screenshot /screen at 1920x1080 after
+  clicking "Start TV" -> `assets/fablabtv/fablabtv_screen.png`. No big glowing signs (user).
 - **Demo display** (back-wall bays visible from the entrance, x ~27.4–32.4): imaginary Fab Lab projects,
   hex-tile art relief above. Spine's workshop side (faces electronics) = TOOL LIBRARY (`tool_library()` in
   build_microelectronics.py): cases, drills (Poly Haven Drill_01), rework/measuring gear, drawer cabinets, hand-tool
@@ -176,6 +187,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - CNC room's WNW end (y ≈15.08) has a 2.3 m unglazed opening (x 22.4–24.7) to outdoors in the colleague's
   model — ask the user: loading door, glazing, or wall?
 - Animated walkthrough (stills done on MPDESKTOP: RTX 4070 Ti SUPER, OptiX; ~10-25 s per 1080p still).
+- Cameras Entrance/Lounge/SecretDoor still frame the old view; a dedicated entrance hero shot of the TV + desk
+  would help the finals.
 - Spine has no camera on its workshop face (tool library); add one if it should be in the finals.
 - Confirmed by the lab: Epilog is 80 W; scanner is a handheld one; presses = a LOKLiK + a classic red industrial
   clam press (+ the Cricut ones); the Flashforge model doesn't matter. Still unknown (stand-ins in the model): clay

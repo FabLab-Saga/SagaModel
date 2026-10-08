@@ -13,6 +13,7 @@ Checked 2026-10-07. Everything visible in renders is either CC0 or Fab Lab's own
 | Equipment list, reference photos | `refs/equipment/`, `refs/images/` | Fab Lab SAGA own material | |
 | City building drawings (Hagatorg 1) | not stored in the repo | Reykjavík public building archive | Only measured (heights, grid); not reproduced |
 | Colleague's SketchUp model | `source/`, `export/`, `.blend` | Colleague's work; components from SketchUp 3D Warehouse | Its embedded textures were replaced by procedural/CC0 materials on everything visible |
+| Fab Lab TV screen capture (`assets/fablabtv/fablabtv_screen.png`) | Welcome TV | **MIT** (github.com/FabLabReykjavik/FabLabTV, © Andri Sæmundsson and Fab Lab Reykjavík) | Captured from our own local run; contains our own render and the repo's bundled demo staff photo (Neil Gershenfeld), used at the user's request |
 | OpenSKP (converter) | `.venv/` (not in repo) | MIT | Tool only |
 
 ## Looked at but NOT used / not stored
