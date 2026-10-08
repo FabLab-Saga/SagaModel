@@ -89,7 +89,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   stations + fume extractors, scope/PSU. Component storage with DRAWER units on the NNE glass
   (y 30.3–34.1). Electronics commons on the bank wall: pin-up board, whiteboard, cable pegboard, kit
   shelf, 3.2 m teaching table + 6 chairs.
-- **Hand-tool wall** on the NNE glass (y 23.25–26.40): pegboard + shelves + counter + tool chest.
+- **Hand-tool wall** on the NNE glass (y 24.06–26.46; keeps ≥1.0 m clear in front of the CNC-room door at
+  x 21.0–21.9, y 23.04): pegboard + shelves + counter + tool chest.
   Rule: along glass = varied tool wall + storage WITH A TABLE BELOW, not plain shelving.
 - **Felt wall**: Flöff-style recycled-textile felt panels (manual orange/green/blue) on the WNW (bench)
   side of the tool walls; arched tops on the manual's 6x6 grid. NEVER a single raised rounded peak

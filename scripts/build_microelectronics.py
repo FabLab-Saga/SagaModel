@@ -207,11 +207,11 @@ def pegboard_mat():
 
 
 def glass_toolwall(m, col):
-    """Along the NNE glass (x ~20.85, y 23.25-26.40): profile frame with a work counter (0.90 m),
+    """Along the NNE glass (x ~20.85, y 24.06-26.46; starts >= 1.0 m past the CNC-room door at y 23.04): profile frame with a work counter (0.90 m),
     under-counter drawer cabinets + toolbox, and above: perforated pegboard with hung tools,
     an open shelf with bins and a small-parts cabinet, a clamp rack, a cable reel - varied, not a
     plain shelf. Faces +x (into the room)."""
-    Y0, Y1, XB = 23.25, 26.40, 20.88                                   # XB = back (glass side)
+    Y0, Y1, XB = 24.06, 26.46, 20.88                                   # XB = back (glass side); door clearance 1.02 m
     L = Y1 - Y0
     D, H, TOP = 0.65, 0.90, 2.25
     peg = pegboard_mat()
@@ -238,17 +238,15 @@ def glass_toolwall(m, col):
     p.box(peg, PX, PX + 0.002, Y0 + 0.06, Y0 + 1.95, H + 0.10, 1.60)
     # shelf block right: two shelves 0.30 deep with bins + a parts cabinet
     for z in (1.25, 1.62, 1.98):
-        p.box(ply, PX, PX + 0.30, Y0 + 2.00, Y1 - 0.06, z - 0.018, z, bevel=0.0015)
+        p.box(ply, PX, PX + 0.30, Y0 + 1.98, Y1 - 0.06, z - 0.018, z, bevel=0.0015)
     shelf_bins = Part()
-    for i in range(3):
-        lib["bin_box"](shelf_bins, MAT["bins"][(i + 2) % 6], 0.0, 0.0, 0.0, w=0.32, d=0.24, h=0.15)
-        shelf_bins.emit(f"GlassTW_Bin_{i}", col, Vector((PX + 0.27, Y0 + 2.04 + i * 0.36, 1.62)), math.pi / 2)
-        shelf_bins = Part()
-    cab, cw, ch = drawer_cabinet(m, cols=5, rows=6)
-    cab.emit("GlassTW_PartsCab", col, Vector((PX + 0.142, Y0 + 2.08, 1.25)), math.pi / 2)
+    lib["bin_box"](shelf_bins, MAT["bins"][2], 0.0, 0.0, 0.0, w=0.32, d=0.24, h=0.15)
+    shelf_bins.emit("GlassTW_Bin_0", col, Vector((PX + 0.27, Y0 + 2.01, 1.62)), math.pi / 2)
+    cab, cw, ch = drawer_cabinet(m, cols=4, rows=6)
+    cab.emit("GlassTW_PartsCab", col, Vector((PX + 0.142, Y0 + 2.02, 1.25)), math.pi / 2)
     tbx = Part()
-    toolbox(tbx, m, m["red"], 0, 0, 0, w=0.42, d=0.24, h=0.18)
-    tbx.emit("GlassTW_Toolbox_top", col, Vector((PX + 0.27, Y1 - 0.48, 1.98)), math.pi / 2)
+    toolbox(tbx, m, m["red"], 0, 0, 0, w=0.30, d=0.24, h=0.18)
+    tbx.emit("GlassTW_Toolbox_top", col, Vector((PX + 0.27, Y1 - 0.38, 1.98)), math.pi / 2)
     # pegboard tools (local frame of the hanging helpers: x along board, -y = out of board -> rotate to face +x)
     hung = Part()
     x = 0.08
@@ -321,9 +319,9 @@ def glass_toolwall(m, col):
     chest.emit("GlassTW_ToolChest", col, Vector((XB + 0.58, Y1 - 0.75, 0.0)), math.pi / 2)
     # on the counter: a vice, a cordless driver case, a parts tray, a cable reel
     on = Part()
-    on.box(m["grey"], XB + 0.35, XB + 0.55, Y0 + 2.30, Y0 + 2.45, H, H + 0.06, bevel=0.005)          # vice body
-    on.box(m["steel"], XB + 0.53, XB + 0.56, Y0 + 2.28, Y0 + 2.47, H + 0.03, H + 0.11, bevel=0.003)
-    on.cyl(m["steel"], (XB + 0.56, Y0 + 2.375, H + 0.05), (XB + 0.68, Y0 + 2.375, H + 0.05), 0.008, seg=10)
+    on.box(m["grey"], XB + 0.35, XB + 0.55, Y0 + 2.07, Y0 + 2.22, H, H + 0.06, bevel=0.005)          # vice body
+    on.box(m["steel"], XB + 0.53, XB + 0.56, Y0 + 2.05, Y0 + 2.24, H + 0.03, H + 0.11, bevel=0.003)
+    on.cyl(m["steel"], (XB + 0.56, Y0 + 2.145, H + 0.05), (XB + 0.68, Y0 + 2.145, H + 0.05), 0.008, seg=10)
     toolbox(on, m, m["blue"], XB + 0.12, Y0 + 1.25, H, w=0.40, d=0.32, h=0.10)
     on.box(m["grey"], XB + 0.15, XB + 0.40, Y0 + 0.40, Y0 + 0.62, H, H + 0.03, bevel=0.003)
     on.cyl(m["yellow"], (XB + 0.45, Y0 + 0.87, H + 0.085), (XB + 0.45, Y0 + 0.97, H + 0.085), 0.085, seg=32)   # cable reel
