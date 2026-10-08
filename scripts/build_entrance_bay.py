@@ -11,7 +11,7 @@ in ~/Documents/AgentWork/saga-video/hall/HALL.md; fix approved by Magnús 2026-1
   38.55) and runs on to stair core D.
 - Outside the door is an interior hall "háskóli 01-01" at the same floor level: glass façade along y ~34.7 (camera
   facing the door has it on the LEFT), exterior double door in it at x ~40.5-42.5, a freestanding WC box (2 WCs) at
-  x ~36.3-39.4, y ~38.7-42.6 with a check-in desk, stair D / lifts / cleaners' cupboard behind the door wall to the
+  x 37.0-40.1, y 38.7-42.6 (doors towards the door wall) with a check-in desk beyond it, stair D / lifts / cleaners' cupboard behind the door wall to the
   ESE, a teaching-room wall at y ~45, free-standing round columns at x 44.8 (y 38.55, 44.75), seating groups along the
   glass (x 37-40, y 35.5-36.5). Floor to floor 4.2 m.
 Finishes (my inference from photos of the main lobby + Háma servery; not in the drawings): dark grey-green polished
@@ -154,8 +154,8 @@ def hall(col, M):
     p.box(M["concrete"], x0, HX1, 31.8, HY0, 3.62, 3.92)                          # outdoor canopy (upper floors)
     # door wall continues ESE (stair D / lifts) to the NNE wall; cleaners' cupboard box with a door
     p.box(M["white"], x0 - 0.20, x0, WRAP_Y1, HY1, 0.0, CEIL)
-    p.box(M["white"], x0, x0 + 0.62, 39.25, 41.60, 0.0, CEIL)
-    sa["door"](col, "Hall_CleanersDoor", (x0 + 0.62, 39.40), 0.80, (0.0, 1.0), 0.0)
+    p.box(M["white"], x0, x0 + 0.66, 39.00, 41.60, 0.0, CEIL)                    # cleaners' cupboard (ræstiskápur)
+    sa["door"](col, "Hall_CleanersDoor", (x0 + 0.68, 39.30), 0.80, (0.0, 1.0), 0.0)
     p.box(M["white"], x0, HX1, HY1 - 0.20, HY1, 0.0, CEIL)                        # teaching-room wall (NNE end)
     # glass façade along y 34.70 (camera facing the door: on the left) with the exterior double door
     yg = HY0
@@ -185,17 +185,21 @@ def hall(col, M):
     # free-standing round columns
     for cx, cy in ((44.80, 38.55), (44.80, 44.75)):
         p.cyl(M["white"], (cx, cy, 0.0), (cx, cy, CEIL), 0.33, seg=40)
-    # WC box with two doors facing WNW (the hall), "WC" plaques
-    bx0, bx1, by0, by1 = 36.30, 39.40, 38.70, 42.60
+    # WC block (drawing: x 37.0-40.1, y 38.67-42.6, 150 mm walls, divider y 40.2-40.35). Both doors are in its face
+    # towards the Fab Lab door wall (x 37.0), off a 1.8 m WC lobby closed at its NNE end by a wall (y 42.45-42.6):
+    # accessible WC 5.8 m2 (door y 41.40-42.45, opens out), WC 3.5 m2 (door y 39.05-39.90, opens in). Drawn closed.
+    bx0, bx1, by0, by1 = 37.00, 40.10, 38.67, 42.60
     p.box(M["white"], bx0, bx1, by0, by1, 0.0, CEIL)
-    for k, (dx0, w) in enumerate(((36.70, 0.90), (38.30, 0.80))):
-        sa["door"](col, f"Hall_WC_Door_{k + 1}", (dx0, by0 - 0.02), w, (1.0, 0.0), 0.0)
-        sa["plaque"](col, f"Hall_WC_{k + 1}", "WC", (dx0 + w + 0.18, by0, 1.55), (0.0, -1.0), w=0.14, h=0.14, size=0.06)
-    # check-in kiosk by the WC box: standing desk + screen
+    p.box(M["white"], x0, bx0, 42.45, by1, 0.0, CEIL)                             # lobby end wall
+    for k, (hy, w, d) in enumerate(((42.45, 1.00, -1.0), (39.05, 0.85, 1.0))):
+        sa["door"](col, f"Hall_WC_Door_{k + 1}", (bx0 - 0.02, hy), w, (0.0, d), 0.0)
+        py = hy + d * (w + 0.20)
+        sa["plaque"](col, f"Hall_WC_{k + 1}", "WC", (bx0, py, 1.55), (-1.0, 0.0), w=0.14, h=0.14, size=0.06)
+    # computer / check-in desk ("tölvuborð, tölvuskjár og innskráning"): counter beyond the WC block (NNE side)
     k = Part()
-    k.box(M["table"], 39.75, 40.65, 39.20, 39.75, 0.0, 1.05, bevel=0.01)
-    k.box(M["black"], 40.05, 40.40, 39.45, 39.48, 1.05, 1.32)
-    k.box(bpy.data.materials["Glass_BlackGloss"], 40.07, 40.38, 39.444, 39.45, 1.07, 1.30)
+    k.box(M["table"], 37.40, 39.80, 42.75, 43.30, 0.0, 1.05, bevel=0.01)
+    k.box(M["black"], 38.45, 38.80, 42.98, 43.01, 1.05, 1.32)
+    k.box(bpy.data.materials["Glass_BlackGloss"], 38.47, 38.78, 42.974, 42.98, 1.07, 1.30)
     k.emit("Hall_CheckIn", col, Vector((0, 0, 0)))
     # seating groups along the glass: round tables + chairs
     for tx, ty in ((37.6, 36.0), (39.4, 36.2)):
@@ -213,7 +217,7 @@ def hall(col, M):
                 for sy in (-0.17, 0.17):
                     c.cyl(M["black"], (sx, sy, 0.0), (sx, sy, 0.44), 0.011, seg=8)
             c.emit(f"Hall_Chair_{tx:.0f}_{a}", col, Vector((tx + 0.62 * math.cos(r), ty + 0.62 * math.sin(r), 0)),
-                   r + math.pi / 2)
+                   r - math.pi / 2)                                           # seat front (-y) faces the table
     p.emit("Hall_Shell", col, Vector((0, 0, 0)))
     g.emit("Hall_Glass", col, Vector((0, 0, 0)))
     for i, (cx, cy) in enumerate(lights):                                       # panel light sources
