@@ -1,10 +1,13 @@
 # Fab Lab SAGA — Blender model (project brief for Claude)
 
-Authoritative project state as of 2026-10-08 evening (MPDESKTOP; PLAN.md G1–G11 done; since then: hidden leftovers
-deleted, work tables, print-farm cabins, every listed machine modelled - see MACHINES.md). `AGENTS.md` is a symlink to
-this file (Hermes/Codex/Claude Code all read it). Read this first; then `git log --oneline` for history,
-`LICENSES.md` for asset rules, `SETUP.md` for machine setup. The previous session's full transcript
-may also be available (see SETUP.md) — this file is the summary of record.
+Authoritative project state as of 2026-10-08 late evening (MPDESKTOP; PLAN.md G1–G11 done; since then: hidden
+leftovers deleted, work tables, print-farm cabins, every listed machine modelled (MACHINES.md), on-call desk + Fab Lab
+TV, GULLVALLA lounge, back staff area (WC, Kaffistofa, store-room door, hallway glass door), CNC room rebuilt (glass
+front with dot manifestation, real-size ShopBot, upright board rack, loading door + windows)). Next: the animated
+walkthrough. `AGENTS.md` is a symlink to this file (Hermes/Codex/Claude Code all read it). Read this first; then
+`git log --oneline` for history, `LICENSES.md` for asset rules, `SETUP.md` for machine setup (partly written for the
+old laptop). Hermes session "Fab lab Blender" (`hermes --continue "Fab lab Blender"`) holds the 2026-10-08 work —
+this file is the summary of record.
 
 ## What this is
 Photoreal architectural model of **Fab Lab SAGA**, a new university Fab Lab (HÍ + Reykjavík/Mixtúra)
@@ -56,13 +59,20 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
   (hides colleague leftovers), `build_material_storage` (CNC room stock), `build_hall_entrance` (hall signage),
   `fix_glass` (thin-glass shader), `build_worktables` (2x2 work tables + chairs), `build_print_farm` (printer wall with
-  cabins), `build_welcome` (on-call desk + Fab Lab TV), `build_staff_area` (back WC, staff room, `Cut_WC2` boolean on ROOT.geo0 = the demolished second WC; its `door_in_wall()` sets normal doors into colleague openings), `build_cnc_room` (CNC walls/doors + operator corner), `purge_hidden` (deletes hidden leftovers). ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
+  cabins), `build_welcome` (on-call desk + Fab Lab TV), `build_staff_area` (back WC, staff room, store-room door,
+  `Cut_WC2` boolean = the demolished second WC; its `door_in_wall()` sets a normal framed door into any colleague
+  opening and closes the wall above), `build_cnc_room` (CNC glass front + manifestation, hallway/loading doors, end
+  windows, hallway glass end door, outdoor paving, operator corner; `Cut_CNC_*` booleans), `purge_hidden` (deletes
+  hidden leftovers). Boolean cutters live in Facade_Cutters, render-hidden AND viewport-hidden (`hide_set(True)`),
+  else the Rendered viewport draws them as solid blocks. ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
   handheld scanner, red clam press, LOKLiK, EasyPress, Mug Press, BEKANT cart) are functions in build_machines.py; zone builders place them.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
   `render_cams.py` (fast GPU review renders), `peek.py` (ad-hoc viewpoint still),
-  `bmcp.py` (MCP-socket fallback), `import_glb.py`.
+  `bmcp.py` (MCP-socket fallback), `import_glb.py`, `viewport.py` (aim the user's viewport), `profile_bom.py`
+  (T-slot profile totals + cut list, 20x20 / 40x40 / per collection; 2026-10-08: 693 m 20x20 incl. 171 m in 35
+  chairs, 673 m 40x40; the lab has ~2.5 km 20x20 and ~1 km 40x40 in stock).
 - `assets/` — CC0 textures/models/HDRI (HDRI .exr is git-ignored: `./setup.sh` re-fetches `buikslotermeerplein`
   4k exr from Poly Haven into `assets/polyhaven/hdri/`; it is the ONLY external file not in git), mural, signs.
 - `.github/workflows/web-preview.yml` — live web preview: every push to main that touches a `.blend` or `assets/`
@@ -227,7 +237,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 
 ## Open items
 - On-site 360° photo for the window view → `refs/skybox/` (current HDRI is a CC0 stand-in).
-- Colleague to confirm CNC model (list: PRS Alpha 120; his model had 96x60).
+- Colleague to confirm CNC model (list: PRS Alpha 120-60, modelled at its real 3.66 x 2.31 m; his model had a 96-60 =
+  3.05 x 2.31 m; one line in build_machines.py if it is the 96-60).
+- Stairwell location unknown (the room behind the staff room is electrical/storage, not stairs).
+- Glass manifestation dots run continuously across pane joints (real glass would restart per pane).
 - Brand sign typos in the source files: "VERKÆRI" (missing F), "ELECTRONCS".
 - Spine bays 0-1 (y 34.0-36.4) face the bank wall 5 cm away (closed boxes only; offer: shorten the spine).
 - Upper hotel floors not modelled → keep exterior shots tight.
@@ -240,5 +253,6 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   printer (Eazao Zero; lab unsure), handheld scanner model, red press model, LOKLiK model, Brother sewing/embroidery,
   overlocker, EasyPress generation. Vinyl cutters are both Roland CAMM-1 GS-24 (confirmed).
 - Prusa count: 7 now; list says 5, its power notes 10, "probably 15 printers in total".
-- Finals (renders/final3) are outdated; re-render when the layout settles. Non-final cameras (Counter, Craft,
-  Interior_01, Mural, ...) were not reframed after the layout changes.
+- Finals (renders/final3) are outdated; re-render when the layout settles. New/reframed cameras: Cam_StaffRoom,
+  Cam_CNC, Cam_CNCRoom, Cam_LoungeLow. Non-final cameras (Counter, Craft, Interior_01, Mural, ...) were not reframed.
+- After an NVIDIA driver update the first Cycles render recompiles the OptiX kernels (~1 min); then normal again.
