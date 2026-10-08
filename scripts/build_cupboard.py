@@ -32,7 +32,7 @@ def build():
         if isinstance(data, bpy.types.Mesh) and data.users == 0:
             bpy.data.meshes.remove(data)
     # sink, tap and drainer out
-    gone = [o for c in SINK for o in bpy.data.collections[c].all_objects]
+    gone = [o for c in SINK if c in bpy.data.collections for o in bpy.data.collections[c].all_objects]
     gone += [o for o in bpy.data.objects if o.name.startswith(DRAINER)]
     for o in gone:
         o.hide_render = o.hide_viewport = True
