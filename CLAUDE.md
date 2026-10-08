@@ -180,7 +180,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Confirmed by the lab: Epilog is 80 W; scanner is a handheld one; presses = a LOKLiK + a classic red industrial
   clam press (+ the Cricut ones); the Flashforge model doesn't matter. Still unknown (stand-ins in the model): clay
   printer (Eazao Zero; lab unsure), handheld scanner model, red press model, LOKLiK model, Brother sewing/embroidery,
-  overlocker, EasyPress generation; Roland vinyl GS-24 vs GS2-24.
+  overlocker, EasyPress generation. Vinyl cutters are both Roland CAMM-1 GS-24 (confirmed).
 - Prusa count: 7 now; list says 5, its power notes 10, "probably 15 printers in total".
 - Finals (renders/final3) are outdated; re-render when the layout settles. Non-final cameras (Counter, Craft,
   Interior_01, Mural, ...) were not reframed after the layout changes.

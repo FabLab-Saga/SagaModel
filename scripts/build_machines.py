@@ -454,7 +454,7 @@ def srm20(w=0.451, d=0.426, h=0.426):
 
 
 def vinyl(w=0.851, d=0.310, h=0.235):
-    """Roland desktop vinyl cutter: grey body, black end caps, pinch-roller slot, vinyl roll behind."""
+    """Roland CAMM-1 GS-24 desktop vinyl cutter (both of the lab's are GS-24s): grey body, black end caps, pinch-roller slot, vinyl roll behind."""
     p = Part()
     p.box(M["grey"], 0.07, w - 0.07, 0.05, d - 0.02, 0.03, h, bevel=0.025)
     for x0 in (0.0, w - 0.07):
