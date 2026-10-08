@@ -221,7 +221,7 @@ def build():
                 c = lib["to_world"](loc, rot, (lx, -0.35, 0))
                 stool().emit(f"Stool_{i + 1}", col, Vector((c.x - 0.18, c.y - 0.18, 0)))
     # ---- vinyl cutters on rolling stands, south of the tool-wall row
-    for i, yc in enumerate((27.05, 28.20)):
+    for i, yc in enumerate((26.98, 28.00)):          # packed up to leave y 28.55-29.55 for the cutter counter
         loc, rot = lib["placement"](XG + 0.25, yc, 0.95, 0.50, "+x")
         vinyl_stand().emit(f"VinylStand_{i + 1}", col, loc, rot)
         put(mach["vinyl"](), f"Roland_VinylCutter_{i + 1}", col, loc, rot, (0.475, 0.22), 0.82, 0.851, 0.310)

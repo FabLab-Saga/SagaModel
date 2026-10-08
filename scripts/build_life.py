@@ -1,6 +1,6 @@
-"""Signs of use: stools at the workbenches and work in progress on them. Re-runnable ("Life" collection).
+"""Signs of use: work in progress on the work tables. Re-runnable ("Life" collection).
 
-Benches = colleague's Component_237631 group (7 units). Props: green self-healing cutting mats
+Benches = the four WorkTable_* of build_worktables.py (run that first; it also builds the chairs). Props: green self-healing cutting mats
 (procedural grid), plywood/acrylic offcuts, laptops, small prints, steel rulers, pencils, a CC0
 cordless drill (Poly Haven Drill_01) and a cardboard box (cardboard_box_01) - credits in
 assets/polyhaven/CREDITS.md.
@@ -92,6 +92,7 @@ def instance(asset, col, name, x, y, z, rz, target=None):
 
 
 def bench_top(name):
+    bpy.context.view_layer.update()                                # fresh emits: children's matrix_world not evaluated yet
     o = bpy.data.objects[name]
     pts = [k.matrix_world @ Vector(c) for k in o.children_recursive if k.type == "MESH" and not k.hide_render for c in k.bound_box]
     return (min(p.x for p in pts), max(p.x for p in pts), min(p.y for p in pts), max(p.y for p in pts), max(p.z for p in pts))
@@ -115,12 +116,8 @@ def build():
     pencil = mat("Pencil", "#E8B21E", 0.5)
     acr = [mat("Acrylic_Clear", "#DDE8EE", 0.05), MAT["bins"][0], MAT["bins"][2]]
     ply = MAT["ply"]
-    benches = sorted([o.name for o in bpy.data.objects["ROOT"].children if o.name.startswith("Component_237631")
-                      and o.name != "Component_237631.006"])          # .006 removed: aisle behind the micro bench
-    o6 = bpy.data.objects.get("Component_237631.006")
-    if o6:
-        for k in (o6, *o6.children_recursive):
-            k.hide_render = k.hide_viewport = True
+    benches = sorted(o.name for o in bpy.data.collections["WorkTables"].objects if o.name.startswith("WorkTable_")
+                     and o.parent is None)                         # build_worktables.py (seats are built there)
     for bi, bn in enumerate(benches):
         x0, x1, y0, y1, zt = bench_top(bn)
         long_x = (x1 - x0) > (y1 - y0)
@@ -160,14 +157,6 @@ def build():
         su, sv = at(rng.uniform(-0.3, 0.3), rng.uniform(-0.15, 0.15))
         p.box(paper, su - 0.105, su + 0.105, sv - 0.148, sv + 0.148, zt, zt + 0.0006)
         p.emit(f"BenchProps_{bi}", col, Vector((0, 0, 0)))
-        # stools: two per long side
-        for side in (-1, 1):
-            for su_ in (-L / 4, L / 4):
-                if rng.random() < 0.25:
-                    continue                                       # not every seat taken / pushed in
-                su2, sv2 = at(su_ + rng.uniform(-0.05, 0.05), side * (W / 2 + rng.uniform(0.12, 0.30)))
-                craft["stool"](0.62).emit(f"Stool_{bi}_{side}_{int(su_ > 0)}", col,
-                                          Vector((su2 - 0.18, sv2 - 0.18, 0)), rng.uniform(-0.15, 0.15))
     # tools: drill on two benches, a cardboard box on the floor by the craft zone
     for k, bn in enumerate(benches[:2]):
         x0, x1, y0, y1, zt = bench_top(bn)

@@ -1,8 +1,9 @@
-"""Textile area on the bench side (WNW, -y) of the felt wall, between the work tables and the
-lounge (x 26.1-28.9, y 26.6-29.6). Re-runnable ("Textile" collection).
+"""Textile area by the SSW glass, on the open floor between the laser room's NNE partition (y 26.94) and the
+lounge nook (x 29.7-31.7, y 27.5-29.6; daylight, ~1.5 m path to the spine side kept clear). Re-runnable ("Textile").
 - Sewing table 2.0 x 1.0 m (profile + birch) with Brother sewing + embroidery + overlocker,
   fabric, scissors, pin cushion, cutting mat; four profile chairs with birch seat and back.
-- Standing counter against felt panel 3 with 2x Cricut and the Mayku former.
+- Cutter counter (Cricut Maker + Mayku FormBox, 1.0 x 0.55 m, standing height) on the NNE glass next to the
+  vinyl cutters (y 28.55-29.55): all the cutters in one corner.
 """
 import math
 import random
@@ -56,7 +57,7 @@ def build():
 
     # ---- sewing table, long side along x, chairs on both long sides
     TL, TD, TH = 2.00, 1.00, 0.76
-    tc = Vector((27.55, 27.95))
+    tc = Vector((30.70, 28.55))
     part, _ = lib["table_unit"](TL, TD, TH, [0.0, TL - 0.04], lower=())
     loc, rot = lib["placement"](tc.x, tc.y, TL, TD, "-y")
     part.emit("SewingTable", col, loc, rot)
@@ -90,18 +91,18 @@ def build():
             off = __import__("mathutils").Matrix.Rotation(r, 4, "Z") @ Vector((-0.22, -0.22, 0))
             chair().emit(f"Chair_{side}_{int(dx > 0)}", col, Vector((cx, cy, 0)) + off, r)
 
-    # ---- standing counter against felt panel 3 (WNW face y ~29.72) with the cutters
-    CL, CD, CH = 1.20, 0.55, 0.92
+    # ---- standing cutter counter on the NNE glass (x 20.90), next to the vinyl stands, front faces +x
+    CL, CD, CH = 1.00, 0.55, 0.92
     part, _ = lib["table_unit"](CL, CD, CH, [0.0, CL - 0.04], lower=(0.16,))
-    cloc, crot = lib["placement"](26.40, 29.62 - CD / 2, CL, CD, "-y")
+    cloc, crot = lib["placement"](20.90 + CD / 2, 29.05, CL, CD, "+x")
     part.emit("CutterCounter", col, cloc, crot)
     put(mach["cricut"](), "Cricut_Maker_1", cloc, crot, 0.35, 0.30, CH, 0.60, 0.179)
-    put(mach["mayku"](), "Mayku_FormBox", cloc, crot, 0.95, 0.30, CH, 0.274, 0.466)
+    put(mach["mayku"](), "Mayku_FormBox", cloc, crot, 0.82, 0.30, CH, 0.274, 0.466)
     b = Part()
-    lib["bin_box"](b, MAT["bins"][3], 0.06, 0.08, 0.16, w=0.50, d=0.40, h=0.22)
-    lib["bin_box"](b, MAT["bins"][5], 0.62, 0.08, 0.16, w=0.50, d=0.40, h=0.22)
-    b.cyl(MAT["bins"][2], (0.10, 0.18, 0.26), (0.48, 0.18, 0.26), 0.04, seg=20)        # vinyl rolls
-    b.cyl(MAT["bins"][0], (0.10, 0.30, 0.26), (0.48, 0.30, 0.26), 0.04, seg=20)
+    lib["bin_box"](b, MAT["bins"][3], 0.05, 0.08, 0.16, w=0.42, d=0.40, h=0.22)
+    lib["bin_box"](b, MAT["bins"][5], 0.52, 0.08, 0.16, w=0.42, d=0.40, h=0.22)
+    b.cyl(MAT["bins"][2], (0.09, 0.18, 0.26), (0.43, 0.18, 0.26), 0.04, seg=20)        # vinyl rolls
+    b.cyl(MAT["bins"][0], (0.09, 0.30, 0.26), (0.43, 0.30, 0.26), 0.04, seg=20)
     b.emit("CutterCounter_Bins", col, cloc, crot)
     print("textile area built")
 

@@ -23,8 +23,8 @@ SIGNS = [
     ("Sign_Fraesivel", "fraesi_vel", (23.05, 23.16, 2.55), "+y", False),               # above the CNC-room window
     ("Sign_Rafeinda", "rafeinda", (24.11, 29.96, 1.92), "+y", False),                 # microelectronics tool wall
     ("Sign_Verkfaeri", "verkfaeri", (20.95, 24.25, 1.93), "+x", True),                # hand-tool wall on the NNE glass
-    ("Sign_Vinylskeri", "vinylskeri", (21.30, 27.62, 2.45), "+x", True),              # over the vinyl stands
-    ("Sign_Saumavel", "saumavel", (27.55, 27.95, 2.45), "-y", True),                  # over the sewing table (textile)
+    ("Sign_Vinylskeri", "vinylskeri", (21.30, 27.75, 2.45), "+x", True),              # over the vinyl stands + cutter counter
+    ("Sign_Saumavel", "saumavel", (30.70, 28.55, 2.45), "-y", True),                  # over the sewing table (textile)
 ]
 
 

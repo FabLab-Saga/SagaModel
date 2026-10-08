@@ -50,9 +50,13 @@ def needed_by_visible(hidden):
 
 
 def purge():
-    hidden = {o for o in bpy.data.objects if o.hide_render and o.name not in KEEP}
+    named = script_literals()               # builders look datablocks up by name (meshes["Profile_2020"],
+    hidden = {o for o in bpy.data.objects if o.hide_render and o.name not in KEEP}   # materials["Sofa_LightGrey"])
     hidden -= needed_by_visible(hidden)
-    data = {o.data for o in hidden if o.data is not None}
+    for n in ("Profile_2020", "Profile_4040"):                     # profile templates for profile_furniture.Part
+        if n in bpy.data.meshes:
+            bpy.data.meshes[n].use_fake_user = True
+    data = {o.data for o in hidden if o.data is not None and o.data.name not in named}
     mats = {s.material for o in hidden for s in o.material_slots if s.material}
     mats |= {m for d in data if hasattr(d, "materials") for m in d.materials if m}
     n_obj = len(hidden)
@@ -61,10 +65,9 @@ def purge():
     imgs = {n.image for m in mats if m.use_nodes and m.node_tree for n in m.node_tree.nodes
             if n.type == "TEX_IMAGE" and n.image}
     bpy.data.batch_remove(gone_data)
-    named = script_literals()               # builders look some materials up by name (materials["Sofa_LightGrey"])
     gone_mats = [m for m in mats if m.users == 0 and m.name not in named]
     bpy.data.batch_remove(gone_mats)
-    gone_imgs = [i for i in imgs if i.users == 0]
+    gone_imgs = [i for i in imgs if i.users == 0 and i.name not in named]
     bpy.data.batch_remove(gone_imgs)
     gone_cols = []
     for name in COLLEAGUE_COLS:
