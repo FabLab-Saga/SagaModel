@@ -59,7 +59,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (Epilog branch joins) → one inline fan → up through the slab to the building's dedicated vent higher up.
 - **Print farm** outside the laser room: profile shelving, 12 Prusa MK3S+ (0.58 m shelf pitch), Bambu P2S.
 - **CNC room**: ShopBot PRS Alpha 120 against the INTERIOR wall; ACword FT100 dust collector out by the
-  far glass corner; flexible hose overhead. (Clearance ignored per user.) No SRM-20s here.
+  far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`), brush skirt on the spindle.
+  (Clearance ignored per user.) No SRM-20s here.
   **Material storage** (`build_material_storage.py`): rolling sheet cart (ply/MDF/acrylic) at the ShopBot's
   loading end (x 22.35–24.90, y 16.95–18.25), offcut slot rack + cantilever rod rack on the side wall x 25.74.
 - **Microelectronics** (ESE side of the tool-wall row): tool walls refitted with drawer cabinets, tool

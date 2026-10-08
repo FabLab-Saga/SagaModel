@@ -472,6 +472,41 @@ def exhaust(col, name, pts, r=0.05):
     return p.emit(name, col, Vector((0, 0, 0)), 0.0)
 
 
+def ribbed_hose(m, pts, r, pitch=0.014, seg=16):
+    """Corrugated hose along a Catmull-Rom path through pts: real ribs (radius alternates every pitch/2)."""
+    def cr(p0, p1, p2, p3, t):
+        return 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3)
+    P = [pts[0]] + list(pts) + [pts[-1]]
+    dense = []
+    for i in range(1, len(P) - 2):
+        for k in range(20):
+            dense.append(cr(P[i - 1], P[i], P[i + 1], P[i + 2], k / 20))
+    dense.append(pts[-1])
+    samples, acc, last = [dense[0]], 0.0, dense[0]                      # resample at half-pitch spacing
+    for q in dense[1:]:
+        acc += (q - last).length
+        last = q
+        if acc >= pitch / 2:
+            samples.append(q)
+            acc = 0.0
+    p = Part()
+    bm = p.bm(m)
+    prev_n, rings = None, []
+    for i, c in enumerate(samples):
+        t = (samples[min(i + 1, len(samples) - 1)] - samples[max(i - 1, 0)]).normalized()
+        n = prev_n if prev_n is not None else (Vector((0, 0, 1)) if abs(t.z) < 0.9 else Vector((1, 0, 0)))
+        n = (n - t * n.dot(t)).normalized()                             # parallel transport
+        prev_n = n
+        b = t.cross(n)
+        rr = r if i % 2 == 0 else r * 0.90
+        rings.append([bm.verts.new(c + (n * math.cos(a) + b * math.sin(a)) * rr)
+                      for a in (2 * math.pi * k / seg for k in range(seg))])
+    for r0, r1 in zip(rings, rings[1:]):
+        for k in range(seg):
+            bm.faces.new((r0[k], r0[(k + 1) % seg], r1[(k + 1) % seg], r1[k]))
+    return p
+
+
 def set_hidden(names, hidden=True):
     n = 0
     for nm in names:
@@ -620,18 +655,36 @@ def build():
     shopbot(W, Lg).emit("ShopBot_PRSAlpha_120", col, sb_loc, 0.0)
     place(dust_collector(), "ACword_FT100", col, 21.50, 16.45, 0.0, 0.84, 0.50, "+y")
     place(control_box(), "ShopBot_Control", col, 21.17, 21.95, 0.0, 0.50, 0.30, "+x")
-    gy = sb_loc.y + Lg * 0.42                                           # flexible hose: dust shoe -> overhead -> collector
+    # dust extraction: brush skirt on the spindle, ribbed hose up to a ceiling-hung swing boom (40x40 profile on
+    # a drop rod by the collector), along the boom in rings, spring balancer at the boom end, down to the inlet
+    gy = sb_loc.y + Lg * 0.42
     hx = sb_loc.x + W * 0.45
-    hose_pts = [(hx, gy - 0.21, 1.52), (hx, gy - 0.21, 2.20), (hx - 0.35, gy - 0.9, 2.50), (21.90, 17.80, 2.40),
-                (21.55, 17.05, 1.90), (21.50, 16.85, 1.30), (21.50, 16.72, 1.12)]
-    cu = bpy.data.curves.new("ShopBot_DustHose", "CURVE")
-    cu.dimensions = "3D"; cu.bevel_depth = 0.052; cu.bevel_resolution = 4; cu.resolution_u = 16
-    sp = cu.splines.new("NURBS"); sp.points.add(len(hose_pts) - 1)
-    for pt, q in zip(sp.points, hose_pts):
-        pt.co = (*q, 1.0)
-    sp.use_endpoint_u = True; sp.order_u = 4
-    cu.materials.append(M["hose"])
-    col.objects.link(bpy.data.objects.new("ShopBot_DustHose", cu))
+    sx, sy = hx, gy - 0.21                                              # spindle axis
+    dx = Part()
+    dx.cyl(mat("Brush_Black", "#141414", 0.95), (sx, sy, 0.845), (sx, sy, 0.905), 0.108, seg=32)   # brush skirt
+    dx.cyl(M["hose"], (sx + 0.07, sy, 0.95), (sx + 0.11, sy, 1.10), 0.045, seg=20)                 # shoe port
+    pv, end = Vector((21.65, 17.55, 2.90)), Vector((sx, sy - 0.10, 2.90))
+    axis = end - pv
+    dx.cyl(M["galv"], (pv.x, pv.y, 3.93), (pv.x, pv.y, pv.z + 0.06), 0.03, seg=16)                 # drop rod
+    dx.cyl(M["galv"], (pv.x, pv.y, pv.z + 0.02), (pv.x, pv.y, pv.z + 0.08), 0.07, seg=24)           # swivel bearing
+    q = axis.to_track_quat("Z", "Y").to_matrix().to_4x4()
+    bmesh.ops.create_cube(dx.bm(lib["MAT"]["profile"]), size=1.0,
+                          matrix=Matrix.Translation(pv + axis / 2) @ q @ Matrix.Diagonal((0.04, 0.04, axis.length, 1)))
+    dx.cyl(M["galv"], (pv.x, pv.y, 3.55), tuple(pv + axis * 0.6 + Vector((0, 0, 0.02))), 0.004, seg=8)  # tie rod
+    for t in (0.2, 0.42, 0.64, 0.86):                                                                 # hose rings
+        c = pv + axis * t - Vector((0, 0, 0.12))
+        dx.cyl(M["galv"], tuple(c + Vector((0, 0, 0.10))), tuple(c + Vector((0, 0, 0.065))), 0.004, seg=6)
+        bmesh.ops.create_cone(dx.bm(M["galv"]), cap_ends=False, segments=24, radius1=0.066, radius2=0.066, depth=0.012,
+                              matrix=Matrix.Translation(c) @ q)
+    dx.box(M["dark"], end.x - 0.04, end.x + 0.04, end.y - 0.03, end.y + 0.03, 2.72, 2.88, bevel=0.006)  # balancer
+    dx.cyl(M["galv"], (end.x, end.y, 2.72), (end.x, end.y, 2.30), 0.0015, seg=6)
+    dx.emit("ShopBot_DustBoom", col, Vector((0, 0, 0)), 0.0)
+    path = [Vector(v) for v in ((sx + 0.11, sy, 1.10), (sx + 0.14, sy - 0.02, 1.45), (end.x + 0.06, end.y + 0.02, 2.05),
+                                (end.x, end.y, 2.26))]
+    path += [pv + axis * t - Vector((0, 0, 0.12)) for t in (0.86, 0.64, 0.42, 0.2)]
+    path += [Vector(v) for v in ((21.60, 17.40, 2.55), (21.52, 17.15, 1.90), (21.50, 17.00, 1.35), (21.50, 16.86, 1.14),
+                                 (21.50, 16.72, 1.12))]
+    ribbed_hose(M["hose"], path, 0.055).emit("ShopBot_DustHose", col, Vector((0, 0, 0)), 0.0)
     return k, hidden
 
 
