@@ -106,7 +106,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **CNC room** (`build_cnc_room.py`, collection CNCRoom; machine models in build_machines.py): its wall to the main
   room is FLUSH WITH THE MURAL WALL (y 21.66–21.82) and is a very tall FRAMELESS glass wall (floor to slab, butt-jointed
   panes, NO aluminium frames) with a tall standard office glass door (1.0 x 2.70, glass transom, BRUSHED aluminium
-  glass-to-glass hinges + pull bar, not chrome) by the NNE glass, x 20.90–21.90 (user). The colleague's glazed front
+  glass-to-glass hinges + pull bar, not chrome) by the NNE glass, x 20.90–21.90 (user). Sandblasted manifestation so it
+  reads as glass (user): BIG frosted dots (64 mm, 100 mm pitch) in a row at 0.95 m and two rows at 1.45/1.55 m;
+  the rest stays clear so the ShopBot is visible from the main room. The colleague's glazed front
   (y 23.05) is cut away (`Cut_CNC_Front`/`Cut_CNC_Side`), the strip in front is main lab. The colleague's 1.08 x 2.49 m hallway door was invented (user): replaced by a normal
   Icelandic interior door (90 x 210, frame + casings, wall completed to the slab), the knocked-down WC's doorway next
   to it walled up. ShopBot PRS Alpha 120-60 at its REAL size 3.66 x 2.31 x 1.70 (spec sheet; was 4.30 x 2.15) kept
