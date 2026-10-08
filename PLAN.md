@@ -18,7 +18,7 @@ spotlights.
 - Verify: GPU review renders of the affected cameras (≈5 s each) and look at them; save the .blend; update
   CLAUDE.md (build order, zones, look rules); commit + push. One goal = one commit.
 
-## Goals (paste one per /goal, in this order)
+## Goals (ALL DONE 2026-10-08 - commits "G1:" .. "G11:")
 
 **G1 — Leftover cleanup.** New `scripts/cleanup_leftovers.py`: hide the colleague's 4th tool wall
 `Component_1346962.003` (y≈15.3–15.8, hammers + saws, by the dust collector), the small table buried in the

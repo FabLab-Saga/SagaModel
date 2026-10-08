@@ -1,6 +1,6 @@
 # Fab Lab SAGA — Blender model (project brief for Claude)
 
-Authoritative project state as of 2026-10-08. Read this first; then `git log --oneline` for history,
+Authoritative project state as of 2026-10-08 (MPDESKTOP; PLAN.md G1–G11 done). Read this first; then `git log --oneline` for history,
 `LICENSES.md` for asset rules, `SETUP.md` for machine setup. The previous session's full transcript
 may also be available (see SETUP.md) — this file is the summary of record.
 
@@ -41,7 +41,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   from Poly Haven into `assets/polyhaven/hdri/` if missing), mural, signs.
 - `refs/` — branding (Fab Lab Ísland brand manual 2021, signs, logos, Roboto fonts), equipment list PDF
   (the machinery list given to the architects for electrical load + airflow), user photos.
-- `renders/final2/` — 21 stills at 1920x1080 (CPU, 32 spp). `renders/tmp/` — scratch previews.
+- `renders/final3/` — 29 stills at 1920x1080 (GPU OptiX, 128 spp) after the PLAN.md goals G1–G11 (2026-10-08).
+  `renders/final2/` — older set (pre-G1, CPU 32 spp). `renders/tmp/` — scratch previews.
 
 ## Geometry & site facts (verified)
 - Model units metres. Frame: **+Y = ESE (bearing 116°), −Y = WNW, +X = SSW (sunny façade, 206°),
@@ -118,4 +119,5 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Upper hotel floors not modelled → keep exterior shots tight.
 - CNC room's WNW end (y ≈15.08) has a 2.3 m unglazed opening (x 22.4–24.7) to outdoors in the colleague's
   model — ask the user: loading door, glazing, or wall?
-- Finals + animated walkthrough on the powerful machine.
+- Animated walkthrough (stills done on MPDESKTOP: RTX 4070 Ti SUPER, OptiX; ~10-25 s per 1080p still).
+- Spine has no camera on its workshop face; the demo pieces there are only seen in passing.
