@@ -87,7 +87,7 @@ def cutter(name, x0, x1, y0, y1, z0=-0.05, z1=3.94):
     mod.operation, mod.solver, mod.object = "DIFFERENCE", "EXACT", ob
 
 
-def manifestation_mat(pitch=0.20, pitch_z=0.10, radius=0.032):
+def manifestation_mat(pitch=0.20, pitch_z=0.20, radius=0.05):
     """Sandblasted dot manifestation (safety marking on glass): satin-white frosted dots in a square grid, procedural in
     world space (dots run along x on this wall, rows in z), everything between the dots fully clear."""
     m = bpy.data.materials.get("Glass_Manifestation_Dots") or bpy.data.materials.new("Glass_Manifestation_Dots")
@@ -170,14 +170,14 @@ def glazed_front(col):
         p.cyl(alu, (hx, yc + sgn * 0.055, 0.75), (hx, yc + sgn * 0.055, 1.35), 0.0125, seg=20)
     p.emit("CNC_GlassWall_Fittings", col, Vector((0, 0, 0)))
     # manifestation (user: make the glass read as a divider without hiding the ShopBot): two narrow sandblasted dot
-    # bands across every pane incl. the door, on the main-room face - big 64 mm dots 200 mm apart (user: "way bigger",
-    # then every other dot dropped): one row at 0.95 m, one at 1.55 m; the rest of the glass stays clear. Gap on the
+    # bands across every pane incl. the door, on the main-room face - 100 mm dots 200 mm apart (user: bigger, then every
+    # other dot dropped, then bigger again): one row at 0.90 m, one at 1.50 m; the rest of the glass stays clear. Gap on the
     # door round the pull handle.
     dots = manifestation_mat()
     md = Part()
     ym = yc + 0.0015
     hx0 = lx1 - 0.17                                                 # handle zone on the door leaf
-    for z0, z1 in ((0.90, 1.00), (1.50, 1.60)):                    # single rows centred at 0.95 / 1.55
+    for z0, z1 in ((0.84, 0.96), (1.44, 1.56)):                    # single rows centred at 0.90 / 1.50
         for xa, xb in ((x0, d0 - J), (d0 + 0.06, hx0), *zip([v for v in xs[:-1]], [v - J for v in xs[1:]])):
             if xb - xa > 0.02:
                 md.box(dots, xa, xb, ym, ym + 0.0002, z0, z1)
