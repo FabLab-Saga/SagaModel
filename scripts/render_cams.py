@@ -9,6 +9,8 @@ import time
 import bpy
 
 sc = bpy.context.scene
+for _m in [m for m in sc.timeline_markers if m.camera]:   # walkthrough markers would override sc.camera
+    sc.timeline_markers.remove(_m)
 prefs = bpy.context.preferences.addons["cycles"].preferences
 for t in ("OPTIX", "CUDA", "HIP", "ONEAPI", "METAL"):
     try:

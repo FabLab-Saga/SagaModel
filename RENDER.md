@@ -55,9 +55,13 @@ CC0 only (same rule as every asset). Shortlist being built in `~/Documents/Agent
 Magnús picks. Record the pick in LICENSES.md.
 
 ## Hall shot
-In the model the area outside the entrance door is outdoors (colleague geometry), but the door opens onto the
-hotel's hall. The push-in needs a built hall "set" (only what the camera sees). Research of the real space from
-the Hagatorg 1 drawings: `~/Documents/AgentWork/saga-video/hall/` (in progress).
+The entrance was wrong in the colleague's model (city drawings, Andrúm AT 20-10-02, 2026-06-30): the lab includes the
+corner bay x 32.6-34.3, y 34.6-38.3 and the door (EI2 30 fire door, y 36.54-37.47) is in its SSW wall at x ~34.3,
+opening onto the university hall "háskóli 01-01". Fixed in the model by `scripts/build_entrance_bay.py` (approved by
+Magnús), which also builds the hall SET for the opening shot (stone floor, acoustic ceiling, glass façade on the
+left, WC box, check-in kiosk, seating; finishes are my inference from lobby photos). Research:
+`~/Documents/AgentWork/saga-video/hall/HALL.md`. The drawing also shows a lab escape door in the SSW façade at
+y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
 
 ## Pipeline + tools (MPDESKTOP)
 - Blender 5.2.2 (Cycles, OptiX, RTX 4070 Ti SUPER): camera paths keyframed by a builder (planned

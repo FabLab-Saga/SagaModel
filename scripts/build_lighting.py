@@ -29,6 +29,7 @@ ROWS = [
     (22.30, 34.6, 38.0), (24.50, 34.6, 38.0), (26.80, 34.6, 38.0),                        # equipment bank
     (31.10, 20.4, 26.7),                                            # laser room
     (29.80, 27.3, 37.9), (31.45, 27.3, 34.6),                       # lounge / textile / demo / entrance
+    (33.45, 35.2, 38.0),                                            # entrance corner bay (build_entrance_bay.py)
 ]
 # (name, ceiling point, aim point)
 SPOTS = [

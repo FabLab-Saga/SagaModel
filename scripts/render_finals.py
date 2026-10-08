@@ -23,6 +23,8 @@ SHOTS += sorted(((f"{int(o['shot_order']):02d}_{o.name[4:].lower()}", o.name) fo
                  if o.type == "CAMERA" and "shot_order" in o), key=lambda s: s[0])
 want = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 sc = bpy.context.scene
+for _m in [m for m in sc.timeline_markers if m.camera]:   # walkthrough markers would override sc.camera
+    sc.timeline_markers.remove(_m)
 sc.render.engine = "CYCLES"
 def _pick_device():
     """Use the fastest GPU backend available (OptiX > CUDA > HIP > oneAPI > Metal), else CPU.

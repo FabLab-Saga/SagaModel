@@ -1,9 +1,10 @@
 """Entrance from the hotel's main hall (the SSW door at y 35.11-36.21 opens onto Bændahöllin's hall, not the
 street). Fab Lab signage on the hall side. Re-runnable (collection "HallEntrance").
 
-- Fascia sign above the door (wall face x 32.634, z ~2.45-2.88): black panel, the Fab Lab icon
+- Fascia sign above the door + fire-glass panel (hall face of the corner-bay wall x 34.44, z ~2.45-2.88; door moved
+  to the bay per the city drawings, build_entrance_bay.py): black panel, the Fab Lab icon
   (refs/branding/logos/fablab_icon.svg) + "FAB" bold / "LAB SAGA" light (Roboto Condensed, like the mural logo).
-- Plaque right of the side window: name, partners, opening hours.
+- Plaque right of the door (hall side): name, partners, opening hours.
 - Door decal: white vinyl icon + FAB LAB SAGA on the door glass.
 Also renames the camera Cam_ExteriorEntrance -> Cam_HallEntrance.
 """
@@ -13,8 +14,8 @@ import bpy
 from mathutils import Matrix, Vector
 
 ROOT = bpy.path.abspath("//")
-WALL_X = 32.634                    # hall-side face of the wall around the door
-GLASS_X = 32.536                   # hall-side face of the door glass
+WALL_X = 34.44                     # hall-side face of the corner-bay wall around the door
+GLASS_X = 34.3405                  # hall-side face of the fixed fire-glass panel
 FONTS = ROOT + "refs/branding/fonts/"
 
 
@@ -109,8 +110,8 @@ def build():
         bpy.data.objects.remove(o)
     black, white = mat("Sign_Black", "#141414", 0.35), mat("Sign_White", "#F4F4F2", 0.45)
     vinyl = mat("Vinyl_White", "#F2F2F0", 0.5)
-    # ---- fascia sign above the door: [icon] FAB LAB SAGA, centred over door + side window
-    yc, zc, H = 36.15, 2.665, 0.40
+    # ---- fascia sign above the door: [icon] FAB LAB SAGA, centred over fire glass + door
+    yc, zc, H = 36.255, 2.665, 0.40
     ic = icon(col, "Hall_Sign_Icon", white, 0.30)
     t1 = text(col, "Hall_Sign_FAB", "FAB", "RobotoCondensed-Bold.ttf", 0.28, white)
     t2 = text(col, "Hall_Sign_LABSAGA", "LAB SAGA", "RobotoCondensed-Light.ttf", 0.28, white)
@@ -130,8 +131,8 @@ def build():
     bm.to_mesh(panel); bm.free()
     panel.materials.append(black)
     col.objects.link(bpy.data.objects.new("Hall_Sign_Panel", panel))
-    # ---- plaque right of the side window
-    py, pz = 37.62, 1.52
+    # ---- plaque right of the door
+    py, pz = 38.20, 1.52
     pl = bpy.data.meshes.new("Hall_Plaque")
     bm = bmesh.new()
     bmesh.ops.create_cube(bm, size=1.0, matrix=Matrix.Translation((WALL_X + 0.006, py, pz)) @ Matrix.Diagonal((0.012, 0.46, 0.34, 1)))
@@ -141,17 +142,17 @@ def build():
     pi = icon(col, "Hall_Plaque_Icon", white, 0.08)
     facing_plus_x(pi, WALL_X + 0.0135, py - 0.15, pz + 0.10)
     for k, (body, fname, size, dz) in enumerate((("FAB LAB SAGA", "RobotoCondensed-Bold.ttf", 0.045, 0.085),
-                                                 ("Háskóli Íslands · Reykjavíkurborg", "RobotoCondensed-Light.ttf", 0.022, 0.0),
+                                                 ("Háskóli Íslands · Reykjavíkurborg · Mixtúra", "RobotoCondensed-Light.ttf", 0.022, 0.0),
                                                  ("Opið / Open", "RobotoCondensed-Regular.ttf", 0.024, -0.055),
                                                  ("mán-fös 10-18 · lau 12-16", "RobotoCondensed-Light.ttf", 0.022, -0.090))):
         t = text(col, f"Hall_Plaque_T{k}", body, fname, size, white, extrude=0.0005)
         facing_plus_x(t, WALL_X + 0.0125, py - 0.20 if k else py - 0.095, pz + dz)
-    # ---- door decal (vinyl on the glass, hall side)
+    # ---- vinyl on the fire-glass panel, hall side
     di = icon(col, "Hall_Door_Icon", vinyl, 0.16)
-    facing_plus_x(di, GLASS_X + 0.0015, 35.66, 1.55)
+    facing_plus_x(di, GLASS_X + 0.0015, 35.67, 1.55)
     dt = text(col, "Hall_Door_Text", "FAB LAB SAGA", "RobotoCondensed-Bold.ttf", 0.055, vinyl, extrude=0.0)
     bpy.context.view_layer.update()
-    facing_plus_x(dt, GLASS_X + 0.0015, 35.66 - width(dt) / 2, 1.40)
+    facing_plus_x(dt, GLASS_X + 0.0015, 35.67 - width(dt) / 2, 1.40)
     # ---- camera rename: this is the hall entrance, not an exterior
     cam = bpy.data.objects.get("Cam_ExteriorEntrance")
     if cam:

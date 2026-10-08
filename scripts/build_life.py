@@ -224,11 +224,7 @@ def wall_details():
     # laser-room partition, workshop side (faces -x at 29.52): sockets for the print farm
     for y in (22.2, 24.9):
         socket(29.515, y, 0.30, -1, 0)
-    # exit sign above the entrance door on the SSW glazing (hangs from the slab, faces -x)
-    p.box(white, 32.30, 32.36, 35.36, 35.96, 2.62, 2.80, bevel=0.004)
-    p.box(exitg, 32.295, 32.30, 35.40, 35.92, 2.64, 2.78)
-    for yy in (35.42, 35.90):
-        p.cyl(grey, (32.33, yy, 2.80), (32.33, yy, 3.93), 0.002, seg=6)
+    # (the exit sign above the entrance door is built by build_entrance_bay.py: the door moved to the corner bay)
     p.emit("Wall_Details", col, Vector((0, 0, 0)))
 
 
