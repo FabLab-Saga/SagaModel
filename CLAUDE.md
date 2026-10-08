@@ -77,8 +77,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   stands by the NNE glass.
 - **Textile area** (WNW side of the felt, x 26.1–28.9, y 26.6–29.6): sewing table with sewing /
   embroidery / overlock + 4 profile chairs; cutter counter (Cricut, Mayku) against the felt.
-- **Lounge / entryway** (SSW glass by the entrance): Cleveland-style sofas, profile coffee tables, felt
-  poufs, TV on wheels, bookcase spine. No machines here.
+- **Lounge** (by the SSW glass): ONE small circular conversation nook (`nook()` in build_bank_lounge.py, centre
+  30.95/31.60, 2.85 m): 240° curved charcoal sofa (back to the glass, open towards the spine path), felt cushions,
+  round birch table, 2 felt poufs. No TV, no machines. Keep walkways clear (spine path ≥1.2 m, entrance zone,
+  strip along the glass). `build_sofas.py` is now a no-op (no Cleveland sofas left).
 - **Demo display** (back-wall bays visible from the entrance, x ~27.4–32.4): imaginary Fab Lab projects,
   hex-tile art relief above. Spine's workshop side also shows projects.
 - **Búnaðarbankinn** (equipment bank): STAFF ONLY, boxes only (SAMLA-style), enclosed by walls 2.80 m

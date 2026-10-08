@@ -6,9 +6,10 @@ Equipment bank = the enclosure at the ESE end (model frame: +X = SSW, +Y = ESE):
   B  south-wall run, y 34.42-34.82, 40 cm deep: small boxes, full height.
   C  NNE end, x 21.05-21.65, 60 cm deep: biggest boxes.
   Contents: IKEA SAMLA-style clear boxes (5-130 L) full of random teaching kit.
-Lounge/entryway along the SSW glass (y 27.05-34.55; main entrance at y 35.1 kept clear):
-  two conversation groups with the list's Cleveland sofas, profile coffee tables,
-  Flöff-felt poufs, TV on wheels.
+Lounge: one small CIRCULAR conversation nook by the SSW glass (centre 30.95, 31.6; 2.85 m across): a 240-degree
+  curved sofa (charcoal linen, back to the glass, open towards the path by the spine), felt cushions, a round
+  birch table, two felt poufs at the opening. Walkways kept clear: 1.3 m between nook and spine, the entrance
+  zone (y > 34.3) and the strip along the glass from the laser room.
 Placeholders inside these areas are hidden, not deleted.
 """
 import math
@@ -224,6 +225,79 @@ def tv_stand(sw=1.92, sh=1.10):
     return p
 
 
+def sector(p, m, c, r0, r1, a0, a1, z0, z1, n=10):
+    """Closed annular-sector solid around centre c (angles in radians)."""
+    bm = p.bm(m)
+    rings = []
+    for i in range(n + 1):
+        a = a0 + (a1 - a0) * i / n
+        ca, sa = math.cos(a), math.sin(a)
+        rings.append([bm.verts.new((c.x + r * ca, c.y + r * sa, z)) for r, z in ((r0, z0), (r1, z0), (r1, z1), (r0, z1))])
+    for q0, q1 in zip(rings, rings[1:]):
+        for k in range(4):
+            bm.faces.new((q0[k], q0[(k + 1) % 4], q1[(k + 1) % 4], q1[k]))
+    bm.faces.new(list(reversed(rings[0])))
+    bm.faces.new(rings[-1])
+
+
+def soften(root, names, width=0.03):
+    for k in root.children:
+        if any(k.name.endswith(n) for n in names):
+            bv = k.modifiers.new("Soft", "BEVEL")
+            bv.width, bv.segments, bv.limit_method = width, 3, "ANGLE"
+            sd = k.modifiers.new("Subd", "SUBSURF")
+            sd.levels, sd.render_levels = 1, 2
+            for f in k.data.polygons:
+                f.use_smooth = True
+
+
+def nook(col, c, R=1.42, opening=math.radians(190), arc=math.radians(240)):
+    """Circular conversation nook: 240-degree curved sofa (6 modules), round birch table, felt cushions, 2 poufs."""
+    char = bpy.data.materials.get("Sofa_Charcoal")
+    if char is None:
+        char = SOFA.copy()
+        char.name = "Sofa_Charcoal"
+    mix = next((n for n in char.node_tree.nodes if n.type == "MIX"), None)
+    if mix:
+        mix.inputs["B"].default_value = lin("#3E4144")
+        mix.inputs["Factor"].default_value = 0.78
+    char.diffuse_color = lin("#3E4144")
+    bsdf = next(n for n in char.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+    bsdf.inputs["Sheen Weight"].default_value = 0.3                     # white sheen washes out a dark fabric
+    bsdf.inputs["Sheen Tint"].default_value = (0.35, 0.36, 0.38, 1)
+    felts = [bpy.data.materials[n] for n in ("Floff_Orange", "Floff_Green", "Floff_Blue")]
+    a_start = opening + (2 * math.pi - arc) / 2
+    mods, g = 6, math.radians(0.8)
+    step = arc / mods
+    p = Part()
+    sector(p, MAT["foot"], c, 0.80, R - 0.08, a_start, a_start + arc, 0.0, 0.10, n=48)            # recessed plinth
+    for i in range(mods):
+        a0, a1 = a_start + i * step + g, a_start + (i + 1) * step - g
+        sector(p, char, c, 0.74, R, a0, a1, 0.10, 0.28, n=8)                                      # base
+        sector(p, char, c, 0.72, R - 0.20, a0, a1, 0.28, 0.44, n=8)                               # seat cushion
+        sector(p, char, c, R - 0.20, R, a0, a1, 0.28, 0.80, n=8)                                  # back
+    for k, i in enumerate((0.9, 2.6, 4.3)):                                                       # loose felt cushions
+        a = a_start + i * step
+        ctr = c + Vector((math.cos(a), math.sin(a), 0)) * (R - 0.30) + Vector((0, 0, 0.62))
+        mtx = Matrix.Translation(ctr) @ Matrix.Rotation(a + math.pi / 2, 4, "Z") @ Matrix.Rotation(math.radians(-14), 4, "X") \
+            @ Matrix.Diagonal((0.42, 0.11, 0.38, 1))
+        bmesh.ops.create_cube(p.bm(felts[k]), size=1.0, matrix=mtx)
+    root = p.emit("Nook_Sofa", col, Vector((0, 0, 0)))
+    soften(root, ("Sofa_Charcoal",) + tuple(f.name for f in felts), 0.035)
+    t = Part()                                                                                    # round birch table
+    t.cyl(MAT["ply"], (c.x, c.y, 0.375), (c.x, c.y, 0.40), 0.36, seg=64)
+    for a in (0.0, math.pi / 2):
+        d = Vector((math.cos(a), math.sin(a), 0)) * 0.26
+        t.box(MAT["profile"], min(c.x - d.x, c.x + d.x) - 0.02, max(c.x - d.x, c.x + d.x) + 0.02,
+              min(c.y - d.y, c.y + d.y) - 0.02, max(c.y - d.y, c.y + d.y) + 0.02, 0.02, 0.06)
+    t.box(MAT["profile"], c.x - 0.02, c.x + 0.02, c.y - 0.02, c.y + 0.02, 0.06, 0.375)
+    t.emit("Nook_Table", col, Vector((0, 0, 0)))
+    for k, da in enumerate((-0.42, 0.42)):                                                        # poufs at the opening
+        a = opening + da
+        q = c + Vector((math.cos(a), math.sin(a), 0)) * 1.08
+        pouf(felts[(k + 1) % 3]).emit(f"Pouf_{k + 1}", col, Vector((q.x - 0.23, q.y - 0.23, 0)))
+
+
 # ---------------------------------------------------------------- build
 def clear_collection(name):
     scene = bpy.context.scene
@@ -318,19 +392,8 @@ def build():
     part.emit("Bank_C_Shelving", bank, loc_c, rot_c)
     fill_unit(slots_c, lv_c, H, 0.60).emit("Bank_C_Boxes", bank, loc_c, rot_c)
 
-    # ---------------- lounge / entryway along the SSW glass
-    XB = 32.40                                                            # sofa backs against the glass zone
-    sofa(2.08).emit("Sofa_Cleveland3_A", lounge, *lib["placement"](XB - 0.43 - 0.05, 28.80, 2.08, 0.86, "-x"))
-    sofa(2.08).emit("Sofa_Cleveland3_B", lounge, *lib["placement"](29.10 + 0.43, 28.80, 2.08, 0.86, "+x"))
-    part, _ = lib["table_unit"](1.20, 0.60, 0.42, [0.0, 1.16], lower=())
-    part.emit("CoffeeTable_1", lounge, *lib["placement"](30.73, 28.80, 1.20, 0.60, "-x"))
-    sofa(1.79).emit("Sofa_Cleveland2", lounge, *lib["placement"](XB - 0.43 - 0.05, 32.45, 1.79, 0.86, "-x"))
-    part, _ = lib["table_unit"](0.90, 0.55, 0.42, [0.0, 0.86], lower=())
-    part.emit("CoffeeTable_2", lounge, *lib["placement"](30.95, 32.45, 0.90, 0.55, "-x"))
-    felts = [bpy.data.materials[n] for n in ("Floff_Orange", "Floff_Green", "Floff_Blue")]
-    for i, (x, y) in enumerate(((29.95, 31.75), (29.80, 32.45), (29.95, 33.15))):
-        pouf(felts[i]).emit(f"Pouf_{i + 1}", lounge, Vector((x - 0.23, y - 0.23, 0)))
-    tv_stand().emit("TV_OnWheels", lounge, *lib["placement"](28.55, 32.45, 1.10, 0.62, "+x"))
+    # ---------------- lounge: circular conversation nook by the SSW glass
+    nook(lounge, Vector((30.95, 31.60, 0.0)))
     return hidden
 
 
