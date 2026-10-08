@@ -189,6 +189,8 @@ def demolish_wc2():
     if ob.name not in cut_col.objects:
         cut_col.objects.link(ob)
     ob.display_type, ob.hide_render = "WIRE", True
+    ob.hide_set(True)                       # like the façade cutters: hidden in the viewport too (else the Rendered
+                                            # viewport shows the cutter as a solid block where the WC used to be)
     root = bpy.data.objects["ROOT.geo0"]
     mod = root.modifiers.get("Cut_WC2") or root.modifiers.new("Cut_WC2", "BOOLEAN")
     mod.operation, mod.solver, mod.object = "DIFFERENCE", "EXACT", ob
