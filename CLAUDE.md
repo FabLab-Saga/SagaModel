@@ -51,6 +51,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `bmcp.py` (MCP-socket fallback), `import_glb.py`.
 - `assets/` — CC0 textures/models/HDRI (HDRI .exr is git-ignored: `./setup.sh` re-fetches `buikslotermeerplein`
   4k exr from Poly Haven into `assets/polyhaven/hdri/`; it is the ONLY external file not in git), mural, signs.
+- `.github/workflows/web-preview.yml` — live web preview: every push to main that touches a `.blend` or `assets/`
+  rebuilds the site in the separate repo `MagnusPetursson/SagaModel-web` (sibling folder `../SagaModel-web`,
+  `tools/publish.sh`, Blender 5.2.2 headless on GitHub Actions) and deploys it to GitHub Pages. Needs the repo secret
+  `SAGA_WEB_DEPLOY_KEY`. Manual run: Actions tab → Web preview → Run workflow. Script-only commits don't trigger it.
 - `PLAN.md` — the review-fix goals G1–G11 (all done). New multi-step work: write a similar plan.
 - `refs/` — branding (Fab Lab Ísland brand manual 2021, signs, logos, Roboto fonts), equipment list PDF
   (the machinery list given to the architects for electrical load + airflow), user photos.
