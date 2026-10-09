@@ -80,6 +80,12 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
   services, fixtures hidden by keyed hide_render/hide_viewport for that shot), ElectronicsWide, ToolWide (replaces
   the close tool wall), LoungeWide; Reveal, Corridor, LaserDetail dropped.
 
+## Final render (started 2026-10-09 on MPTVPC, Magnús's go)
+- MPTVPC (RTX 5060 Ti) renders `render_walk_final.py -- 1 2368 final` (64 spp, OIDN, motion blur) into its NVMe;
+  frames come back to MPDESKTOP via Syncthing folder `saga-render-mptvpc` (send-only there; accept receive-only here,
+  then point assemble_film.py at that folder). Messages: ~/Documents/AgentWork/saga-video/mptvpc-render/.
+- Then: check frame count/sizes (2368, no half-written PNGs), `assemble_film.py <frames> renders/FabLabSAGA_film.mp4`.
+
 ## Drafts (user wants quick drafts until he approves the cut)
 - `renders/walk_flat.mp4`: 1080p flat-shaded Workbench draft, whole film in ~7 min (`render_walk_flat.py`).
 - `renders/walk_test.mp4`: 640x360 Cycles 8 spp animatic (~5 min).
