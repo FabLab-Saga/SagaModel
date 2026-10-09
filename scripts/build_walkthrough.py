@@ -92,9 +92,9 @@ def linearize(ob):
     return len(curves)
 
 
-def secret_door(fa, fb, angle=85.0):
-    """Bank shot: the fin-sculpture PIVOT door turns open about its centre (build_bank_walls.py builds the leaf with
-    its origin on the pivot). Eased like a real heavy door; closed outside the shot."""
+def secret_door(fa, fb, angle=-90.0):
+    """Bank shot: the bookcase door swings open on its hinge (spine-side front corner; build_bank_walls.py puts the
+    leaf origin on the hinge), outward into the room. Eased like a real heavy door; closed outside the shot."""
     leaf = bpy.data.objects.get("SecretDoor_Leaf")
     if not leaf:
         return

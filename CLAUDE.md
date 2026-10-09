@@ -97,8 +97,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Heights from Reykjavík drawing archive (Hagatorg 1, 2024 set by Andrúm): floor K13.00, next floor
   K17.20, concrete soffit ≈ 3.93 m clear, glazing to 3.6 m, transom ~3.30.
 - Búnaðarbanki SFS secret door = a BOOKCASE door (Magnús): one 1.16 x 0.30 x 2.42 bay of the spine's shelving with
-  books, on a centre pivot (27.68, 37.085) in the wall slot between the spine end and the demo shelving
-  (build_bank_walls.py; swept radius 0.61 clears spine, demo shelving, jambs and the hex art above). Animated open
+  books in the wall slot between the spine end and the demo shelving, HINGED like a normal door at its spine-side
+  front corner (27.87, 36.505), swinging out 90 deg against the spine end (build_bank_walls.py). It only has to look
+  convincing in the film (Magnús), not be engineered. Animated open
   in the bank shot. The birch-fin relief is gone.
 - Main entrance (city drawings, Andrúm SAGA AT 20-10-02 ground-floor plan, approved 2026-06-30, USK26040333; research
   in ~/Documents/AgentWork/saga-video/hall/HALL.md): the lab includes the CORNER BAY x 32.6–34.3, y 34.7–38.3 (the

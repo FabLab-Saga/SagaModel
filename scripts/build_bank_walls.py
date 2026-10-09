@@ -7,7 +7,9 @@ facing the entrance hidden in a sculpture. Re-runnable ("BankWalls" collection).
   Door opening y 36.62-37.58, 2.40 m high.
 - Secret door (Magnús, 2026-10-08: a BOOKCASE door, so it vanishes into the shelf language around it; replaced the
   birch-fin relief, which read as a door-shaped object and clipped its frame when opened): one bay of the spine's
-  black-profile + birch shelving, filled with books like the spine's lounge face, on a CENTRE PIVOT. The slot between
+  black-profile + birch shelving, filled with books like the spine's lounge face, HINGED like a normal door
+  (Magnús: a centre pivot left it practically inaccessible) at its front corner on the spine side, swinging out 90 deg
+  into the room until it lies against the spine's end; then the whole 1.25 m opening is free. The slot between
   the spine end (y 36.47) and the demo shelving (y 37.70) is 1.23 m and the hex art above starts at z 2.57, so the leaf
   is 1.16 x 0.30 m (swept radius 0.61 m < 0.615 to both neighbours and < 0.625 to the jambs), 2.45 m high; the wall
   opening is y 36.46-37.71 x 2.46. White back panel on the bank side. Animated open in build_walkthrough.py.
@@ -35,7 +37,7 @@ YS0, YS1 = 34.32, 34.40            # south wall (moved 0.8 m into the electronic
 YN = 38.35                          # back (exterior) wall line
 D0, D1, DH = 36.46, 37.71, 2.46     # door opening (bookcase pivot leaf, see docstring)
 F0, F1 = 36.50, 37.70               # sculpture extent (= the pivot leaf)
-PIVOT = (27.68, 37.085)             # leaf centre in plan: back panel 27.49 .. shelf front 27.87
+PIVOT = (27.87, 36.505)             # hinge: the leaf's front corner on the spine side
 
 
 def fin_depth(t, u):
@@ -121,14 +123,15 @@ def build():
     exec(_c[:_c.index("\ndef build():")], sp)                    # book(), books_and_plants(), shelf language
     lv = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]                        # = the spine's shelf levels
     part, slots, L = lib["shelf_unit"]([1.08], 0.30, 2.42, lv)        # L = 1.16
-    loc, rot = lib["placement"](XW1 + 0.15, py, L, 0.30, "+x")
+    yc = 37.085                                                       # leaf centre y in the slot
+    loc, rot = lib["placement"](XW1 + 0.15, yc, L, 0.30, "+x")
     fill = sp["Part"]()
     tops = lv + [2.42]
     for (bi, li), (xa, xb, _, _, zt) in slots.items():
         sp["books_and_plants"](fill, xa, xb, 0.30, zt, tops[li + 1] - zt - 0.06, (loc, rot))
     back = Part()
-    back.box(paint, XW0 + 0.002, XW1, py - L / 2, py + L / 2, 0.003, DH - 0.006)            # bank-side face
-    back.box(ply, XW1, XW1 + 0.012, py - L / 2 + 0.04, py + L / 2 - 0.04, 0.04, 2.40)       # birch back of the bay
+    back.box(paint, XW1 - 0.012, XW1, yc - L / 2, yc + L / 2, 0.003, DH - 0.006)            # bank-side face
+    back.box(ply, XW1, XW1 + 0.012, yc - L / 2 + 0.04, yc + L / 2 - 0.04, 0.04, 2.40)       # birch back of the bay
     piv = bpy.data.objects.new("SecretDoor_Leaf", None)
     col.objects.link(piv)
     piv.location, piv.empty_display_size = (px, py, 0.0), 0.3
