@@ -13,6 +13,9 @@ import bpy
 
 def run():
     sc = bpy.context.scene
+    for _g in ("Ground_Paving", "Ground_Grass"):                   # real ground: the HDRI ground is a static picture
+        if _g in bpy.data.objects:                                  # at infinity (no parallax through glass, huge in the cutaway)
+            bpy.data.objects[_g].hide_render = False
     sc.render.engine = "BLENDER_WORKBENCH"
     sh = sc.display.shading
     sh.light, sh.color_type = "STUDIO", "MATERIAL"

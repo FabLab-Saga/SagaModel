@@ -271,7 +271,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   Blender, ~0.17 s/frame, the user's preferred quick review), `make_titles.py` + `assemble_film.py` (system python3;
   brand titles, logo bug, partner outro, music, loudnorm), `render_walk_final.py` (resumable PNG sequence; NOT started
   until the user says so). Walkthrough timeline markers bind cameras:
-  peek/render_cams/render_finals remove markers with cameras first, else sc.camera is overridden.
+  peek/render_cams/render_finals remove markers with cameras first, else sc.camera is overridden. The walk renderers
+  switch Ground_Paving/Ground_Grass ON (hidden in the file; otherwise the HDRI ground shows as a static zoomed picture).
 - Cameras Entrance/Lounge/SecretDoor still frame the old view; a dedicated entrance hero shot of the TV + desk
   would help the finals.
 - Spine has no camera on its workshop face (tool library); add one if it should be in the finals.

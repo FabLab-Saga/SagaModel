@@ -12,6 +12,9 @@ import bpy
 
 a = sys.argv[sys.argv.index("--") + 1:]
 sc = bpy.context.scene
+for _g in ("Ground_Paving", "Ground_Grass"):                   # real ground: the HDRI ground is a static picture
+    if _g in bpy.data.objects:                                  # at infinity (no parallax through glass, huge in the cutaway)
+        bpy.data.objects[_g].hide_render = False
 first, last = int(a[0]), int(a[1])
 tag = a[2] if len(a) > 2 else "final"
 p = bpy.context.preferences.addons["cycles"].preferences
