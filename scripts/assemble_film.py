@@ -19,6 +19,8 @@ T = os.path.join(ROOT, "renders/video_titles")
 MUSIC = os.path.expanduser("~/Documents/AgentWork/saga-video/music/1_Amarent_-_Stairwell_Harmony.mp3")
 MUSIC_IN, OUTRO_S = 25.57, 5.4
 CARD = os.path.expanduser("~/Documents/AgentWork/saga-video/fframes-title/title_card.mp4")   # fframes intro
+OUTRO_CARD = os.path.expanduser("~/Documents/AgentWork/saga-video/fframes-title/outro_card.mp4")  # fframes outro
+#   (cd fframes-title && cargo run --release -- render --card outro -o outro_card.mp4); falls back to outro.png
 
 src = ast.parse(open(os.path.join(ROOT, "scripts/build_walkthrough.py")).read())
 V = {t.targets[0].id: ast.literal_eval(t.value) for t in src.body
@@ -29,14 +31,18 @@ INTRO_S = INTRO_BARS * BAR
 ext = "png" if glob.glob(os.path.join(frames, "f*.png")) else "jpg"
 
 card = os.path.exists(CARD)
+ocard = os.path.exists(OUTRO_CARD)
+if ocard:
+    OUTRO_S = 3 * BAR                                                       # 3-bar fframes card, beat-aligned
 inputs = ["-f", "lavfi", "-t", f"{INTRO_S:.3f}", "-i", f"color=black:s=1920x1080:r={FPS}"]            # 0 intro bg
 inputs += (["-i", CARD] if card else                                                                   # 1 fframes card
            ["-loop", "1", "-framerate", str(FPS), "-t", f"{INTRO_S:.3f}", "-i", os.path.join(T, "intro.png")])
 inputs += [
           "-framerate", str(FPS), "-pattern_type", "glob", "-i", os.path.join(frames, f"f*.{ext}"),        # 2 body
           "-loop", "1", "-framerate", str(FPS), "-i", os.path.join(T, "bug.png"),                       # 3
-          "-f", "lavfi", "-t", f"{OUTRO_S:.3f}", "-i", f"color=black:s=1920x1080:r={FPS}",              # 4 outro bg
-          "-loop", "1", "-framerate", str(FPS), "-t", f"{OUTRO_S:.3f}", "-i", os.path.join(T, "outro.png")]  # 5
+          "-f", "lavfi", "-t", f"{OUTRO_S:.3f}", "-i", f"color=black:s=1920x1080:r={FPS}"]              # 4 outro bg
+inputs += (["-i", OUTRO_CARD] if ocard else                                                        # 5 outro
+           ["-loop", "1", "-framerate", str(FPS), "-t", f"{OUTRO_S:.3f}", "-i", os.path.join(T, "outro.png")])
 fc = ([f"[1]fps={FPS},trim=duration={INTRO_S:.3f},setpts=PTS-STARTPTS,format=yuv420p,"
        f"fade=out:st={INTRO_S - 0.5:.3f}:d=0.5[intro]"] if card else
       [f"[1]format=rgba,fade=in:st=0.3:d=0.8:alpha=1,fade=out:st={INTRO_S - 0.6:.3f}:d=0.5:alpha=1[il]",
@@ -56,9 +62,14 @@ for name, bars, title, *_ in SHOTS:
         fc.append(f"[{last}][t{idx}]overlay=eof_action=pass:format=auto[o{idx}]")
         last, idx = f"o{idx}", idx + 1
     b += bars
-fc.append("[5]format=rgba,fade=in:st=0.2:d=0.8:alpha=1[ol]")
-fc.append("[4][ol]overlay=format=auto[outro]")
-fc.append(f"[intro][{last}][outro]concat=n=3:v=1:a=0,format=yuv420p[v]")
+if ocard:
+    fc.append(f"[5]fps={FPS},trim=duration={OUTRO_S:.3f},setpts=PTS-STARTPTS,format=yuv420p[outro]")
+else:
+    fc.append("[5]format=rgba,fade=in:st=0.2:d=0.8:alpha=1[ol]")
+    fc.append("[4][ol]overlay=format=auto[outro]")
+body_s = b * BAR
+fc.append(f"[{last}]trim=duration={body_s:.3f},fade=in:st=0:d=0.4,fade=out:st={body_s - 0.5:.3f}:d=0.5[body]")  # dip
+fc.append("[intro][body][outro]concat=n=3:v=1:a=0,format=yuv420p[v]")                                   # from/to black
 film_s = INTRO_S + b * BAR + OUTRO_S
 cmd = ["ffmpeg", "-y", "-v", "error"] + inputs + ["-ss", f"{MUSIC_IN}", "-t", f"{film_s:.3f}", "-i", MUSIC,
        "-filter_complex", ";".join(fc), "-map", "[v]", "-map", f"{idx}:a",

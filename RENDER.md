@@ -85,6 +85,13 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
   frames come back to MPDESKTOP via Syncthing folder `saga-render-mptvpc` (send-only there; accept receive-only here,
   then point assemble_film.py at that folder). Messages: ~/Documents/AgentWork/saga-video/mptvpc-render/.
 - Then: check frame count/sizes (2368, no half-written PNGs), `assemble_film.py <frames> renders/FabLabSAGA_film.mp4`.
+- Done 2026-10-21: 2368 frames pulled with `rsync -a mptvpc:/srv/games/windows/renders/SagaModel/walk/final/
+  renders/walk/final/` (ssh works now; Syncthing folder not used), all decode cleanly. Master:
+  `renders/FabLabSAGA_film.mp4`, 92.87 s, 2786 frames, H.264 CRF 16 + AAC 256k, -15.4 LUFS.
+- Finishing pass (my choices, open to change): fframes outro card (`--card outro`, 3 bars, same layout as
+  outro.png: small construction grid round the icon, lockup settles, divider draws, partner logos up one per beat,
+  fade to black); 0.4 s fade from black into the body and 0.5 s dip to black before the outro; soft dark halo
+  under the white shot titles and the logo bug (make_titles.py `shadowed()`) for legibility on light walls/floors.
 
 ## Drafts (user wants quick drafts until he approves the cut)
 - `renders/walk_flat.mp4`: 1080p flat-shaded Workbench draft, whole film in ~7 min (`render_walk_flat.py`).

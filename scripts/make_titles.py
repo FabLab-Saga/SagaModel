@@ -13,7 +13,7 @@ import os
 import subprocess
 import tempfile
 
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 Image.MAX_IMAGE_PIXELS = None
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -63,6 +63,25 @@ def canvas():
     return Image.new("RGBA", (W, H), (0, 0, 0, 0))
 
 
+def shadowed(im, blur=9, offset=2, strength=0.55):
+    """Soft dark halo under white overlay art so it stays legible on light walls/floors (legibility aid only;
+    the white artwork itself is unchanged)."""
+    a = im.getchannel("A").filter(ImageFilter.GaussianBlur(blur)).point(lambda v: int(v * strength))
+    sh = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    sh.putalpha(a)
+    out = canvas()
+    out.alpha_composite(sh, (offset, offset))
+    out.alpha_composite(im)
+    return out
+
+
+def layer(im, xy):
+    """Full-frame transparent layer with `im` placed at xy (for the fframes outro)."""
+    out = canvas()
+    out.alpha_composite(im, xy)
+    return out
+
+
 def main():
     LK = lockup()
     # intro
@@ -75,7 +94,7 @@ def main():
     bx, by = W - M - bug.width, H - M - bug.height
     im = canvas()
     im.alpha_composite(bug, (bx, by))
-    im.save(os.path.join(OUT, "bug.png"))
+    shadowed(im, blur=6, strength=0.45).save(os.path.join(OUT, "bug.png"))
     # titles: baseline on the bug's first text line (FAB LAB occupies ~the upper half of the lockup)
     base = by + round(bug.height * 0.47)
     fb = ImageFont.truetype(os.path.join(FONTS, "Roboto-Bold.ttf"), 63)
@@ -94,7 +113,7 @@ def main():
             d.text((x, base), pre + sep, font=fb, fill="white", anchor="ls")
             x += round(fb.getlength(pre + sep))
         d.text((x, base), nm, font=fl, fill="white", anchor="ls")
-        im.save(os.path.join(OUT, f"title_{name}.png"))
+        shadowed(im).save(os.path.join(OUT, f"title_{name}.png"))
     # outro, variant B: lockup | line | partners (2 x 2), all white
     im = canvas()
     lk = LK.resize((560, round(560 * LK.height / LK.width)), Image.LANCZOS)
@@ -116,9 +135,17 @@ def main():
     lx = x0 + lk.width + 80
     ImageDraw.Draw(im).rectangle((lx, cy - block_h // 2, lx + 1, cy + block_h // 2), fill="white")
     y = cy - block_h // 2
-    for p in parts:
+    # the same frame as separate full-frame layers, animated by the fframes outro card
+    LAY = os.path.join(OUT, "outro_layers")
+    os.makedirs(LAY, exist_ok=True)
+    layer(lk, (x0, cy - lk.height // 2)).save(os.path.join(LAY, "outro_lockup.png"))
+    for i, p in enumerate(parts):
         im.alpha_composite(p, (lx + 82, y))
+        layer(p, (lx + 82, y)).save(os.path.join(LAY, f"outro_partner{i}.png"))
         y += p.height + gap
+    with open(os.path.join(LAY, "geometry.txt"), "w") as fh:     # divider line for the fframes card
+        fh.write(f"line_x={lx} line_top={cy - block_h // 2} line_bottom={cy + block_h // 2} lockup_x={x0} "
+                 f"lockup_w={lk.width} lockup_y={cy - lk.height // 2} lockup_h={lk.height}\n")
     im.save(os.path.join(OUT, "outro.png"))
     print("titles written to", OUT)
 
