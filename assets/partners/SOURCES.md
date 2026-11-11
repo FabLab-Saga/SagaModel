@@ -107,6 +107,22 @@ Colour variants found: **red only**. There is no white or black version and no v
 
 ---
 
+## 5. Háskóli Íslands – NýMennt á Menntavísindasviði (added 2026-11-11)
+
+Supplied by Magnús as two PNG exports (no vector, source page unknown); they replace the plain Menntavísindasvið
+identifier in the video outro.
+
+| File | Status | Format | Size |
+|---|---|---|---|
+| `HI_NyMennt_IS_white-on-blue_supplied.png` | SUPPLIED (white on HÍ blue, opaque) | PNG RGB | 3407×1013 px |
+| `HI_NyMennt_IS_blue_supplied.png` | SUPPLIED (blue on white, opaque) | PNG RGB | 3407×1013 px |
+| `HI_NyMennt_IS_white_derived.png` | DERIVED from the white-on-blue file: blue background keyed to alpha, 24 px edge (a white export border) cut, trimmed | PNG RGBA | 2488×518 px |
+
+In the outro it is 96 px high against 72 px for the Verkfræði- og náttúruvísindasvið identifier: at 72 px the
+sub-line "á Menntavísindasviði" is unreadable at 1080p. A vector file from NýMennt would be better.
+
+---
+
 ## Gaps / to confirm
 1. **HÍ school identifiers**: there is no official white file. The white SVGs are exact recolours of the official vector PDFs, and the HÍ standard allows white. If needed, confirm with HÍ Markaðs- og samskiptasvið.
 2. **Mixtúra**: no vector, no white version, and no logo on the current official page. The best source is the 2021 PNG from the archived mixtura.is. Ask Mixtúra (mixtura@reykjavik.is) for a current vector/white file and whether they still use their own logo. Under the Reykjavík brand rules they might prefer to be credited as "Reykjavík" (shield + wordmark) with "Mixtúra" in text.

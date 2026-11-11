@@ -92,6 +92,11 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
   outro.png: small construction grid round the icon, lockup settles, divider draws, partner logos up one per beat,
   fade to black); 0.4 s fade from black into the body and 0.5 s dip to black before the outro; soft dark halo
   under the white shot titles and the logo bug (make_titles.py `shadowed()`) for legibility on light walls/floors.
+- Outro partners changed 2026-11-11 (Magnús: include NýMennt; logo files from him): HÍ Verkfræði- og
+  náttúruvísindasvið, HÍ NýMennt á Menntavísindasviði, Reykjavík, Mixtúra. Replacing the plain Menntavísindasvið
+  identifier (rather than adding a fifth logo) and the 96 px height are my choices. Outro card re-rendered (divider
+  281-799), intro card unchanged (PSNR inf), master re-assembled from the same frames; the previous master is
+  `renders/FabLabSAGA_film_pre-nymennt.mp4`, the previous card `fframes-title/outro_card_pre-nymennt.mp4`.
 
 ## Drafts (user wants quick drafts until he approves the cut)
 - `renders/walk_flat.mp4`: 1080p flat-shaded Workbench draft, whole film in ~7 min (`render_walk_flat.py`).
