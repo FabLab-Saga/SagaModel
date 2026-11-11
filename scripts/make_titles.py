@@ -117,18 +117,19 @@ def main():
     # outro, variant B: lockup | line | partners (2 x 2), all white
     im = canvas()
     lk = LK.resize((560, round(560 * LK.height / LK.width)), Image.LANCZOS)
-    parts = [white(svg_png(os.path.join(P, "HI_Verkfraedi-og-natturuvisindasvid_IS_white.svg"), 300)),
-             # NýMennt á Menntavísindasviði replaces the plain Menntavísindasvið identifier (2026-11-11)
-             white(Image.open(os.path.join(P, "HI_NyMennt_IS_white_derived.png")).convert("RGBA")),
+    # order (Magnús, 2026-11-11): NýMennt, Verkfræði- og náttúruvísindasvið, Menntavísindasvið, Reykjavík, Mixtúra
+    parts = [white(Image.open(os.path.join(P, "HI_NyMennt_IS_white_derived.png")).convert("RGBA")),
+             white(svg_png(os.path.join(P, "HI_Verkfraedi-og-natturuvisindasvid_IS_white.svg"), 300)),
+             white(svg_png(os.path.join(P, "HI_Menntavisindasvid_IS_white.svg"), 300)),
              white(svg_png(os.path.join(P, "Reykjavik_logo_white.svg"), 300)),
              white(Image.open(os.path.join(P, "Mixtura_wordmark_white_derived-crop.png")).convert("RGBA"))]
-    heights = [72, 96, 104, 78]      # NýMennt taller than the school identifier: its sub-line is unreadable at 72
+    heights = [96, 72, 72, 104, 78]  # NýMennt taller than the school identifiers: its sub-line is unreadable at 72
     parts = [fit_h(p, h) for p, h in zip(parts, heights)]
     for i, p in enumerate(parts):                                    # keep every partner logo <= 760 px wide
         if p.width > 760:
             parts[i] = p.resize((760, round(p.height * 760 / p.width)), Image.LANCZOS)
     gap, col_w = 56, max(p.width for p in parts)
-    block_h = sum(p.height for p in parts) + gap * 3
+    block_h = sum(p.height for p in parts) + gap * (len(parts) - 1)
     total_w = lk.width + 2 * 80 + 2 + col_w
     x0 = (W - total_w) // 2
     cy = H // 2

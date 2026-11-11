@@ -109,8 +109,8 @@ Colour variants found: **red only**. There is no white or black version and no v
 
 ## 5. Háskóli Íslands – NýMennt á Menntavísindasviði (added 2026-11-11)
 
-Supplied by Magnús as two PNG exports (no vector, source page unknown); they replace the plain Menntavísindasvið
-identifier in the video outro.
+Supplied by Magnús as two PNG exports (no vector, source page unknown); shown first in the video outro, above the
+two school identifiers.
 
 | File | Status | Format | Size |
 |---|---|---|---|
@@ -118,7 +118,7 @@ identifier in the video outro.
 | `HI_NyMennt_IS_blue_supplied.png` | SUPPLIED (blue on white, opaque) | PNG RGB | 3407×1013 px |
 | `HI_NyMennt_IS_white_derived.png` | DERIVED from the white-on-blue file: blue background keyed to alpha, 24 px edge (a white export border) cut, trimmed | PNG RGBA | 2488×518 px |
 
-In the outro it is 96 px high against 72 px for the Verkfræði- og náttúruvísindasvið identifier: at 72 px the
+In the outro it is 96 px high against 72 px for the two school identifiers: at 72 px the
 sub-line "á Menntavísindasviði" is unreadable at 1080p. A vector file from NýMennt would be better.
 
 ---
