@@ -117,9 +117,11 @@ two school identifiers.
 | `HI_NyMennt_IS_white-on-blue_supplied.png` | SUPPLIED (white on HÍ blue, opaque) | PNG RGB | 3407×1013 px |
 | `HI_NyMennt_IS_blue_supplied.png` | SUPPLIED (blue on white, opaque) | PNG RGB | 3407×1013 px |
 | `HI_NyMennt_IS_white_derived.png` | DERIVED from the white-on-blue file: blue background keyed to alpha, 24 px edge (a white export border) cut, trimmed | PNG RGBA | 2488×518 px |
+| `HI_NyMennt_IS_white_oneline_nymennt-hi-is.png` | One-line white HÍ \| NÝMENNT lockup cropped from nymennt.hi.is (prepared on MPTVPC, sent 2026-11-20 on Magnús's request) | PNG RGBA | 453×87 px |
 
-In the outro it is 96 px high against 72 px for the two school identifiers: at 72 px the
-sub-line "á Menntavísindasviði" is unreadable at 1080p. A vector file from NýMennt would be better.
+Since 2026-11-20 the outro uses the one-line lockup at 72 px, the same height as the two school identifiers
+(Magnús: subtle, same size/style as the HÍ school logos). Until then it used the two-line derived file at 96 px.
+A vector file from NýMennt would still be better.
 
 ---
 

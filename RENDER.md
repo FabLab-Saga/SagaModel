@@ -98,6 +98,11 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
   (divider 217-863, logos on beats 4-8), intro card unchanged (PSNR inf), master re-assembled from the same frames,
   slide 11 + slides PDF regenerated. The October master is `renders/FabLabSAGA_film_pre-nymennt.mp4`, the October
   card `fframes-title/outro_card_pre-nymennt.mp4`.
+- 2026-11-20 (Magnús, via MPTVPC): NýMennt now uses the one-line HÍ | NÝMENNT lockup from nymennt.hi.is at 72 px,
+  same as the school identifiers; order unchanged. Divider 229-851 (OUT_LINE_* in fframes lib.rs), outro card
+  re-rendered, intro card unchanged (PSNR inf), master re-assembled: intro+body video and audio identical to the
+  previous master (PSNR inf, same audio MD5), -15.4 LUFS. Previous master `renders/FabLabSAGA_film_pre-nymennt-oneline.mp4`,
+  card `fframes-title/outro_card_pre-nymennt-oneline.mp4`.
 
 ## Drafts (user wants quick drafts until he approves the cut)
 - `renders/walk_flat.mp4`: 1080p flat-shaded Workbench draft, whole film in ~7 min (`render_walk_flat.py`).
