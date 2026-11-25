@@ -44,6 +44,12 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Everything scripted and re-runnable; commit after each step (attribution lines per system prompt).
 - **Licensing:** only CC0 (Poly Haven) or the Fab Lab's own material in renders; record every new asset
   in `LICENSES.md` and `assets/polyhaven/CREDITS.md`. The user asked for this to be triple-checked.
+- **NO RENDERS UNLESS MAGNÚS REQUESTS THEM (2026-11-25), on any host (MPDESKTOP, MPTVPC, CI)**: no finals, film shots,
+  re-renders of out-of-sync film shots or web builds on our own initiative. Review peeks for checking an edit are
+  part of the edit. The film being out of sync with the model is expected and stays that way until he asks.
+  Web preview: only when he says push.
+- No new drawings yet (contractors slow, construction ongoing): work from Magnús's manual measurements and visual
+  estimates; label every such dimension as his estimate or mine.
 - MPDESKTOP (RTX 4070 Ti SUPER, OptiX) is the render machine: finals via `scripts/render_finals.py`
   (`SAGA_OUT=final3 SAGA_SPP=128`, ~15 s per 1080p still). The old laptop only did quick references.
 

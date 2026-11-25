@@ -308,7 +308,8 @@ def text_report(res):
         what = f" {v['what']}" if v.get("what") else ""
         lines.append(f"  ! {v['rule']}: {', '.join(v['items'])}{what} ({v['value']}{need})")
     for v in res.get("advisory", []):
-        lines.append(f"  ~ advisory {v['rule']}: {', '.join(v['items'])} {v.get('what', '')} ({v['value']} < {v['need']})"
+        need = f" < {v['need']}" if v.get("need") else (" m overlap" if "need" in v else "")
+        lines.append(f"  ~ advisory {v['rule']}: {', '.join(v['items'])} {v.get('what', '')} ({v['value']}{need})"
                      + (f" [{v['decision']}]" if v.get("decision") else ""))
     if res.get("review"):
         lines.append(f"  review notes ({len(res['review'])}): " + "; ".join(

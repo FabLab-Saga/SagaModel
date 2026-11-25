@@ -3883,9 +3883,25 @@
      "by": "Magnús",
      "quote": "We accept a reduced clearance for the shopbot.",
      "note": "CNC room keeps its size (3.34 m across); the brief's 1 m all round the ShopBot is reported, not a violation."
+    },
+    {
+     "rule": "srm-box",
+     "status": "advisory",
+     "date": "2026-11-25",
+     "by": "Magnús",
+     "quote": "The SRM-20s look fine to me in the model. Same for the vinyl cutters. But we'll re-arrange all those machines soon anyways.",
+     "note": "Roland's 1000 x 1000 mm installation space; the two SRM-20s' spaces overlap 0.4 m. Accepted as modelled until the electronics area is re-arranged."
+    },
+    {
+     "rule": "gs-box",
+     "status": "advisory",
+     "date": "2026-11-25",
+     "by": "Magnús",
+     "quote": "The SRM-20s look fine to me in the model. Same for the vinyl cutters. But we'll re-arrange all those machines soon anyways.",
+     "note": "Roland's 2000 x 2000 mm installation space; the two GS-24s' spaces overlap 0.98 m. Accepted as modelled until the cutter corner is re-arranged."
     }
    ]
   }
  },
- "source_commit": "a1d0677"
+ "source_commit": "65dd933"
 }
