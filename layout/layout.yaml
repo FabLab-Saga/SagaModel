@@ -575,10 +575,10 @@ items:
     label: ComponentStorage
     kind: storage
     zone: main-lab
-    pos: [21.138, 32.181]
+    pos: [21.137, 32.18]
     z: 0
     rot: 90
-    size: [3.767, 0.525, 2.218]
+    size: [3.764, 0.525, 2.218]
     locked: false
     objects: [ComponentStorage, ComponentStorage_Top, ComponentStorage_Drawers, ComponentStorage_Doors, WindowCabinets, WindowCabinets_Doors, CompCab_0_0, CompCab_1_0, ScopePSU]
 
@@ -659,27 +659,49 @@ items:
     locked: false
     objects: [Elec_Chair_-1_-10]
 
-  - id: lab.electronics-boardrun
-    label: Electronics BoardRun
-    kind: fixture
-    zone: main-lab
-    pos: [24.5, 34.275]
-    z: 0.95
-    rot: 0
-    size: [5.4, 0.08, 1.32]
-    locked: true
-    objects: [Electronics_BoardRun, WB_Text, WB_Text.001, WB_Text.002, WB_Text.003, WB_Text.004, WB_Text.005, WB_Text.006, WB_Text.007]
-
   - id: lab.solderdesk
-    label: Soldering desk (Weller + desoldering)
+    label: Soldering desk (4 places)
     kind: furniture
     zone: main-lab
-    pos: [22.85, 33.985]
+    pos: [23.75, 33.993]
     z: 0
     rot: 0
-    size: [1.804, 0.64, 1.178]
+    size: [3.604, 0.64, 1.298]
     locked: false
-    objects: [SolderDesk, Solder_Weller, Fume_0, Desolder_ZD915, Magnifier]
+    objects: [SolderDesk, SolderDesk_Riser, Solder_Weller, Fume_0, Desolder_ZD915, Magnifier]
+
+  - id: lab.pcbbench
+    label: PCB bench (2x SRM-20)
+    kind: furniture
+    zone: main-lab
+    pos: [26.425, 33.993]
+    z: 0
+    rot: 0
+    size: [1.554, 0.64, 1.21]
+    locked: false
+    objects: [PCBBench, PCBBench_Kit, PCBBench_Pedestal, PCBBench_PedestalLock]
+
+  - id: lab.elecwall-lining
+    label: Electronics wall lining + power rail
+    kind: fixture
+    zone: main-lab
+    pos: [24.305, 34.295]
+    z: 0
+    rot: 0
+    size: [5.89, 0.04, 2.78]
+    locked: true
+    objects: [ElecWall_Lining]
+
+  - id: lab.whiteboard-mobile
+    label: Mobile whiteboard (double-sided)
+    kind: furniture
+    zone: main-lab
+    pos: [26.73, 31.45]
+    z: 0
+    rot: 0
+    size: [0.61, 1.88, 2.05]
+    locked: false
+    objects: [Whiteboard_Mobile]
 
   - id: lab.electronics-table
     label: Electronics Table
@@ -1133,11 +1155,11 @@ items:
     label: Roland SRM20 1
     kind: machine
     zone: main-lab
-    pos: [21.112, 33.155]
-    z: 1.075
-    rot: 90
+    pos: [25.936, 34.05]
+    z: 0.75
+    rot: 0
     size: [0.451, 0.427, 0.426]
-    "on": lab.componentstorage
+    "on": lab.pcbbench
     locked: false
     objects: [Roland_SRM20_1]
 
@@ -1145,11 +1167,11 @@ items:
     label: Roland SRM20 2
     kind: machine
     zone: main-lab
-    pos: [21.112, 33.696]
-    z: 1.075
-    rot: 90
+    pos: [26.476, 34.05]
+    z: 0.75
+    rot: 0
     size: [0.451, 0.427, 0.426]
-    "on": lab.componentstorage
+    "on": lab.pcbbench
     locked: false
     objects: [Roland_SRM20_2]
 
@@ -1567,3 +1589,36 @@ items:
     size: [0.464, 0.464, 0.86]
     locked: false
     objects: [Solder_Chair_2]
+
+  - id: lab.pcb-chair
+    label: PCB Chair
+    kind: furniture
+    zone: main-lab
+    pos: [26.93, 33.383]
+    z: 0
+    rot: 180
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [PCB_Chair]
+
+  - id: lab.solder-chair-3
+    label: Solder Chair 3
+    kind: furniture
+    zone: main-lab
+    pos: [24.2, 33.383]
+    z: 0
+    rot: -177.9
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Solder_Chair_3]
+
+  - id: lab.solder-chair-4
+    label: Solder Chair 4
+    kind: furniture
+    zone: main-lab
+    pos: [25.1, 33.383]
+    z: 0
+    rot: 179.5
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Solder_Chair_4]
