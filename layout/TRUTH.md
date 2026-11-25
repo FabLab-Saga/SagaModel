@@ -32,3 +32,25 @@ Confirmed earlier (from CLAUDE.md, for reference): Epilog is 80 W; the scanner i
 red industrial clam press (+ the Cricut ones); the Flashforge model doesn't matter; both vinyl cutters are Roland
 CAMM-1 GS-24; the room behind the staff room is electrical + general storage, not a stairway; the corner bay
 x 32.6–34.3, y 34.7–38.3 belongs to the lab and the entrance is the EI2 30 fire door from the university hall.
+
+## To measure on site (Magnús, while construction is on)
+
+No new drawings are coming soon (2026-11-25), so these come from tape or laser measure. Fill in the "Measured" column
+(mm, plus the date); Talos then updates the model and moves the row into the table above. "Model now" is what the
+model has, with where it came from. Clear opening = between the frame stops, door fully open.
+
+| # | What | Model now | Measured |
+|---|---|---|---|
+| M1 | Escape door pair ÚT in the SSW glazing: clear opening (both leaves), leaf widths, head height, where it sits along the façade (distance from the corner column / entrance-bay wall) | 1.44 m opening, 2 × 0.72 leaves, head 2.40, y 32.74–34.18 (fitted to a façade bay by me); Magnús recalls ~1.40 | |
+| M2 | Laser room door from the main lab: clear opening, leaf width, single or pair, hinge side, swing direction | 1.07 m opening (colleague's model), swing unchecked | |
+| M3 | Laser room's other door (the one in room.json as laser-exterior): where it leads, opening, swing | 1.48 m opening (colleague's model), swing unchecked | |
+| M4 | Entrance fire door from the university hall: clear opening, hinge side, does it open into the lab | 0.93 m, hinged ESE, opens into the lab (city drawing) | |
+| M5 | CNC room glass door: opening, height, hinge side; and is the CNC wall to the main lab really full-height glass | 1.0 × 2.70, by the NNE glass (Magnús's description) | |
+| M6 | CNC room inside: width across (NNE glass to the interior wall) and length (glass wall to the WNW end wall) | 3.34 × 6.6 m | |
+| M7 | Loading door in the CNC room's WNW end: total opening, leaf count, head height | 2.32 m, 2 leaves, 2.40 head (my details) | |
+| M8 | Laser room: inside length along the SSW glass and depth to the print-farm partition | x 29.67–32.53 (2.86 m), y 20.14–26.92 (6.78 m) | |
+| M9 | Clear height: floor to concrete soffit, and the underside of the lowest duct/beam where the LED rows hang | 3.93 m soffit (2024 drawings); LED rows bottom 2.95 (mine) | |
+| M10 | Columns inside the lab (any free-standing ones?), and the one at the spine/bank wall: diameter and position | one round Ø ~0.78 at (27.61, 30.16) from the colleague's model; 8.40 m grid verified | |
+| M11 | Stairwell box at the ShopBot end: its walls as seen from the lab side (does it take space from the store room or CNC room?) | box x 29.2–34.3, y 12.8–16.1 (exterior only) | |
+| M12 | Spine / bank wall line: where the bank's walls actually stand, and their height | south wall y 34.32–34.40, 2.80 high (Magnús's earlier spec) | |
+| M13 | Power, data, water and exhaust points that already exist (photos are enough) | not modelled except the laser exhaust riser, staff-kitchen and WC water | |
