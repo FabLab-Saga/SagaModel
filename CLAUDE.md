@@ -206,6 +206,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   stations + fume extractors, scope/PSU. Component storage with DRAWER units on the NNE glass
   (y 30.3–34.1). Electronics commons on the bank wall: pin-up board, whiteboard, cable pegboard, kit
   shelf, 3.2 m teaching table + 6 chairs.
+- **Lock-down detail** (`scripts/lockdown.py`, exec'd by builders): clear acrylic leaves hung in pairs, one surface
+  RFID electronic cabinet lock per pair (Magnús: acrylic doors, electronic locks where reasonable; the detail is my
+  design). Enclosure door objects carry `layout_skip` and belong to their item's `objects`. Portable tools live behind
+  such doors, not on tables or open walls. Done: print farm, hand-tool wall.
 - **Hand-tool wall** on the NNE glass (y 24.06–26.46; starts ≥1.0 m past the old CNC-room door line y 23.04;
   the CNC door is now at y 21.66): pegboard + shelves + counter + tool chest.
   Rule: along glass = varied tool wall + storage WITH A TABLE BELOW, not plain shelving.

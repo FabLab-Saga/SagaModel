@@ -8,8 +8,8 @@ Bay 0 has no 0.80 deck: the P2S with its top-mounted AMS 2 Pro needs >= 0.80 m c
 double cell gives 1.32 m. Prusa 03 moved from there into the first dry cell (Magnús, 2026-11-25).
   top   (deck 2.16)  spare spools, open
 
-Lock-down (2026-11-25): EVERY cell has a clear acrylic door with the standard cabinet-lock detail (cam lock or an
-electronic cabinet lock in the same cut-out), and every printer stands between two steel angle cleats screwed to the
+Lock-down (2026-11-25): EVERY cell has a clear acrylic door with the electronic cabinet lock of lockdown.py (Magnús:
+electronic locks where reasonable), and every printer stands between two steel angle cleats screwed to the
 deck (PrintFarm_Anchors). Doors on the open cells, the cleats and the lock detail are my design.
 
 Every Prusa MK3S+ sits in its own cabin: birch sides/back/top, a clear acrylic front door hinged on the bay's left
@@ -156,13 +156,14 @@ def door(p, b, r, angle_deg):
 
 
 def lock(p, at, a, du, z):
-    """Cabinet lock position on a door (local frame of door()): a 19 mm cam-lock face + escutcheon on the outside and
-    the cam/keeper behind; the same cut-out takes an electronic cabinet lock. One standard detail on every door."""
-    chrome = M["alusatin"]
-    obox(p, MAT["profile"], at(du, -0.0045, z), (0.030, 0.004, 0.044), a)          # escutcheon plate
-    obox(p, chrome, at(du, -0.0075, z + 0.004), (0.019, 0.003, 0.019), a)          # lock face
-    obox(p, MAT["profile"], at(du, -0.0092, z + 0.004), (0.002, 0.0008, 0.010), a) # key slot
-    obox(p, MAT["zinc"], at(du + 0.012, 0.012, z), (0.030, 0.016, 0.006), a)       # cam behind the door
+    """Electronic cabinet lock (the lockdown.py detail: RFID reader pad + status LED outside, bolt body inside, 12 V
+    from the cell's power strip), in the local frame of door()."""
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    _, pad, led, body, _ = ld["_ld_mats"]()
+    obox(p, pad, at(du, -0.0105, z), (0.045, 0.011, 0.085), a)                      # reader pad
+    obox(p, led, at(du, -0.0164, z + 0.030), (0.008, 0.0008, 0.005), a)             # status LED
+    obox(p, body, at(du + 0.005, 0.016, z), (0.060, 0.032, 0.100), a)              # bolt body behind the door
 
 
 def build():
