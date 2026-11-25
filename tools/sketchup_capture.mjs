@@ -1,5 +1,5 @@
 // Capture a SketchUp share link: node sketchup_capture.mjs '<share-url>' <outdir>
-// Saves every API response; the .skp arrives as connect-gateway parts (see CLAUDE.md / README).
+// Saves every API response; the .skp arrives as connect-gateway parts (see AGENTS.md / README).
 import puppeteer from 'puppeteer-core';
 import fs from 'fs';
 

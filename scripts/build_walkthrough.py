@@ -7,7 +7,7 @@ Directing rules (presentation-video-production skill, references/cinematography.
   (linear keys, no easing), with a FIXED view direction. No rotation while moving, no pans, no S-curves.
 - Cameras are LEVEL (pitch 0, roll 0); up/down framing comes from lens shift (two-point perspective).
 - Cuts land on bar lines of the music (Stairwell Harmony, 103.4 BPM -> 1 bar = 2.322 s).
-Shot poses come from zone geometry (CLAUDE.md), NOT from the old Cam_* stills cameras.
+Shot poses come from zone geometry (AGENTS.md), NOT from the old Cam_* stills cameras.
 
 SHOTS: (name, bars, title or None, eye_start, eye_end, look_target, lens). The look target only sets the
 fixed yaw and the lens shift (from the target's height); it is not tracked.

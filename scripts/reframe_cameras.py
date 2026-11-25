@@ -17,7 +17,7 @@ VIEWS = {
     "Cam_Lounge": ((29.05, 34.05, 1.55), (31.4, 29.6, 0.95), 18, {}),
     # the bookcase door is the subject: spine end left, demo shelving right, hex relief above; clears the desk
     "Cam_SecretDoor": ((30.75, 35.45, 1.55), (27.75, 37.05, 1.25), 24, {"exposure_offset": 0.5, "shot_order": 28}),
-    # NEW: entrance hero, the Fab Lab TV over the on-call desk as you walk in (open item in CLAUDE.md)
+    # NEW: entrance hero, the Fab Lab TV over the on-call desk as you walk in (open item in AGENTS.md)
     "Cam_EntranceHero": ((33.25, 36.05, 1.60), (28.3, 34.95, 1.55), 24, {"exposure_offset": 0.3}),
     # NEW: the spine's workshop face (tool library), which had no camera
     "Cam_ToolLibrary": ((24.6, 30.9, 1.55), (27.62, 33.4, 1.15), 20, {}),

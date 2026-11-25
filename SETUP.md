@@ -40,7 +40,7 @@ M=~/.claude/projects/$(dirname "$PWD" | tr / -)/memory && mkdir -p "$M" && cp cl
 claude --continue      # from <repo>
 ```
 If the project path differs, name the transcript folder after the NEW path (replace every `/` with `-`).
-Even without the transcript, `CLAUDE.md` is loaded automatically and contains the full state.
+Even without the transcript, `AGENTS.md` is loaded automatically and contains the full state.
 
 ## 5. Rendering finals on this machine
 ```
@@ -58,4 +58,4 @@ and prints `RENDER DEVICE:` at start. Output: `renders/<SAGA_OUT>/NN_<shot>.png`
 - `rasterize_svg.mjs <abs.svg> <out.png>` — mural: `python3 scripts/mural.py assets/mural/mural.svg` then rasterise.
 - `extract_logo_icon.mjs`, `page_screenshot.mjs` — logo icon extraction, JS-page capture.
 - `reykjavik_drawing_download.sh <rendition-href> <out.pdf>` — Reykjavík building-drawing archive
-  (skjalasafn.reykjavik.is FotoWeb; search API in CLAUDE.md history).
+  (skjalasafn.reykjavik.is FotoWeb; search API in AGENTS.md history).

@@ -95,5 +95,5 @@ blender -b "$ROOT/SagaV2_work.blend" --python-expr 'import bpy; m=[i.filepath fo
 
 say "Done"
 echo "Next: blender $ROOT/SagaV2_work.blend &   (add-on starts its MCP socket on 127.0.0.1:9876)"
-echo "      cd $ROOT && claude --continue        (resumes the previous conversation; CLAUDE.md is loaded either way)"
+echo "      cd $ROOT && claude --continue        (resumes the previous conversation; AGENTS.md is loaded either way)"
 echo "      Finals: blender -b SagaV2_work.blend --python scripts/render_finals.py   (GPU auto-selected)"

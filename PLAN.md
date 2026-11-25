@@ -16,7 +16,7 @@ spotlights.
 - Reuse `profile_furniture.py` (`Part`, `shelf_unit`, `table_unit`, `placement`, `board`, `bin_box`, `MAT`).
 - Only CC0 Poly Haven or own material; record new assets in `LICENSES.md` + `assets/polyhaven/CREDITS.md`.
 - Verify: GPU review renders of the affected cameras (≈5 s each) and look at them; save the .blend; update
-  CLAUDE.md (build order, zones, look rules); commit + push. One goal = one commit.
+  AGENTS.md (build order, zones, look rules); commit + push. One goal = one commit.
 
 ## Goals (ALL DONE 2026-10-08 - commits "G1:" .. "G11:")
 
@@ -69,7 +69,7 @@ Cam_Counter framing. Done when the nook reads as one circle and the walkways are
 - Whiteboard: a real circuit diagram or class plan instead of random dashes.
 - Books: varied spines with title bands.
 - Hand-tool pegboard: fill it out properly; resize the oversized yellow cable reel.
-- Rename `Cam_ExteriorEntrance` → `Cam_HallEntrance`, record in CLAUDE.md that this is the entrance from the
+- Rename `Cam_ExteriorEntrance` → `Cam_HallEntrance`, record in AGENTS.md that this is the entrance from the
   hotel's main hall, and give it Fab Lab signage/branding on the hall side.
 
 Done when the affected shots look lived-in.
@@ -82,7 +82,7 @@ piece, felt wall and lounge. Real light objects with sensible lumen-like strengt
 MuralFront).
 
 **G11 — Final pass.** Render all 35 cameras for review, fix regressions, rerun `render_finals.py`
-into `renders/final3/`, update CLAUDE.md open items, commit + push.
+into `renders/final3/`, update AGENTS.md open items, commit + push.
 
 ## Verification (each goal)
 `blender -b SagaV2_work.blend --python <scratch all_cams.py>` (GPU, 1280x720, 32 spp) → read the renders →

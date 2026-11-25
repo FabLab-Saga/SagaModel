@@ -1,6 +1,6 @@
 # RENDER.md — presentation renders + video (Fab Lab SAGA)
 
-Working document for the render/video phase (started 2026-10-08). CLAUDE.md stays the brief for the model
+Working document for the render/video phase (started 2026-10-08). AGENTS.md stays the brief for the model
 itself; this file holds everything about stills, the presentation video, its script and its branding rules.
 Decisions marked (Magnús) are his; everything else is Claude's proposal and can be changed.
 

@@ -1,4 +1,4 @@
-"""Rebuild acceptance: run the item builders (CLAUDE.md order) on the open .blend, then compare every object's
+"""Rebuild acceptance: run the item builders (AGENTS.md order) on the open .blend, then compare every object's
 world transform with the state before. Never saves. Run:
     blender -b SagaV2_work.blend --python scripts/layout_check_rebuild.py [-- --only build_worktables,build_life]
 Prints REBUILD {json}: objects compared/missing/new, max geometric-centre deviation (mm), max rotation (deg),

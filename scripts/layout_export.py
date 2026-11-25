@@ -27,12 +27,12 @@ OUT = os.path.join(ROOT, "layout")
 os.makedirs(OUT, exist_ok=True)
 
 # ------------------------------------------------------------------ zones (Blender model coordinates, metres)
-# Laser room, entrance bay, CNC room walls and the bank box come from CLAUDE.md (city drawings + builders);
+# Laser room, entrance bay, CNC room walls and the bank box come from AGENTS.md (city drawings + builders);
 # the other boundaries follow the plan slice at 1.1 m. "approx" marks lines I drew from furniture/walls, not drawings.
 ZONES = [
-    ("laser-room", "Laser room", [(29.67, 20.14), (32.53, 20.14), (32.53, 26.92), (29.67, 26.92)], "CLAUDE.md"),
+    ("laser-room", "Laser room", [(29.67, 20.14), (32.53, 20.14), (32.53, 26.92), (29.67, 26.92)], "AGENTS.md"),
     ("cnc-room", "CNC room", [(20.85, 15.08), (25.75, 15.08), (25.75, 19.42), (24.26, 19.42), (24.26, 21.66),
-                              (20.85, 21.66)], "CLAUDE.md + builders"),
+                              (20.85, 21.66)], "AGENTS.md + builders"),
     ("wc", "WC", [(24.26, 19.42), (25.75, 19.42), (25.75, 21.66), (24.26, 21.66)], "build_staff_area.py"),
     ("back-hallway", "Back hallway", [(25.9, 15.0), (27.6, 15.0), (27.6, 21.66), (25.9, 21.66)], "approx"),
     ("staff-room", "Staff room", [(27.73, 17.0), (32.53, 17.0), (32.53, 20.06), (29.67, 20.06), (29.67, 21.66),
@@ -41,7 +41,7 @@ ZONES = [
      "approx; interior not modelled"),
     ("bank", "Búnaðarbanki SFS (equipment bank)", [(20.9, 34.31), (27.58, 34.31), (27.58, 38.35), (20.9, 38.35)],
      "build_bank_walls.py"),
-    ("entrance-bay", "Entrance bay", [(32.6, 34.7), (34.3, 34.7), (34.3, 38.3), (32.6, 38.3)], "CLAUDE.md (drawings)"),
+    ("entrance-bay", "Entrance bay", [(32.6, 34.7), (34.3, 34.7), (34.3, 38.3), (32.6, 38.3)], "AGENTS.md (drawings)"),
     ("lounge", "Lounge + on-call (fjölnota kennslurými)", [(28.25, 30.2), (32.53, 30.2), (32.53, 38.35),
                                                            (27.58, 38.35), (27.58, 34.31), (28.25, 34.31)],
      "approx (drawing label 110.8 m2)"),
@@ -404,7 +404,7 @@ def room_json(items):
     }
 
 
-# Doors: positions from CLAUDE.md / builders. hinge = the end (a|b) the leaf turns on; swing = in|out relative to
+# Doors: positions from AGENTS.md / builders. hinge = the end (a|b) the leaf turns on; swing = in|out relative to
 # `side`, a point on the room side the door belongs to. source: drawing | model | assumed (hinge/swing guessed).
 DOORS = [
     {"id": "entrance", "a": [34.34, 36.54], "b": [34.34, 37.47], "hinge": "b", "swing": "in", "side": [33.8, 37.0],

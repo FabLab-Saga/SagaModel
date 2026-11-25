@@ -2034,7 +2034,7 @@
      26.92
     ]
    ],
-   "source": "CLAUDE.md"
+   "source": "AGENTS.md"
   },
   {
    "id": "cnc-room",
@@ -2065,7 +2065,7 @@
      21.66
     ]
    ],
-   "source": "CLAUDE.md + builders"
+   "source": "AGENTS.md + builders"
   },
   {
    "id": "wc",
@@ -2211,7 +2211,7 @@
      38.3
     ]
    ],
-   "source": "CLAUDE.md (drawings)"
+   "source": "AGENTS.md (drawings)"
   },
   {
    "id": "lounge",
