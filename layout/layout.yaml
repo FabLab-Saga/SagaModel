@@ -1413,7 +1413,7 @@ items:
     pos: [26.923, 24.42]
     z: 0
     rot: -90
-    size: [2.46, 0.975, 0.9]
+    size: [2.46, 0.975, 1.1]
     locked: false
     objects: [WorkTable_2]
 
@@ -1424,7 +1424,7 @@ items:
     pos: [26.923, 26.96]
     z: 0
     rot: -90
-    size: [2.46, 0.975, 0.9]
+    size: [2.46, 0.975, 1.1]
     locked: false
     objects: [WorkTable_3]
 
@@ -1469,7 +1469,7 @@ items:
     kind: furniture
     zone: main-lab
     pos: [26.832, 24.807]
-    z: 0.9
+    z: 1.1
     rot: 0
     size: [0.581, 1.414, 0.012]
     "on": lab.worktable-2
@@ -1481,7 +1481,7 @@ items:
     kind: fixture
     zone: main-lab
     pos: [26.923, 25.536]
-    z: 0.911
+    z: 1.111
     rot: 0
     size: [0.32, 0.062, 0.214]
     "on": lab.worktable-2
@@ -1493,7 +1493,7 @@ items:
     kind: furniture
     zone: main-lab
     pos: [26.868, 27.25]
-    z: 0.9
+    z: 1.1
     rot: 0
     size: [0.563, 1.267, 0.011]
     "on": lab.worktable-3

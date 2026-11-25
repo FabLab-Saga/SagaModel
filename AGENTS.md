@@ -231,7 +231,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   each top one piece from a 2440 x 1220 board; the two 305 rips per standing table lie side by side as a 610 platform
   at 0.20 m (stability + misc, NOT storage) -> 4 boards, no waste. All on locking castors. Two lines along y, two
   tables end to end each (y 23.20-25.64 / 25.74-28.18): SITTING 0.75 m on the hand-tool-wall side (x 23.03-23.945,
-  3 chairs per long side = 12 seats, nothing under the top), STANDING 0.90 m on the print-farm side (x 26.47-27.38,
+  3 chairs per long side = 12 seats, nothing under the top), STANDING 1.10 m (European tall table; Icelandic adults
+  avg ~181/168 cm, staff 185+) on the print-farm side (x 26.47-27.38,
   ~6 people each). ~1.45 m aisle between the lines, ~0.9 m to the hand-tool wall / print farm / mural cupboard,
   ~1.0 m to the felt dividers. Target: ~16 in the main space, 20 with electronics (Magnús). Props by build_life.
 - **Cutter corner** on the NNE glass: 2 Roland vinyl cutters on rolling stands (y 26.5–28.5), Cricut Maker + Mayku

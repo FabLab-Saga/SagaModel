@@ -5,7 +5,8 @@ Option 7b (Magnús 2026-11-25): four 2440 x 915 tables, each top one piece from 
 every board goes back in: two strips side by side = a 610 platform under each standing table (4 boards, no waste).
 All on locking castors (move and combine). Long side along y, in two lines:
   sitting  (0.75 m, 3 profile chairs per long side = 12 seats) on the hand-tool-wall side, x 23.03-23.945
-  standing (0.90 m, ~6 people each, 610 platform at 0.20 m for stability + misc) on the print-farm side, x 26.47-27.38
+  standing (1.10 m, European tall-table height: Icelandic adults avg ~181/168 cm, staff 185+; ~6 people each,
+           610 platform at 0.20 m for stability + misc) on the print-farm side, x 26.47-27.38
   each line two tables end to end, y 23.20-25.64 / 25.74-28.18; ~1.45 m aisle between the lines, ~0.9 m to the
   hand-tool wall and the print farm, ~0.9 m to the mural cupboard, ~1.0 m to the felt dividers.
 No low shelf under the sitting tables (chairs tuck in; Magnús). Props come from build_life.py, which must run after.
@@ -26,7 +27,7 @@ exec(_t[:_t.index("\ndef build():")], tex)                         # chair()
 rng = random.Random(42)
 
 TL, TD = 2.44, 0.915                                               # one board minus the 305 rip
-SIT_H, STAND_H, CASTOR_H = 0.75, 0.90, 0.11
+SIT_H, STAND_H, CASTOR_H = 0.75, 1.10, 0.11                           # standing = European Stehtisch 1.10 m (Magnús)
 SIT_X, STAND_X = 23.4875, 26.9225                                  # line centres x
 YS = (24.42, 26.96)                                                # table centres y
 PLAT_Z, PLAT_W = 0.20, 0.305                                       # two 305 strips per platform
