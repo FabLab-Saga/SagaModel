@@ -9,6 +9,7 @@ USK26040333); Hagatorg 1 2024 set (heights); the equipment list "Tæki og búna�
 MACHINES.md. Nothing newer is on MPDESKTOP as of 2026-11-25.
 
 Questions sent 2026-11-25 ~13:40 UTC (relayed via Hermes on MPTVPC; the Bot Chat run could not prompt him directly).
+Q1–4 and 9 are with him in #hermes-control (answers pending).
 
 | # | Topic | Model now | Magnús (date, verbatim) | Status |
 |---|---|---|---|---|
@@ -17,11 +18,11 @@ Questions sent 2026-11-25 ~13:40 UTC (relayed via Hermes on MPTVPC; the Bot Chat
 | 3 | ShopBot model | PRS Alpha 120-60, 3.66 × 2.31 m (equipment list); colleague's model had a 96-60 (3.05 × 2.31 m) | | open |
 | 4 | Prusa count | 7 MK3S+ (Magnús, 2026-10-08); list says 5, its power notes 10, "probably 15 in total" | | open |
 | 5 | Stand-in machine models | Clay printer (Eazao Zero), handheld scanner (Revopoint POP 3), red clam press (Secabo TC7), LOKLiK press, Brother sewing (CS7000X) + embroidery (PE900), overlocker (Brother 1034D), EasyPress generation | | open |
-| 6 | Spine bays 0–1 face the bank wall 5 cm away | Closed boxes only | | open (offer: shorten the spine) |
-| 7 | Glass manifestation dots run straight across pane joints | Continuous pattern | | open (offer: restart per pane) |
-| 8 | Stale cameras (Entrance, Lounge, SecretDoor; no tool-library camera) | Old framing | | open (reframe after the layout settles) |
+| 6 | Spine bays 0–1 faced the bank wall 5 cm away | Done 2026-11-25: workshop face cut to the 2 bays facing the room (y 31.55–34.03, contents unchanged), birch end cap closes the slot to the bank wall; lounge face (4 bays, TV, secret door) unchanged. The workshop-face-only cut and the end cap are my choices | "Go on all. paralellize." (2026-11-25, via Hermes: (a)-(c) are polish inside the approved plan) | done |
+| 7 | Glass manifestation dots ran straight across pane joints | Done 2026-11-25: dots restart on every pane (whole dots, centred, ≥ 80 mm from the edges); the 9 cm sliver pane next to the façade now has none | same | done |
+| 8 | Stale cameras | Done 2026-11-25 (`scripts/reframe_cameras.py`, my framings): Entrance, Lounge, SecretDoor reframed; new Cam_EntranceHero (TV + on-call desk) and Cam_ToolLibrary | same | done; re-check after Magnús's layout moves |
 | 9 | Anything newer than the June 2026 Andrúm plan (furniture plan, drawings, photos) | None on MPDESKTOP | | open |
-| 10 | SagaModel-web "Site code" workflow still deploys `site/**` pushes publicly | Unchanged | | open (offer: release-only too) |
+| 10 | SagaModel-web "Site code" workflow deployed `site/**` pushes publicly | Done 2026-11-25: release-only (SagaModel-web f1ae0d0) | "Make sure Talos' point of the builds and deploys is fixed." (2026-11-25, via Hermes: no push of any kind publishes; only a web-v* tag or manual run, no tag without his yes) | done |
 
 Confirmed earlier (from CLAUDE.md, for reference): Epilog is 80 W; the scanner is handheld; presses = a LOKLiK + a
 red industrial clam press (+ the Cricut ones); the Flashforge model doesn't matter; both vinyl cutters are Roland

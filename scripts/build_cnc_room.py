@@ -169,18 +169,33 @@ def glazed_front(col):
             p.cyl(alu, (hx, yc + sgn * 0.001, z), (hx, yc + sgn * 0.055, z), 0.008, seg=12)
         p.cyl(alu, (hx, yc + sgn * 0.055, 0.75), (hx, yc + sgn * 0.055, 1.35), 0.0125, seg=20)
     p.emit("CNC_GlassWall_Fittings", col, Vector((0, 0, 0)))
-    # manifestation (user: make the glass read as a divider without hiding the ShopBot): two narrow sandblasted dot
-    # bands across every pane incl. the door, on the main-room face - 100 mm dots 200 mm apart (user: bigger, then every
-    # other dot dropped, then bigger again): one row at 0.90 m, one at 1.50 m; the rest of the glass stays clear. Gap on the
-    # door round the pull handle.
-    dots = manifestation_mat()
+    # manifestation (user: make the glass read as a divider without hiding the ShopBot): two rows of sandblasted dots
+    # across every pane incl. the door, on the main-room face - 100 mm dots 200 mm apart (user: bigger, then every
+    # other dot dropped, then bigger again): one row at 0.90 m, one at 1.50 m; the rest of the glass stays clear. Gap on
+    # the door round the pull handle. The pattern RESTARTS ON EVERY PANE (2026-11-25; it used to run on across the
+    # butt joints like one sheet): each pane gets a whole number of dots, centred, >= 80 mm from its edges. Real discs,
+    # not a world-space procedural mask.
+    frost = bpy.data.materials.get("Glass_Manifestation_Frost") or bpy.data.materials.new("Glass_Manifestation_Frost")
+    frost.use_nodes = True
+    bs = frost.node_tree.nodes.get("Principled BSDF")
+    bs.inputs["Base Color"].default_value = (0.93, 0.95, 0.96, 1)
+    bs.inputs["Roughness"].default_value = 0.55
+    bs.inputs["Transmission Weight"].default_value = 0.25
+    frost.diffuse_color = (0.9, 0.92, 0.93, 1)
     md = Part()
     ym = yc + 0.0015
     hx0 = lx1 - 0.17                                                 # handle zone on the door leaf
-    for z0, z1 in ((0.84, 0.96), (1.44, 1.56)):                    # single rows centred at 0.90 / 1.50
-        for xa, xb in ((x0, d0 - J), (d0 + 0.06, hx0), *zip([v for v in xs[:-1]], [v - J for v in xs[1:]])):
-            if xb - xa > 0.02:
-                md.box(dots, xa, xb, ym, ym + 0.0002, z0, z1)
+    PITCH, RAD, EDGE = 0.20, 0.05, 0.08
+    spans = [(x0, d0 - J), (d0 + 0.02, hx0)] + list(zip(xs[:-1], [v - J for v in xs[1:]]))
+    for xa, xb in spans:
+        n = int((xb - xa - 2 * EDGE) / PITCH) + 1
+        if n < 1:
+            continue
+        c = (xa + xb) / 2
+        for z in (0.90, 1.50):                                       # single rows at 0.90 / 1.50
+            for i in range(n):
+                x = c + (i - (n - 1) / 2) * PITCH
+                md.cyl(frost, (x, ym, z), (x, ym + 0.0004, z), RAD, seg=24)
     md.emit("CNC_GlassWall_Manifestation", col, Vector((0, 0, 0)))
 
 

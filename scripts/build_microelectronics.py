@@ -465,10 +465,12 @@ def build():
 
 def tool_library(m, col):
     """Tool library on the workshop face of the spine (faces -x, toward electronics). Spine unit: 4 bays x 1.18 m,
-    0.30 deep, levels 0.10..2.00; local x runs toward -y, so bays 3 and 2 (y 31.6-34.0) are the visible ones;
-    bays 1 and 0 sit 5 cm from the bank wall and only get closed boxes."""
+    0.30 deep, levels 0.10..2.00. Since 2026-11-25 the workshop-side unit has only the 2 bays facing the room
+    (y 31.55-34.03, still called bays 3 and 2 here); the other two faced the bank wall 5 cm away and are gone."""
     lv = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]
-    _, slots, L = lib["shelf_unit"]([1.18] * 4, 0.30, 2.42, lv)
+    _, slots4, L4 = lib["shelf_unit"]([1.18] * 4, 0.30, 2.42, lv)      # 2026-11-25: the unit has 2 bays; keep the
+    _, slots2, L = lib["shelf_unit"]([1.18] * 2, 0.30, 2.42, lv)       # old bay numbers 3/2 (names, contents) and map
+    slots = {(bi, li): slots2[(bi - 2, li)] for (bi, li) in slots4 if bi >= 2}   # them onto the 2-bay unit's 1/0
     loc, rot = lib["placement"](27.62 + 0.15, 31.55 + L / 2, L, 0.30, "-x")
     W = lambda x, y, z: lib["to_world"](loc, rot, (x, y, z))
     life = {}
@@ -576,11 +578,6 @@ def tool_library(m, col):
         xa, xb, _, _, z5 = slots[(bi, 5)]                               # top: labelled kit boxes
         for k in range(3):
             labelled_box(xa + 0.04 + k * 0.38, z5, 0.34, 0.22, (MAT["bins"][(bi + k) % 6] if k == 1 else m["grey"]))
-    for bi in (1, 0):                                                   # behind the bank wall: closed boxes only
-        for li in range(6):
-            xa, xb, _, _, zt = slots[(bi, li)]
-            for k in range(3):
-                labelled_box(xa + 0.04 + k * 0.38, zt, 0.34, 0.25 if li < 5 else 0.22, m["grey"])
     p.emit("ToolLibrary", col, loc, rot)
 
 

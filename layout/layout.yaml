@@ -817,10 +817,10 @@ items:
     label: Spine Boxes Shelving
     kind: storage
     zone: main-lab
-    pos: [27.774, 34.01]
+    pos: [27.757, 33.999]
     z: 0
     rot: -90
-    size: [4.924, 0.311, 2.42]
+    size: [4.902, 0.344, 2.42]
     locked: false
     objects: [Spine_Boxes_Shelving, Spine_Panel]
 
@@ -1429,10 +1429,10 @@ items:
     label: ToolLibrary
     kind: storage
     zone: main-lab
-    pos: [27.771, 34.01]
+    pos: [27.771, 32.79]
     z: 0.1
     rot: -90
-    size: [4.76, 0.278, 2.12]
+    size: [2.32, 0.278, 2.12]
     "on": lab.spine-boxes-shelving
     locked: false
     objects: [ToolLibrary, ToolLib_Drill_0, ToolLib_Drill_1, ToolLib_Cab_3_0, ToolLib_Cab_3_1, ToolLib_ScopePSU, ToolLib_Cab_2_0, ToolLib_Cab_2_1]

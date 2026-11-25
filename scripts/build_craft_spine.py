@@ -6,8 +6,8 @@ Craft zone (replaces placeholder Component_1489559 and friends), model frame +X 
     overlocker and two profile stools; coloured bins below.
   - south of the row (y 26.5-28.8): 2x Roland vinyl cutter on rolling profile stands
     with vinyl-roll racks (mobile; the aisle to the benches is ~0.75 m).
-Spine (x 27.62-28.22, y 31.55-36.65): double-sided profile shelving, birch-ply spine;
-  bank/workshop side (-x) = SAMLA boxes, lounge side (+x) = books, plants, display.
+Spine (x 27.62-28.22, y 31.55-36.47): profile shelving on a birch-ply spine; lounge side (+x) 4 bays = books,
+  display, TV; workshop side (-x) = tool library, 2 bays (y 31.55-34.03; the rest faces the bank wall: bare spine).
 """
 import math
 import random
@@ -228,8 +228,10 @@ def build():
 
     # ---- spine: two back-to-back 0.30 m shelf units with a birch-ply spine between
     lv = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]
-    bays = [1.18] * 4
     for side, facing, xc in (("Boxes", "-x", 27.62 + 0.15), ("Lounge", "+x", 28.22 - 0.15)):
+        # workshop face: only the 2 bays that face the room (y 31.55-34.03); the other two sat 5 cm from the bank
+        # wall and were unreachable (2026-11-25). Same posts/bays as before, so the kept bays don't move.
+        bays = [1.18] * (2 if side == "Boxes" else 4)
         part, slots, L = lib["shelf_unit"](bays, 0.30, 2.42, lv)
         loc, rot = lib["placement"](xc, 31.55 + L / 2, L, 0.30, facing)
         part.emit(f"Spine_{side}_Shelving", sp, loc, rot)
@@ -244,6 +246,9 @@ def build():
     PLANT_SPOTS.clear()                                                # no plants indoors (user)
     spine = Part()
     spine.box(MAT["ply"], 27.913, 27.929, 31.57, 31.55 + 4 * 1.22 + 0.04 - 0.02, 0.05, 2.40)
+    # end cap where the 2-bay workshop face stops (y 34.03): closes the slot between the bank wall (x 27.58) and the
+    # spine panel, so the spine reads as one solid birch wall from there to the bank (2026-11-25, my detail)
+    spine.box(MAT["ply"], 27.585, 27.913, 34.03, 34.048, 0.0, 2.42)
     spine.emit("Spine_Panel", sp, Vector((0, 0, 0)))
     return hidden
 

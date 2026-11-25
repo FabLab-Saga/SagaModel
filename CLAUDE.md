@@ -275,12 +275,12 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Colleague to confirm CNC model (list: PRS Alpha 120-60, modelled at its real 3.66 x 2.31 m; his model had a 96-60 =
   3.05 x 2.31 m; one line in build_machines.py if it is the 96-60).
 - Stairwell location unknown (the room behind the staff room is electrical/storage, not stairs).
-- Glass manifestation dots run continuously across pane joints (real glass would restart per pane).
+- Glass manifestation dots restart per pane (done 2026-11-25).
 - Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which
   re-letters them with Magnús's names (GEISLASKERI, ÞRÍVÍDDARPRENTARI, FRÆSIVÉL, RAFEINDAVERKSTÆÐI, TEXTÍLSVÆÐI,
   VERKFÆRI; VÍNYLSKERI kept). Source PDFs unchanged.
 - Open from the drawings: the lab escape door in the SSW glazing (y ~32.4–34.3) where the lounge pit stands.
-- Spine bays 0-1 (y 34.0-36.4) face the bank wall 5 cm away (closed boxes only; offer: shorten the spine).
+- Spine workshop face is 2 bays (y 31.55–34.03) + a birch end cap to the bank wall (2026-11-25); lounge face 4 bays.
 - Upper hotel floors not modelled → keep exterior shots tight.
 - Presentation video: plan, script, brand rules, budget in RENDER.md. `build_walkthrough.py` (shot cameras on music
   bars, one straight constant-speed move per shot, level cameras + lens shift), `render_walk_test.py` (animatic,
@@ -290,9 +290,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   until the user says so). Walkthrough timeline markers bind cameras:
   peek/render_cams/render_finals remove markers with cameras first, else sc.camera is overridden. The walk renderers
   switch Ground_Paving/Ground_Grass ON (hidden in the file; otherwise the HDRI ground shows as a static zoomed picture).
-- Cameras Entrance/Lounge/SecretDoor still frame the old view; a dedicated entrance hero shot of the TV + desk
-  would help the finals.
-- Spine has no camera on its workshop face (tool library); add one if it should be in the finals.
+- Cameras reframed 2026-11-25 (`scripts/reframe_cameras.py`): Entrance, Lounge, SecretDoor; new Cam_EntranceHero
+  (TV + on-call desk) and Cam_ToolLibrary (no shot_order yet: not in the finals set until Magnús picks).
 - Confirmed by the lab: Epilog is 80 W; scanner is a handheld one; presses = a LOKLiK + a classic red industrial
   clam press (+ the Cricut ones); the Flashforge model doesn't matter. Still unknown (stand-ins in the model): clay
   printer (Eazao Zero; lab unsure), handheld scanner model, red press model, LOKLiK model, Brother sewing/embroidery,

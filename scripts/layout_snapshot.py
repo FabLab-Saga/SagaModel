@@ -275,7 +275,8 @@ def text_report(res):
         if m.get("with"):
             lines.append(f"  {m['id']} moved with {m['with']}")
             continue
-        s = f"  {m['id']} moved {m['dist']:.2f} m" + (f" towards {direction(m['dx'], m['dy'])}" if m["dist"] >= 0.02 else "")
+        dirn = direction(m["dx"], m["dy"])
+        s = f"  {m['id']} moved {m['dist']:.2f} m" + (f" towards {dirn}" if dirn else "")
         if abs(m["drot"]) >= TOL_ROT:
             s += f", rotated {m['drot']:+.0f}°"
         if abs(m["dz"]) >= TOL_POS:
