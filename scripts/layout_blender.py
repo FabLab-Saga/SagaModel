@@ -66,6 +66,8 @@ def measure(objs, exclude=frozenset()):
                 continue
             if o.display_type in {"BOUNDS", "WIRE"} or o.hide_render:
                 continue                                            # boolean cutters, per-shot hidden helpers
+            if o.get("layout_skip"):
+                continue                                            # moving parts (door leaves) can stand open
             mw = Fi @ o.matrix_world
             for c in o.bound_box:
                 p = mw @ Vector(c)

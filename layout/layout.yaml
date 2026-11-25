@@ -800,7 +800,7 @@ items:
     rot: -90
     size: [3.364, 0.724, 2.42]
     locked: false
-    objects: [PrintFarm_Frame, PrintFarm_Spools, DryCell_3, DryCell_4]
+    objects: [PrintFarm_Frame, PrintFarm_Spools, PrintFarm_Doors, PrintFarm_Anchors, DryCell_3, DryCell_4]
 
   - id: lab.sewingbench
     label: SewingBench
