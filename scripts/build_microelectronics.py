@@ -136,6 +136,72 @@ def soldering_station(m):
     return p
 
 
+def weller_we1010(m):
+    """Weller WE1010 (the lab has a Weller; WE1010 is my stand-in pick): black power unit 120 W x 150 D x 98 H (Weller
+    data sheet) with a blue-grey right flank, a back-lit LCD, up/down/menu buttons and the iron socket at the lower
+    left; PH 70 safety rest beside it (black base, yellow sponge, steel spiral) with the WEP 70 iron (teal sleeve,
+    black foam grip) in it. From the weller-tools.com product photo. Front at local y=0, x = width."""
+    p = Part()
+    blk = mat("Weller_Black", "#1B1C1E", 0.45)
+    flank = mat("Weller_BlueGrey", "#9FB9C4", 0.35)
+    teal = mat("Weller_Teal", "#7FC4C9", 0.35)
+    lcd = mat("Weller_LCD", "#B8CCD6", 0.2, emit=0.6)
+    w, d, h = 0.120, 0.150, 0.098
+    p.box(blk, 0.0, w - 0.012, 0.0, d, 0.006, h, bevel=0.008)                          # housing
+    p.box(flank, w - 0.012, w, 0.010, d, 0.006, h - 0.004, bevel=0.004)                # blue-grey right flank
+    p.box(blk, 0.004, w - 0.004, 0.004, d - 0.004, 0.0, 0.008)                          # foot plinth
+    p.box(lcd, 0.018, 0.088, -0.001, 0.0, 0.050, 0.082)                                 # LCD
+    for z in (0.074, 0.058):                                                           # up/down buttons
+        p.box(m["grey"], 0.094, 0.108, -0.003, 0.0, z - 0.006, z + 0.006, bevel=0.002)
+    p.cyl(m["grey"], (0.101, -0.003, 0.038), (0.101, 0.0, 0.038), 0.007, seg=16)        # menu button
+    p.box(m["red"], 0.006, 0.016, -0.002, 0.0, 0.026, 0.040)                            # mains rocker
+    p.cyl(blk, (0.040, -0.020, 0.026), (0.040, 0.0, 0.026), 0.010, seg=16)              # iron socket + plug
+    # PH 70 safety rest to the right: base, sponge, spiral, iron
+    bx = w + 0.025
+    p.box(blk, bx, bx + 0.10, 0.0, 0.16, 0.0, 0.030, bevel=0.006)
+    p.box(mat("Sponge_Yellow", "#E8C547", 0.9), bx + 0.015, bx + 0.085, 0.015, 0.085, 0.030, 0.040)
+    p.cyl(blk, (bx + 0.05, 0.125, 0.030), (bx + 0.05, 0.125, 0.055), 0.022, seg=20)
+    p.cyl(m["steel"], (bx + 0.05, 0.120, 0.055), (bx + 0.05, 0.075, 0.150), 0.020, seg=18)        # spiral (as a sleeve)
+    p.cyl(blk, (bx + 0.05, 0.072, 0.152), (bx + 0.05, 0.064, 0.170), 0.024, seg=18)               # funnel top
+    p.cyl(blk, (bx + 0.05, 0.060, 0.175), (bx + 0.05, 0.020, 0.250), 0.014, seg=14)               # foam grip
+    p.cyl(teal, (bx + 0.05, 0.020, 0.250), (bx + 0.05, 0.000, 0.290), 0.010, seg=14)              # teal sleeve
+    p.cyl(m["steel"], (bx + 0.05, 0.125, 0.040), (bx + 0.05, 0.110, 0.070), 0.0035, seg=8)        # tip in the spiral
+    for k in range(5):                                                                 # cable to the socket
+        a = (bx + 0.05 - k * 0.03, 0.000 + 0.004 * k, 0.290 - 0.055 * k)
+        b = (bx + 0.05 - (k + 1) * 0.03, 0.000 + 0.004 * (k + 1), max(0.020, 0.290 - 0.055 * (k + 1)))
+        p.cyl(blk, a, b, 0.0028, seg=6)
+    return p
+
+
+def zd915(m):
+    """ZD-915 desoldering station ("AliExpress special", Magnús; ZD-915 is my stand-in pick): beige-grey steel box
+    130 W x 225 D x 158 H (retail listing), rounded front bezel with a green LCD and three grey arrow buttons, red power
+    button, gun socket and white air knob below; black cradle on the left flank holding the beige pistol-grip
+    desoldering gun. From the eleshop.eu product photo. Front at local y=0."""
+    p = Part()
+    beige = mat("ZD_Beige", "#C9C6BA", 0.45)
+    lcd = mat("ZD_LCD", "#8FA88A", 0.25, emit=0.3)
+    blk = m["black"]
+    w, d, h = 0.130, 0.225, 0.158
+    p.box(beige, 0.0, w, 0.008, d, 0.0, h, bevel=0.004)                                 # case
+    p.box(beige, 0.006, w - 0.006, 0.0, 0.010, 0.006, h - 0.006, bevel=0.008)           # front bezel
+    p.box(lcd, 0.025, 0.095, -0.001, 0.0, 0.098, 0.135)                                 # LCD
+    for z in (0.090, 0.072, 0.054):
+        p.box(m["grey"], 0.100, 0.118, -0.003, 0.0, z - 0.006, z + 0.006, bevel=0.002)
+    p.cyl(m["red"], (0.025, -0.004, 0.022), (0.025, 0.0, 0.022), 0.008, seg=14)         # power
+    p.cyl(m["steel"], (0.062, -0.012, 0.022), (0.062, 0.0, 0.022), 0.008, seg=14)       # gun socket
+    p.cyl(blk, (0.100, -0.010, 0.022), (0.100, 0.0, 0.022), 0.013, seg=18)              # air knob
+    p.cyl(m["lampwhite"], (0.100, -0.011, 0.022), (0.100, -0.010, 0.022), 0.008, seg=16)
+    # cradle on the left flank + gun resting in it, nose forward
+    p.box(blk, -0.030, 0.0, 0.10, 0.16, 0.10, 0.125, bevel=0.004)
+    p.box(beige, -0.075, -0.020, 0.06, 0.19, 0.105, 0.135, bevel=0.010)                 # gun body
+    p.box(beige, -0.068, -0.030, 0.15, 0.19, 0.025, 0.110, bevel=0.010)                 # grip
+    p.cyl(m["steel"], (-0.048, 0.06, 0.122), (-0.048, -0.02, 0.122), 0.008, seg=12)     # barrel + tip
+    p.cyl(m["steel"], (-0.048, -0.02, 0.122), (-0.048, -0.045, 0.118), 0.003, seg=8)
+    p.cyl(blk, (-0.049, 0.19, 0.03), (0.06, 0.20, 0.0), 0.004, seg=6)                   # hose/cable
+    return p
+
+
 def fume_extractor(m):
     p = Part()
     p.box(m["black"], 0, 0.20, 0, 0.08, 0, 0.22, bevel=0.01)
@@ -462,11 +528,49 @@ def build():
     by = yf + 0.25                                                   # bench back edge (against the tool wall)
     for i, sx in enumerate((21.95, 22.55)):                          # the only machines here: 2x Roland SRM-20
         on_bench(mach["srm20"](), f"Roland_SRM20_{i + 1}", sx, by + 0.03, 0.451, 0.426)
-    for i, sx in enumerate((23.50, 24.70, 25.90)):
-        on_bench(soldering_station(m), f"Solder_{i}", sx, by + 0.12, 0.25, 0.16)
-        on_bench(fume_extractor(m), f"Fume_{i}", sx + 0.30, by + 0.05, 0.20, 0.08)
-    on_bench(scope_and_psu(m), "ScopePSU", 26.56, by + 0.04, 0.56, 0.25)
-    on_bench(magnifier_lamp(m), "Magnifier", 24.35, by + 0.02, 0.06, 0.06)
+    # Soldering (Magnús 2026-11-25): ONE permanent good station (a Weller) + a Chinese desoldering station on the
+    # bench; every other soldering tool, the meters and the scope/PSU live in the lockable hutch on the bench's back
+    # edge (acrylic doors, electronic locks), open during sessions, locked at closing. Hutch and layout are mine.
+    on_bench(weller_we1010(m), "Solder_Weller", 23.40, by + 0.04, 0.245, 0.16)
+    on_bench(fume_extractor(m), "Fume_0", 23.72, by + 0.04, 0.20, 0.08)
+    on_bench(zd915(m), "Desolder_ZD915", 24.06, by + 0.03, 0.13, 0.225)
+    on_bench(magnifier_lamp(m), "Magnifier", 24.45, by + 0.02, 0.06, 0.06)
+    HX0, HX1, HD, HZ0, HZ1 = 23.25, X1 - 0.06, 0.30, top + 0.40, top + 0.86
+    scope_and_psu(m).emit("ScopePSU", col, Vector((26.40 + 0.56, by + 0.04 + 0.25, HZ0 + 0.018)), math.pi)
+    hutch, hd = Part(), Part()
+    ply = MAT["ply"]
+    for x in (HX0, (HX0 + HX1) / 2 - 0.01, HX1 - 0.02):
+        for y in (by, by + HD - 0.02):
+            hutch.profile(0.02, "z", x, y, top, HZ1 - top)                         # posts down to the bench top
+    hutch.box(ply, HX0, HX1, by, by + HD, HZ0, HZ0 + 0.018, bevel=0.0015)          # floor shelf
+    hutch.box(ply, HX0, HX1, by, by + HD, HZ1, HZ1 + 0.018, bevel=0.0015)          # top
+    hutch.box(ply, HX0, HX1, by, by + 0.012, HZ0, HZ1)                             # back
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    acr = ld["_ld_mats"]()[0]
+    for x in (HX0 - 0.005, HX1):
+        hutch.box(acr, x, x + 0.005, by, by + HD, HZ0, HZ1)                        # acrylic ends
+    z1 = HZ0 + 0.018
+    toolbox(hutch, m, m["red"], 23.45, by + 0.04, z1, w=0.38, d=0.24, h=0.13)      # hot-air rework station case
+    toolbox(hutch, m, m["blue"], 23.90, by + 0.04, z1, w=0.36, d=0.22, h=0.11)     # spare irons + tips
+    toolbox(hutch, m, m["grey"], 24.32, by + 0.04, z1, w=0.34, d=0.22, h=0.09)     # solder, wick, flux, pumps
+    for i in range(4):                                                             # multimeters standing on edge
+        x = 24.80 + i * 0.12
+        hutch.box(m["yellow"], x, x + 0.09, by + 0.20, by + 0.245, z1, z1 + 0.18, bevel=0.006)
+        hutch.box(m["screen"], x + 0.015, x + 0.075, by + 0.245, by + 0.246, z1 + 0.11, z1 + 0.16)
+    toolbox(hutch, m, m["black"], 25.32, by + 0.04, z1, w=0.40, d=0.24, h=0.12)    # probes, leads, logic analyser
+    toolbox(hutch, m, m["blue"], 25.78, by + 0.04, z1, w=0.34, d=0.22, h=0.10)     # spare fume-extractor filters
+    ld["door_run"](hd, "+y", by + HD, HX0, HX1, HZ0 + 0.004, HZ1 - 0.002, leaves=6, lock_z=HZ0 + 0.23)
+    hutch.emit("ElecHutch", col, Vector((0, 0, 0)))
+    dob = hd.emit("ElecHutch_Doors", col, Vector((0, 0, 0)))
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
+    anchors = Part()                                                               # SRM-20 anchor cleats
+    for sx in (21.95, 22.55):
+        for ux, sgn in ((sx, -1), (sx + 0.451, 1)):
+            anchors.box(MAT["profile"], min(ux, ux + sgn * 0.04), max(ux, ux + sgn * 0.04), by + 0.20, by + 0.24, top, top + 0.003)
+            anchors.box(MAT["profile"], min(ux, ux + sgn * 0.003), max(ux, ux + sgn * 0.003), by + 0.20, by + 0.24, top, top + 0.04)
+    anchors.emit("SRM20_Anchors", col, Vector((0, 0, 0)))
     pc = Part()                                                      # PCBs + parts tray + solder spool on the bench
     for i in range(5):
         x, y = 22.6 + i * 0.9 + rng.uniform(-0.1, 0.1), by + 0.42 + rng.uniform(-0.05, 0.08)
