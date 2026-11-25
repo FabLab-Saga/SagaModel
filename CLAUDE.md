@@ -133,7 +133,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   existing mullions (y 32.74–34.18; fitting it to the bay is my call), outward opening, dark façade frames, head 2.40
   with a transom, stainless panic bars inside, flat threshold, small green exit pictogram hung inside above it (my own
   drawing, `scripts/make_exit_sign.py`; his pick of the look). `Cut_Escape_Glass`/`Cut_Escape_Sill` booleans on
-  Facade_SSW_Glass/_Frames. The drawing labels the lounge/desk area "fjölnota kennslurými 110.8 m²" (Magnús: close enough to the lounge +
+  Facade_SSW_Glass/_Frames. Magnús recalls the pair at roughly 1.40 m, "definitely wide enough to fit the epilog", same
+  for the laser-room door (both consistent with the model; re-check against the updated drawings he expects). The drawing labels the lounge/desk area "fjölnota kennslurými 110.8 m²" (Magnús: close enough to the lounge +
   on-call area as modelled). Sun: 22 Sep 15:30 UTC (az 215°, el 22°) so light
   reaches under the ~1.9 m upper-floor overhang. HDRI rotation aligned to the sun lamp.
 
