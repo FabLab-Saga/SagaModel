@@ -88,6 +88,13 @@ JSON: `{"base", "target", "moves": [{id, from: {pos, rot, z}, to: {...}, dist, d
 "removed": [...], "violations": [{rule, items, value, where}]}`. Text: one line per move, e.g.
 `lab.worktable-1 moved 1.12 m towards +X (SSW) / -Y (WNW), rotated +90°`.
 
+Clearance policy (`layout/clearance_policy.json`, research proposal of 2026-11-25 plus Magnús's overrides; merged
+into room.json `rules.clearance_policy` by the exporter, never generated): `scripts/layout_clearance.py` runs its
+mechanical machine rules (body edge offsets, clear height under the item above, cabin top gap, work-envelope
+overlap and support height) on moved items, or on all items with `--audit`. A rule overridden by Magnús reports
+as `advisory` with his words; rules needing inputs the model lacks (face mapping, stock paths, ventilation,
+egress plans, door schedule) are `review` notes in `--audit`. Nothing is moved to satisfy a rule.
+
 Violations are checked for moved and added items only: overlap with another floor item, keepout intrusion
 (door swing / escape route), clearance under `walkway_min` (`aisle_laser_min` in the laser room) to a neighbour or wall, item outside its zone,
 `on:` child not moved with its parent, moving a `locked` item.

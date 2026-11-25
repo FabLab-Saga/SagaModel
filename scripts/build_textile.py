@@ -65,7 +65,7 @@ def build():
     part.emit("SewingBench", col, loc, rot)
     put(mach["loklik_auto_press"](), "LOKLiK_AutoPress", loc, rot, 0.29, 0.30, BH, 0.50, 0.40)
     put(mach["cricut_mug_press"](), "Cricut_MugPress", loc, rot, 0.70, 0.22, BH, 0.275, 0.157)
-    put(mach["overlock"](), "Overlock", loc, rot, 1.14, 0.30, BH, 0.33, 0.28)
+    put(mach["overlock"](), "Overlock", loc, rot, 1.14, 0.30, BH, 0.335, 0.282)
     put(mach["cricut_easypress3"](), "Cricut_EasyPress3_1", loc, rot, 0.30, 0.34, 0.16, 0.305, 0.254)   # shelf
     put(mach["cricut_easypress3"](), "Cricut_EasyPress3_2", loc, rot, 0.72, 0.34, 0.16, 0.305, 0.254)
     put(mach["sewing"](0.50, 0.24, 0.32), "Brother_Embroidery", loc, rot, 1.62, 0.26, BH, 0.50, 0.24)

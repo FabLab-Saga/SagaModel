@@ -1420,7 +1420,7 @@ items:
     pos: [31.21, 27.41]
     z: 0.76
     rot: 180
-    size: [0.33, 0.28, 0.363]
+    size: [0.335, 0.282, 0.37]
     "on": lab.sewingbench
     locked: false
     objects: [Overlock]

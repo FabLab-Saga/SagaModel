@@ -3229,7 +3229,650 @@
  "rules": {
   "walkway_min": 1.2,
   "aisle_laser_min": 1.0,
-  "door_clear": 0.9
+  "door_clear": 0.9,
+  "clearance_policy": {
+   "version": 1,
+   "scope": "Proposed planner overlay, not a site approval. Merge rules only; never overwrite generated room.json.",
+   "units": {
+    "contract_scalars": "metres",
+    "*_mm": "millimetres",
+    "rot": "degrees CCW about +Z"
+   },
+   "selectors": "Python/ECMAScript-compatible regex, full string match against layout item id. Missing expected matches => review.",
+   "frame": "Use physical operator front; local -Y at zero for verified bench models, then apply rot. Supply per-model face mapping if not verified; never infer cable-chain side from room direction.",
+   "null_meaning": "No defensible fixed offset, not zero, permission to touch, or automatic pass. Apply check-specific geometry or obtain measurements.",
+   "decision": "Apply every matching rule in scope. Max of applicable minima for the SAME measured quantity only. Mandatory failure = conflict with named authority, not necessarily unlawful. Reference solutions may differ only on documented approved equivalent. Unverified inputs = review; recommendations = advisory.",
+   "collision": "Use height-sliced solid parts and occupied states. Exclude intended support contact, not cabinet panels or other machines. Draw stock paths, open doors and seated users. Never use an overhead accessory or occupied bench as an unbroken floor obstacle.",
+   "inputs": [
+    "route centreline/polygons with role, design-user count, traffic and approved fire plan",
+    "finished clear opening, threshold, latch and actual hinge; door schedule",
+    "station points, working states, approach side, operating orientation, peer simultaneous-use policy",
+    "service and stock envelopes, shelf inside faces and commissioned ventilation evidence"
+   ],
+   "room_checks": [
+    {
+     "id": "project-aisles",
+     "title": "Mark the actual walking lines",
+     "authority": "Saga brief",
+     "status": "mandatory",
+     "applies_when": "designated local workshop circulation, excluding machine service-only gaps",
+     "check": "connected_clear_width",
+     "reason": "Protect a continuous route in the occupied layout. Use the laser default only for its dedicated aisle; a classified corridor or escape route can demand more. Do not reject all furniture-to-wall gaps.",
+     "source_urls": [
+      "https://github.com/MagnusPetursson/SagaModel/blob/7f9f11a64ab4db800d64b80c70828b81ca6bd61c/layout/README.md",
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
+     ],
+     "parameters": {
+      "ordinary_m": 1.2,
+      "laser_m": 1.0
+     }
+    },
+    {
+     "id": "door-strips",
+     "title": "Reserve door approaches and the leaf sweep",
+     "authority": "Saga brief",
+     "status": "mandatory",
+     "applies_when": "door swings for all doors; v1 approach strips at the designated entrance and escape doors",
+     "check": "polygon_intrusion",
+     "reason": "Keep equipment, waiting positions, chairs and stored material outside the polygons. Both laser doors must remain usable. The 900 mm scalar is strip depth perpendicular to a doorway, not clear opening width or a complete access landing.",
+     "source_urls": [
+      "https://github.com/MagnusPetursson/SagaModel/blob/7f9f11a64ab4db800d64b80c70828b81ca6bd61c/layout/README.md",
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
+     ],
+     "parameters": {
+      "strip_depth_m": 0.9
+     }
+    },
+    {
+     "id": "corridor-low",
+     "title": "Low-traffic accessible corridor",
+     "authority": "Icelandic regulation",
+     "status": "mandatory",
+     "applies_when": "universal-design corridor or access balcony classified as low traffic",
+     "check": "connected_clear_width",
+     "reason": "§§6.1.3 and 6.4.4 main rule 4(a): schools fall within universal design. Measure the unobstructed corridor between finished faces and projections. The general duty is enough width for the actual traffic.",
+     "source_urls": [
+      "https://files.reglugerd.is/pdf/0112-2012/current",
+      "https://www.byggingarreglugerd.is/leidbeiningar/gangar-og-anddyri"
+     ],
+     "parameters": {
+      "min_width_mm": 1300
+     }
+    },
+    {
+     "id": "corridor-busy",
+     "title": "Busy or long accessible route",
+     "authority": "Icelandic reference solution",
+     "status": "mandatory",
+     "applies_when": "high traffic OR long internal route without dedicated wheelchair passing bays",
+     "check": "connected_clear_width",
+     "reason": "§6.4.4 reference rule 1: apply the reference solution unless an equivalent design is documented. The designer classifies traffic and length; furniture spacing alone cannot classify either.",
+     "source_urls": [
+      "https://files.reglugerd.is/pdf/0112-2012/current",
+      "https://www.byggingarreglugerd.is/leidbeiningar/gangar-og-anddyri"
+     ],
+     "parameters": {
+      "min_width_mm": 1800
+     }
+    },
+    {
+     "id": "passing",
+     "title": "Passing places on narrower corridors",
+     "authority": "Icelandic reference solution",
+     "status": "mandatory",
+     "applies_when": "universal-design corridor narrower than 1500 mm",
+     "check": "fit_rectangle_and_spacing",
+     "reason": "§6.4.4 reference rule 2: provide clear passing places at intervals appropriate to expected traffic. Do not invent an interval. High traffic uses the larger square; a bay alone does not waive a busy-route rule.",
+     "source_urls": [
+      "https://files.reglugerd.is/pdf/0112-2012/current",
+      "https://www.byggingarreglugerd.is/leidbeiningar/gangar-og-anddyri"
+     ],
+     "parameters": {
+      "trigger_below_mm": 1500,
+      "normal_mm": [
+       1500,
+       1500
+      ],
+      "high_traffic_mm": [
+       1800,
+       1800
+      ]
+     }
+    },
+    {
+     "id": "door-landing",
+     "title": "Space to manoeuvre at a corridor door",
+     "authority": "Icelandic regulation",
+     "status": "mandatory",
+     "applies_when": "outside a door on a universal-design corridor/access balcony; separately outside the building main entrance",
+     "check": "fit_any_rectangle",
+     "reason": "§6.4.4 main rule 4(b): fit either full rectangle; high traffic needs the larger square. §6.4.2 requires level space outside the main entrance outside the door sweep and ≥500 mm latch-side room outside entrance doors. Do not automatically classify the internal lab-to-hall door as a building entrance.",
+     "source_urls": [
+      "https://files.reglugerd.is/pdf/0112-2012/current",
+      "https://www.byggingarreglugerd.is/leidbeiningar/gangar-og-anddyri"
+     ],
+     "parameters": {
+      "normal_options_mm": [
+       [
+        1500,
+        1500
+       ],
+       [
+        1300,
+        1800
+       ]
+      ],
+      "high_traffic_mm": [
+       1800,
+       1800
+      ],
+      "outside_building_entrance_latch_mm": 500
+     }
+    },
+    {
+     "id": "turn-station",
+     "title": "Turn at a teaching station",
+     "authority": "proposed design target",
+     "status": "recommended",
+     "applies_when": "at accessible teaching positions and changes of direction selected with the access designer",
+     "check": "fit_connected_disk",
+     "reason": "Reserve a usable 1500 mm diameter clear circle reached from the accessible route. A disc is a planning test at a workstation, not a substitute for the statutory rectangle at a corridor door or a guarantee for every chair. Check knees, reach and controls in section.",
+     "source_urls": [
+      "https://www.byggingarreglugerd.is/leidbeiningar/gangar-og-anddyri",
+      "https://files.reglugerd.is/pdf/0112-2012/current"
+     ],
+     "parameters": {
+      "diameter_mm": 1500
+     }
+    },
+    {
+     "id": "door-opening",
+     "title": "Measure the opening with the leaf open",
+     "authority": "Icelandic regulation",
+     "status": "mandatory",
+     "applies_when": "building entrance or universal-design interior door; larger fire/traffic requirements prevail",
+     "check": "measured_clear_opening",
+     "reason": "§6.4.2: entrance ≥830 × 2070 mm clear; §6.4.3: interior ≥800 × 2000 mm clear, subject to the article’s limited cupboard-like exceptions. Inspect usable opening, stops, leaf and hardware; nominal rough opening and leaf widths are not evidence. Both articles give 25 N at handle and 40 N max push/pull guidance.",
+     "source_urls": [
+      "https://files.reglugerd.is/pdf/0112-2012/current"
+     ],
+     "parameters": {
+      "building_entrance_wh_mm": [
+       830,
+       2070
+      ],
+      "interior_wh_mm": [
+       800,
+       2000
+      ]
+     }
+    },
+    {
+     "id": "egress-path",
+     "title": "Protect the entire escape route",
+     "authority": "Icelandic regulation",
+     "status": "mandatory",
+     "applies_when": "all occupied spaces and assigned escape routes",
+     "check": "approved_paths_and_dynamic_keepouts",
+     "reason": "§§9.5.2–.4, .6–.9 and 581/1995 §37: trace routes to approved safe destinations, including common routes; check clear width, travel and exit independence against the fire design. Normally two independent routes per use unit; exceptions require verification. Two leaves of one door do not give two independent routes. Signage and emergency lighting require field review.",
+     "source_urls": [
+      "https://files.reglugerd.is/pdf/0112-2012/current",
+      "https://www.byggingarreglugerd.is/leidbeiningar/flottaleidir",
+      "https://assets.ctfassets.net/8k0h54kbe6bj/7os5BHEkKYN0RG4gmZaQgE/4793b0c959a9cc285802ef9cc393933b/581_1995.pdf"
+     ],
+     "parameters": {}
+    },
+    {
+     "id": "egress-capacity",
+     "title": "Check exit capacity and route loss",
+     "authority": "Icelandic reference solution",
+     "status": "mandatory",
+     "applies_when": "fire design supplies use classification, occupancy, shared flows and exit grouping",
+     "check": "fire_design_review",
+     "reason": "§9.5.8 reference 1–4: aggregate at least 1 m per 100 people; with one route lost, remaining capacity 200 people per metre. Merged flows add. Door/route from a space for >300 people: ≥1.2 m. These are distinct tests, not blanket aisle widths. Use §9.5.6 table 9.04 and its measurement rules for travel distance.",
+     "source_urls": [
+      "https://files.reglugerd.is/pdf/0112-2012/current"
+     ],
+     "parameters": {
+      "aggregate_mm_per_person": 10,
+      "remaining_persons_per_m": 200,
+      "over_300_door_min_mm": 1200
+     }
+    },
+    {
+     "id": "egress-door",
+     "title": "Direction and release of escape doors",
+     "authority": "Icelandic regulation",
+     "status": "mandatory",
+     "applies_when": "designated escape door or dedicated workplace emergency exit",
+     "check": "fire_door_review",
+     "reason": "§9.5.9: open in direction of escape, without key or tools; open leaf must not constrict escape. Reverse swing exception requires familiar users AND no crowd risk, not merely a small headcount. 581/1995 §37 specifically requires outward-opening dedicated emergency doors. Check fire-door rating, approved hold-open/release, hardware and power-loss behaviour against the schedule.",
+     "source_urls": [
+      "https://files.reglugerd.is/pdf/0112-2012/current",
+      "https://assets.ctfassets.net/8k0h54kbe6bj/7os5BHEkKYN0RG4gmZaQgE/4793b0c959a9cc285802ef9cc393933b/581_1995.pdf"
+     ],
+     "parameters": {}
+    },
+    {
+     "id": "work-envelope",
+     "title": "Separate occupied stations from through-traffic",
+     "authority": "Icelandic regulation",
+     "status": "mandatory",
+     "applies_when": "normal simultaneous work or stock transport",
+     "check": "occupied_state_intersection",
+     "reason": "581/1995 §§3,39: size and mark routes for users and material movements; workers need sufficient room outside traffic areas unless the work requires otherwise. Model occupied chairs, helper, sheet destination and swept path. UK BB81 §5 allows some shared work space only under stated usage assumptions. Never borrow a protected route for storage.",
+     "source_urls": [
+      "https://assets.ctfassets.net/8k0h54kbe6bj/7os5BHEkKYN0RG4gmZaQgE/4793b0c959a9cc285802ef9cc393933b/581_1995.pdf",
+      "https://island.is/umhverfisthaettir/husnaedi-vinnurymi",
+      "https://science.cleapss.org.uk/Resource/Building-Bulletin-81-Design-Technology.pdf"
+     ],
+     "parameters": {}
+    },
+    {
+     "id": "capture",
+     "title": "Capture fumes where they form",
+     "authority": "Icelandic regulation",
+     "status": "mandatory",
+     "applies_when": "laser, solder, CNC dust and other contaminating tasks",
+     "check": "commissioning_evidence",
+     "reason": "581/1995 §10: capture/clean contaminated air at source and prevent return of polluted air to the workplace; maintain and verify function. Check make-up air, discharge, filter access, branch compatibility and capture with the proposed simultaneous duty. A riser, duct or fan icon does not prove performance.",
+     "source_urls": [
+      "https://assets.ctfassets.net/8k0h54kbe6bj/7os5BHEkKYN0RG4gmZaQgE/4793b0c959a9cc285802ef9cc393933b/581_1995.pdf"
+     ],
+     "parameters": {}
+    },
+    {
+     "id": "laser-fire",
+     "title": "Provide supervision and accessible fire equipment",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "laser in use or ready to print; all teaching configurations",
+     "check": "operating_plan_and_access",
+     "reason": "Keep a clear attended operator position with direct view, reachable controls and suitable inspected extinguisher. Keep combustibles and offcuts clear; reserve panel, tray and cleaning access. Workplace §3(7) requires suitable firefighting and detection equipment for the actual risk. Agree equipment with the fire designer.",
+     "source_urls": [
+      "https://assets.ctfassets.net/8k0h54kbe6bj/7os5BHEkKYN0RG4gmZaQgE/4793b0c959a9cc285802ef9cc393933b/581_1995.pdf",
+      "https://www.epiloglaser.com/assets/downloads/manuals/fusionedge-manual-web.pdf",
+      "https://assets.ctfassets.net/ljtyf78xujn2/6DGJekPZWOM6CU3wVJEIB9/b5852c5f9751d6bc2a21f37b7c623959/Glowforge_HD_Manual_v1.0.pdf",
+      "https://support.xtool.com/article/1366"
+     ],
+     "parameters": {}
+    },
+    {
+     "id": "laser-class",
+     "title": "Confirm laser class and control the usable area",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "Pro HD or F1 Ultra; include passthrough/conveyor or open configurations",
+     "check": "laser_safety_review",
+     "reason": "Glowforge Pro HD is Class 4: use the manufacturer’s laser safety programme. For F1 Ultra read the nameplate: MXF-K002-001 is Class 1, B20/B21 are Class 4. Do not infer classification from a green hood or ordinary glazing. Have the laser safety lead assess access and sightlines before class use.",
+     "source_urls": [
+      "https://assets.ctfassets.net/ljtyf78xujn2/6DGJekPZWOM6CU3wVJEIB9/b5852c5f9751d6bc2a21f37b7c623959/Glowforge_HD_Manual_v1.0.pdf",
+      "https://support.xtool.com/article/1366",
+      "https://support.xtool.com/article/3299"
+     ],
+     "parameters": {}
+    }
+   ],
+   "machine_clearances": [
+    {
+     "id": "cnc-brief",
+     "title": "ShopBot PRSalpha 120-60",
+     "id_pattern": "cnc\\.shopbot-prsalpha-120",
+     "authority": "Saga brief",
+     "status": "mandatory",
+     "applies_when": "installed machine body; all sides",
+     "check": "body_edge_offsets",
+     "front_mm": 1000,
+     "back_mm": 1000,
+     "side_mm": 1000,
+     "reason": "The architects’ equipment schedule asks for at least 1 m on all sides for handling and service. Use full body, not cutting bed, and exclude overhead boom from floor footprint. Also draw the actual load-in and stock sweep. A change needs a revised brief.",
+     "source_url": "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
+     "supporting_urls": [
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md",
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
+     ],
+     "parameters": {}
+    },
+    {
+     "id": "cnc-service",
+     "title": "ShopBot cable-chain side",
+     "id_pattern": "cnc\\.shopbot-prsalpha-120",
+     "authority": "manufacturer",
+     "status": "recommended",
+     "applies_when": "cable-chain side positively identified; check control-box and origin ends separately",
+     "check": "identified_face_offset",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "ShopBot suggests about 300–500 mm at the far chain side to allow access but discourage traffic there. Leave more on the control/origin side and room to load from a short end. Its illustration is a 96-48, not the Saga 120-60 footprint. This advice does not cancel the 1 m brief.",
+     "source_url": "https://shopbottools.com/wp-content/uploads/2024/01/Overview-of-Power-Supply-and-Placement-for-ShopBot-International.pdf",
+     "supporting_urls": [],
+     "parameters": {
+      "face": "cable_chain",
+      "suggested_range_mm": [
+       300,
+       500
+      ]
+     }
+    },
+    {
+     "id": "edge-service",
+     "title": "Epilog Fusion Edge 24",
+     "id_pattern": "laser\\.epilog-fusionedge24",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "all jobs",
+     "check": "measure_service_and_vent_envelope",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "Do not obstruct cooling fans on either side. Fit and service the rear 102 mm port and hose, fully open lid and service panels. In the reviewed manual no fixed wall setback was specified. External exhaust guidance is 595–680 m³/h, not a filter-unit rating or the flow for the entire room. Confirm hardware by nameplate.",
+     "source_url": "https://www.epiloglaser.com/assets/downloads/manuals/fusionedge-manual-web.pdf",
+     "supporting_urls": [
+      "https://support.epiloglaser.com/laser-machine/fusion-pro/usage-and-operation/system-requirements-setup/laser-exhaust-requirements/",
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf"
+     ],
+     "parameters": {
+      "outdoor_exhaust_guidance_m3h": [
+       595,
+       680
+      ],
+      "rear_port_mm": 102
+     }
+    },
+    {
+     "id": "hd-body",
+     "title": "Glowforge Pro HD casing",
+     "id_pattern": "laser\\.glowforge-prohd-[0-9]+",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "all jobs",
+     "check": "body_edge_offsets",
+     "front_mm": 25.4,
+     "back_mm": 25.4,
+     "side_mm": 25.4,
+     "reason": "Manual: leave at least one inch all around; keep underside air intake clear. Offsets are from the casing, not the hose tip. Add space for lid, connections and sheets; the air gap alone is insufficient to operate.",
+     "source_url": "https://assets.ctfassets.net/ljtyf78xujn2/6DGJekPZWOM6CU3wVJEIB9/b5852c5f9751d6bc2a21f37b7c623959/Glowforge_HD_Manual_v1.0.pdf",
+     "supporting_urls": [],
+     "parameters": {}
+    },
+    {
+     "id": "hd-feed",
+     "title": "Pro HD passthrough",
+     "id_pattern": "laser\\.glowforge-prohd-[0-9]+",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "passthrough enabled",
+     "check": "stock_sweep",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "Slots run front to rear. Compute maximum protrusion from stock length, position and support path; reserve both ends. Otherwise label this placement closed-job only. Fit Pro Shields when not using passthrough as directed.",
+     "source_url": "https://assets.ctfassets.net/ljtyf78xujn2/6DGJekPZWOM6CU3wVJEIB9/b5852c5f9751d6bc2a21f37b7c623959/Glowforge_HD_Manual_v1.0.pdf",
+     "supporting_urls": [],
+     "parameters": {
+      "axis": "front_back"
+     }
+    },
+    {
+     "id": "aura-feed",
+     "title": "Glowforge Aura",
+     "id_pattern": "laser\\.glowforge-aura",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "all jobs; lateral feed envelope when passthrough is enabled",
+     "check": "stock_sweep_and_service",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "Both slots open at the SIDES. Reserve the full height and length of protruding stock plus support; keep the underside intake and lid clear. No fixed perimeter distance verified in the Aura manual. Do not copy the Pro HD inch rule.",
+     "source_url": "https://assets.ctfassets.net/ljtyf78xujn2/4Z0MkTBABj5lzjUMChTv18/2276bde4fad15a88c9562004bedaa90c/Glowforge_Aura_User_Manual_v1.1.pdf",
+     "supporting_urls": [],
+     "parameters": {
+      "axis": "left_right"
+     }
+    },
+    {
+     "id": "glow-exhaust",
+     "title": "Glowforge outdoor exhaust",
+     "id_pattern": "laser\\.glowforge-(?:prohd-[0-9]+|aura)",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "outdoor vent option; otherwise use the exact compatible filter",
+     "check": "vent_path_review",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "Both manuals limit the outdoor hose/vent path to 2.4384 m without added turns in the vent. HD gives no more than two turns of ≤90° for the hose. Keep hose unpinched. Aura uses Personal Filter, not Performance Filter. Treat shared-building ducting as unapproved until manufacturer and ventilation designer validate it.",
+     "source_url": "https://assets.ctfassets.net/ljtyf78xujn2/6DGJekPZWOM6CU3wVJEIB9/b5852c5f9751d6bc2a21f37b7c623959/Glowforge_HD_Manual_v1.0.pdf",
+     "supporting_urls": [
+      "https://assets.ctfassets.net/ljtyf78xujn2/4Z0MkTBABj5lzjUMChTv18/2276bde4fad15a88c9562004bedaa90c/Glowforge_Aura_User_Manual_v1.1.pdf"
+     ],
+     "parameters": {
+      "max_outdoor_path_mm": 2438.4
+     }
+    },
+    {
+     "id": "f1-install",
+     "title": "xTool F1 Ultra",
+     "id_pattern": "laser\\.xtool-f1-ultra",
+     "authority": "Saga brief",
+     "status": "mandatory",
+     "applies_when": "tower plus controller in the planned normal configuration",
+     "check": "support_rectangle_and_dynamic_clearance",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "Schedule provides 700 × 500 mm of bench space and an 80 mm exhaust connection. Verify against the actual unit. Allow the shield to lift and controls and emergency stop to be reached; keep exhaust clear. If a conveyor is fitted, draw its full feed and outfeed separately. No fixed OEM side clearances verified.",
+     "source_url": "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
+     "supporting_urls": [
+      "https://support.xtool.com/article/1366",
+      "https://support.xtool.com/article/3299"
+     ],
+     "parameters": {
+      "support_wh_mm": [
+       700,
+       500
+      ],
+      "brief_exhaust_port_mm": 80
+     }
+    },
+    {
+     "id": "prusa-cabin",
+     "title": "MK3S+ in Saga’s custom cabins",
+     "id_pattern": "lab\\.prusa-mk3s-[0-9]+",
+     "authority": "Saga brief",
+     "status": "mandatory",
+     "applies_when": "custom birch single-door cell, from moving printer envelope",
+     "check": "cabinet_internal_offsets",
+     "front_mm": null,
+     "back_mm": 100,
+     "side_mm": null,
+     "reason": "The schedule calls for 100–150 mm above and behind for cooling/service. Screen at the lower edge (100 mm); aim for 150 mm. Check bed, rear cable and spool at full travel. Measure door sweep from its own hinge, and test cabinet temperatures and emissions at class duty.",
+     "source_url": "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
+     "supporting_urls": [
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
+     ],
+     "parameters": {
+      "top_mm": 100,
+      "target_back_mm": 150,
+      "target_top_mm": 150
+     }
+    },
+    {
+     "id": "prusa-oem",
+     "title": "Original Prusa Enclosure only",
+     "id_pattern": "lab\\.prusa-mk3s-[0-9]+",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "only if installed enclosure model equals Original Prusa Enclosure",
+     "check": "enclosure_face_offset",
+     "front_mm": 250,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "The factory enclosure needs 250 mm clear in front of ITS doors. External size is 530 mm wide × 545 mm high and 640/715 mm deep with the LCD inside/outside. The 250 mm is not Saga’s custom door sweep.",
+     "source_url": "https://help.prusa3d.com/article/original-prusa-enclosure_347479",
+     "supporting_urls": [],
+     "parameters": {
+      "enclosure_model": "Original Prusa Enclosure"
+     }
+    },
+    {
+     "id": "p2s-body",
+     "title": "Bambu Lab P2S",
+     "id_pattern": "lab\\.bambu-p2s",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "installed bare printer body",
+     "check": "body_edge_offsets",
+     "front_mm": null,
+     "back_mm": 100,
+     "side_mm": 4,
+     "reason": "Bambu specifies at least 4 mm each side and 100 mm at rear for intakes, tube and purge chute. Keep front door swing, rear discharge, cables and service reachable; those are additional measured spaces.",
+     "source_url": "https://wiki.bambulab.com/en/p2s/manual/p2s-faq",
+     "supporting_urls": [],
+     "parameters": {}
+    },
+    {
+     "id": "p2s-ams",
+     "title": "P2S with top-mounted AMS 2 Pro",
+     "id_pattern": "lab\\.bambu-p2s",
+     "authority": "Saga brief",
+     "status": "mandatory",
+     "applies_when": "AMS 2 Pro installed on top",
+     "check": "clear_height_from_deck",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "The architects’ schedule asks for ≥800 mm total clear height from supporting surface for a top AMS. Also verify open lid and maintenance reach on the real assembly. Do not apply to a bare P2S.",
+     "source_url": "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
+     "supporting_urls": [
+      "https://wiki.bambulab.com/en/p2s/manual/p2s-faq"
+     ],
+     "parameters": {
+      "min_install_height_mm": 800
+     }
+    },
+    {
+     "id": "srm-box",
+     "title": "Roland monoFab SRM-20",
+     "id_pattern": "lab\\.roland-srm20-[0-9]+",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "each installed/operating mill",
+     "check": "nested_rectangles",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "Roland §2.2 depicts a 500 × 500 mm installation square within a 1000 × 1000 mm working square; support ≥600 mm above floor. Preserve both rectangles; the figure does not dimension per-edge offsets from the casing. Confirm full cover opening and cleaning/tool change. Saga separately requests 600 × 600 mm support plus computer.",
+     "source_url": "https://startup.rolanddg.com/monoFab/SRM-20/SRM-20_EN/sp-srm_spc_on_en.html",
+     "supporting_urls": [
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf"
+     ],
+     "parameters": {
+      "install_xy_mm": [
+       500,
+       500
+      ],
+      "work_xy_mm": [
+       1000,
+       1000
+      ],
+      "min_support_z_mm": 600,
+      "project_support_xy_mm": [
+       600,
+       600
+      ]
+     }
+    },
+    {
+     "id": "gs-box",
+     "title": "Roland CAMM-1 GS-24",
+     "id_pattern": "lab\\.roland-vinylcutter-[0-9]+",
+     "authority": "manufacturer",
+     "status": "mandatory",
+     "applies_when": "cutting location; parked location is not operating clearance",
+     "check": "nested_rectangles_and_stock_sweep",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "E-13: 1000 × 1000 mm main unit space within 2000 × 2000 mm work space; install ≥600 mm above floor. No obstacles at front or rear: stock travels. Draw the longest planned media path even if it exceeds the working square. Mark a distinct operating position for a wheeled stand.",
+     "source_url": "https://downloadcenter.rolanddg.com/contents/manuals/GS-24_INS_EN_R3.pdf",
+     "supporting_urls": [
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
+     ],
+     "parameters": {
+      "install_xy_mm": [
+       1000,
+       1000
+      ],
+      "work_xy_mm": [
+       2000,
+       2000
+      ],
+      "min_support_z_mm": 600,
+      "axis": "front_back"
+     }
+    },
+    {
+     "id": "solder-capture",
+     "title": "Soldering stations on microelectronics bench",
+     "id_pattern": "lab\\.microbench",
+     "authority": "Icelandic regulation",
+     "status": "mandatory",
+     "applies_when": "three solder stations grouped in the host; evaluate each active iron",
+     "check": "local_capture_and_operator_zone",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "Locate extraction at each source, maintain it, and verify capture at the working point without the plume crossing the face. HSE warns bench boxes have limited use without HEPA; a modelled fan or HEPA label does not prove capture of all contaminants. Reserve hood movement, operator and filter change; no universal mm setback verified.",
+     "source_url": "https://assets.ctfassets.net/8k0h54kbe6bj/7os5BHEkKYN0RG4gmZaQgE/4793b0c959a9cc285802ef9cc393933b/581_1995.pdf",
+     "supporting_urls": [
+      "https://www.hse.gov.uk/asthma/solderers.htm",
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
+     ],
+     "parameters": {
+      "assess_each_station": true
+     }
+    },
+    {
+     "id": "sewing-space",
+     "title": "Sewing, embroidery and overlock",
+     "id_pattern": "lab\\.(?:brother-sewing|brother-embroidery|overlock)",
+     "authority": "workshop guidance",
+     "status": "recommended",
+     "applies_when": "each occupied sewing position with actual machine and attachments",
+     "check": "occupant_and_material_sweep",
+     "front_mm": null,
+     "back_mm": null,
+     "side_mm": null,
+     "reason": "Reserve chair travel, pedal, fabric and moving embroidery hoop; keep leads off walking routes and separate hot presses. HSE requires attention to lighting, guards and posture. Saga machines are stand-ins, so obtain real manuals and measure moving envelopes before setting offsets.",
+     "source_url": "https://www.hse.gov.uk/textiles/machinery/sewing-machines.htm",
+     "supporting_urls": [
+      "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md",
+      "https://science.cleapss.org.uk/Resource/Building-Bulletin-81-Design-Technology.pdf",
+      "https://download.brother.com/welcome/doch102511/888_k80_l80_l82_om01en.pdf"
+     ],
+     "parameters": {}
+    }
+   ],
+   "provenance": {
+    "source": "MPTVPC saga-research/rules/rules.yaml (clearance research, proposal)",
+    "received": "2026-11-25",
+    "sha256": "3fb734ef89df347f974f7f3e509eb34e29607e10f14cc881e2fe3ca7a979a845",
+    "report": "Saga-clearance-and-layout.pdf (MPTVPC)"
+   },
+   "overrides": [
+    {
+     "rule": "cnc-brief",
+     "status": "advisory",
+     "date": "2026-11-25",
+     "by": "Magnús",
+     "quote": "We accept a reduced clearance for the shopbot.",
+     "note": "CNC room keeps its size (3.34 m across); the brief's 1 m all round the ShopBot is reported, not a violation."
+    }
+   ]
+  }
  },
- "source_commit": "7f9f11a"
+ "source_commit": "a0df44c"
 }

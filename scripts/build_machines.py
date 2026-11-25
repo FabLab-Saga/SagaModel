@@ -506,7 +506,9 @@ def cricut(w=0.60, d=0.179, h=0.158, body=None):
     return p
 
 
-def overlock(w=0.33, d=0.28, h=0.29):
+def overlock(w=0.335, d=0.282, h=0.296):
+    """Overlocker, identified 2026-11-25 as Brother Lock M343D (schedule photo; body 335 x 282 x 296 per the Brother
+    manual p. 34). Still a simple body + thread cones: remodel from photos when it matters in a shot."""
     p = Part()
     p.box(M["white"], 0, w, 0, d, 0, h * 0.7, bevel=0.03)
     for i, x in enumerate((0.08, 0.13, 0.18, 0.23)):                                            # thread cones

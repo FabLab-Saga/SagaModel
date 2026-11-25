@@ -23,6 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 import layout_io  # noqa: E402
+import layout_clearance  # noqa: E402
 
 YAML = os.path.join(ROOT, "layout", "layout.yaml")
 ROOM = os.path.join(ROOT, "layout", "room.json")
@@ -289,7 +290,16 @@ def text_report(res):
     for r in res["removed"]:
         lines.append(f"  {r} removed")
     for v in res["violations"]:
-        lines.append(f"  ! {v['rule']}: {', '.join(v['items'])} ({v['value']})")
+        need = f" < {v['need']}" if v.get("need") else (" m overlap" if "need" in v else "")
+        what = f" {v['what']}" if v.get("what") else ""
+        lines.append(f"  ! {v['rule']}: {', '.join(v['items'])}{what} ({v['value']}{need})")
+    for v in res.get("advisory", []):
+        lines.append(f"  ~ advisory {v['rule']}: {', '.join(v['items'])} {v.get('what', '')} ({v['value']} < {v['need']})"
+                     + (f" [{v['decision']}]" if v.get("decision") else ""))
+    if res.get("review"):
+        lines.append(f"  review notes ({len(res['review'])}): " + "; ".join(
+            r["rule"] + (f" [{', '.join(r['items'][:3])}{'...' if len(r['items']) > 3 else ''}]" if r["items"] else "")
+            for r in res["review"]))
     return "\n".join(lines)
 
 
@@ -300,6 +310,7 @@ def main():
     g.add_argument("--blend"); g.add_argument("--yaml"); g.add_argument("--ref")
     g.add_argument("--live", action="store_true"); g.add_argument("--worktree", action="store_true")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--audit", action="store_true", help="also run the clearance policy over ALL items, not only moved ones")
     ap.add_argument("--write", action="store_true", help="write target poses into layout/layout.yaml")
     a = ap.parse_args()
     base = layout_io.loads(git_show(a.base))
@@ -314,6 +325,9 @@ def main():
     else:
         target, tname = layout_io.load(YAML), "working tree"
     room = json.load(open(ROOM))
+    cp = os.path.join(ROOT, "layout", "clearance_policy.json")
+    if "clearance_policy" not in room.get("rules", {}) and os.path.exists(cp):
+        room["rules"]["clearance_policy"] = json.load(open(cp))     # until the next layout_export run merges it
     moves, added, removed = diff(base, target)
     zone_of = lambda p: next((z["id"] for z in room["zones"] if in_poly(p, z["polygon"])), None)
     T = {it["id"]: it for it in target["items"]}
@@ -325,6 +339,11 @@ def main():
             m["with"] = host                                  # carried by its parent (Blender parenting / planner)
     res = {"base": git_sha(a.base), "target": tname, "moves": moves, "added": added, "removed": removed,
            "violations": rules(base, target, room, moves, added)}
+    changed = {m["id"] for m in moves} | {x["id"] for x in added}
+    cl = layout_clearance.audit(target["items"], room, None if a.audit else changed)
+    res["violations"] += cl["violations"]
+    res["advisory"] = cl["advisory"]
+    res["review"] = cl["review"] if a.audit else []
     if a.write:
         cur = layout_io.load(YAML)
         hdr = open(YAML).read().split("version:", 1)[0]

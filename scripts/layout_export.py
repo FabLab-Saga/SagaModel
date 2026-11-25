@@ -334,6 +334,12 @@ def split_columns(segs):
     return [s for i, s in enumerate(segs) if i not in drop], cols
 
 
+def clearance_policy():
+    """Merged, never generated: layout/clearance_policy.json (research proposal + Magnús's overrides)."""
+    p = os.path.join(OUT, "clearance_policy.json")
+    return {"clearance_policy": json.load(open(p, encoding="utf-8"))} if os.path.exists(p) else {}
+
+
 def room_json(items):
     item_objs = set()
     for it in items:
@@ -393,7 +399,7 @@ def room_json(items):
         "walls": walls, "doors": doors, "columns": columns,
         "zones": [{"id": z, "label": lbl, "polygon": [list(p) for p in poly], "source": src} for z, lbl, poly, src in ZONES],
         "keepout": keepout, "services": SERVICES,
-        "rules": {"walkway_min": 1.2, "aisle_laser_min": 1.0, "door_clear": 0.9},
+        "rules": dict({"walkway_min": 1.2, "aisle_laser_min": 1.0, "door_clear": 0.9}, **clearance_policy()),
         "source_commit": sha,
     }
 
