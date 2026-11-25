@@ -11,3 +11,7 @@ renders/walk/
 renders/walk_flat/
 renders/walk_wb/
 renders/video_titles/
+# Film deliverables and drafts (100+ MB each; kept on disk and in the restic backup of ~/Documents, not in git)
+renders/*.mp4
+renders/FabLabSAGA_thumbnail_*.png
+renders/slides/

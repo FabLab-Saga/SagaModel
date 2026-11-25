@@ -39,7 +39,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Colleague SketchUp objects: builders hide what they replace; `purge_hidden.py` then DELETES every render-hidden
   object (keeps the façade boolean cutters + per-camera ground, and any datablock a builder looks up by name, e.g.
   the `Profile_2020/4040` template meshes). Never delete a template mesh profile_furniture needs.
-- Push after each commit (remote: github.com/MagnusPetursson/SagaModel, private).
+- Push after each commit (remote: github.com/FabLab-Saga/SagaModel, PUBLIC since Magnús moved it to the FabLab-Saga org
+  on 2026-11-25; the web repo stays MagnusPetursson/SagaModel-web).
 - Everything scripted and re-runnable; commit after each step (attribution lines per system prompt).
 - **Licensing:** only CC0 (Poly Haven) or the Fab Lab's own material in renders; record every new asset
   in `LICENSES.md` and `assets/polyhaven/CREDITS.md`. The user asked for this to be triple-checked.

@@ -27,8 +27,8 @@
    "check": "connected_clear_width",
    "reason": "Protect a continuous route in the occupied layout. Use the laser default only for its dedicated aisle; a classified corridor or escape route can demand more. Do not reject all furniture-to-wall gaps.",
    "source_urls": [
-    "https://github.com/MagnusPetursson/SagaModel/blob/7f9f11a64ab4db800d64b80c70828b81ca6bd61c/layout/README.md",
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
+    "https://github.com/FabLab-Saga/SagaModel/blob/7f9f11a64ab4db800d64b80c70828b81ca6bd61c/layout/README.md",
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
    ],
    "parameters": {
     "ordinary_m": 1.2,
@@ -44,8 +44,8 @@
    "check": "polygon_intrusion",
    "reason": "Keep equipment, waiting positions, chairs and stored material outside the polygons. Both laser doors must remain usable. The 900 mm scalar is strip depth perpendicular to a doorway, not clear opening width or a complete access landing.",
    "source_urls": [
-    "https://github.com/MagnusPetursson/SagaModel/blob/7f9f11a64ab4db800d64b80c70828b81ca6bd61c/layout/README.md",
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
+    "https://github.com/FabLab-Saga/SagaModel/blob/7f9f11a64ab4db800d64b80c70828b81ca6bd61c/layout/README.md",
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
    ],
    "parameters": {
     "strip_depth_m": 0.9
@@ -294,10 +294,10 @@
    "back_mm": 1000,
    "side_mm": 1000,
    "reason": "The architects’ equipment schedule asks for at least 1 m on all sides for handling and service. Use full body, not cutting bed, and exclude overhead boom from floor footprint. Also draw the actual load-in and stock sweep. A change needs a revised brief.",
-   "source_url": "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
+   "source_url": "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
    "supporting_urls": [
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md",
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md",
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
    ],
    "parameters": {}
   },
@@ -338,7 +338,7 @@
    "source_url": "https://www.epiloglaser.com/assets/downloads/manuals/fusionedge-manual-web.pdf",
    "supporting_urls": [
     "https://support.epiloglaser.com/laser-machine/fusion-pro/usage-and-operation/system-requirements-setup/laser-exhaust-requirements/",
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf"
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf"
    ],
    "parameters": {
     "outdoor_exhaust_guidance_m3h": [
@@ -432,7 +432,7 @@
    "back_mm": null,
    "side_mm": null,
    "reason": "Schedule provides 700 × 500 mm of bench space and an 80 mm exhaust connection. Verify against the actual unit. Allow the shield to lift and controls and emergency stop to be reached; keep exhaust clear. If a conveyor is fitted, draw its full feed and outfeed separately. No fixed OEM side clearances verified.",
-   "source_url": "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
+   "source_url": "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
    "supporting_urls": [
     "https://support.xtool.com/article/1366",
     "https://support.xtool.com/article/3299"
@@ -457,9 +457,9 @@
    "back_mm": 100,
    "side_mm": null,
    "reason": "The schedule calls for 100–150 mm above and behind for cooling/service. Screen at the lower edge (100 mm); aim for 150 mm. Check bed, rear cable and spool at full travel. Measure door sweep from its own hinge, and test cabinet temperatures and emissions at class duty.",
-   "source_url": "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
+   "source_url": "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
    "supporting_urls": [
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/CLAUDE.md"
    ],
    "parameters": {
     "top_mm": 100,
@@ -513,7 +513,7 @@
    "back_mm": null,
    "side_mm": null,
    "reason": "The architects’ schedule asks for ≥800 mm total clear height from supporting surface for a top AMS. Also verify open lid and maintenance reach on the real assembly. Do not apply to a bare P2S.",
-   "source_url": "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
+   "source_url": "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf",
    "supporting_urls": [
     "https://wiki.bambulab.com/en/p2s/manual/p2s-faq"
    ],
@@ -535,7 +535,7 @@
    "reason": "Roland §2.2 depicts a 500 × 500 mm installation square within a 1000 × 1000 mm working square; support ≥600 mm above floor. Preserve both rectangles; the figure does not dimension per-edge offsets from the casing. Confirm full cover opening and cleaning/tool change. Saga separately requests 600 × 600 mm support plus computer.",
    "source_url": "https://startup.rolanddg.com/monoFab/SRM-20/SRM-20_EN/sp-srm_spc_on_en.html",
    "supporting_urls": [
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf"
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/refs/equipment/T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur%20%C3%AD%20mixt%C3%BAru%20og%20FabLabVON%20-%20T%C3%A6ki%20og%20b%C3%BAna%C3%B0ur.pdf"
    ],
    "parameters": {
     "install_xy_mm": [
@@ -567,7 +567,7 @@
    "reason": "E-13: 1000 × 1000 mm main unit space within 2000 × 2000 mm work space; install ≥600 mm above floor. No obstacles at front or rear: stock travels. Draw the longest planned media path even if it exceeds the working square. Mark a distinct operating position for a wheeled stand.",
    "source_url": "https://downloadcenter.rolanddg.com/contents/manuals/GS-24_INS_EN_R3.pdf",
    "supporting_urls": [
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
    ],
    "parameters": {
     "install_xy_mm": [
@@ -597,7 +597,7 @@
    "source_url": "https://assets.ctfassets.net/8k0h54kbe6bj/7os5BHEkKYN0RG4gmZaQgE/4793b0c959a9cc285802ef9cc393933b/581_1995.pdf",
    "supporting_urls": [
     "https://www.hse.gov.uk/asthma/solderers.htm",
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md"
    ],
    "parameters": {
     "assess_each_station": true
@@ -617,7 +617,7 @@
    "reason": "Reserve chair travel, pedal, fabric and moving embroidery hoop; keep leads off walking routes and separate hot presses. HSE requires attention to lighting, guards and posture. Saga machines are stand-ins, so obtain real manuals and measure moving envelopes before setting offsets.",
    "source_url": "https://www.hse.gov.uk/textiles/machinery/sewing-machines.htm",
    "supporting_urls": [
-    "https://github.com/MagnusPetursson/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md",
+    "https://github.com/FabLab-Saga/SagaModel/blob/878b612d7edfad3bc5d6c0ebdc61a705a4fbc544/MACHINES.md",
     "https://science.cleapss.org.uk/Resource/Building-Bulletin-81-Design-Technology.pdf",
     "https://download.brother.com/welcome/doch102511/888_k80_l80_l82_om01en.pdf"
    ],
