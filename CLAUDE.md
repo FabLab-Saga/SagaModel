@@ -40,7 +40,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   object (keeps the façade boolean cutters + per-camera ground, and any datablock a builder looks up by name, e.g.
   the `Profile_2020/4040` template meshes). Never delete a template mesh profile_furniture needs.
 - Push after each commit (remote: github.com/FabLab-Saga/SagaModel, PUBLIC since Magnús moved it to the FabLab-Saga org
-  on 2026-11-25; the web repo stays MagnusPetursson/SagaModel-web).
+  on 2026-11-25, public on purpose so it can be forked; the web repo stays MagnusPetursson/SagaModel-web).
 - Everything scripted and re-runnable; commit after each step (attribution lines per system prompt).
 - **Licensing:** only CC0 (Poly Haven) or the Fab Lab's own material in renders; record every new asset
   in `LICENSES.md` and `assets/polyhaven/CREDITS.md`. The user asked for this to be triple-checked.
@@ -282,11 +282,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 
 ## Open items
 - On-site 360° photo for the window view → `refs/skybox/` (current HDRI is a CC0 stand-in).
-- Colleague to confirm CNC model (list: PRS Alpha 120-60, modelled at its real 3.66 x 2.31 m; his model had a 96-60 =
-  3.05 x 2.31 m; one line in build_machines.py if it is the 96-60).
+- CNC model settled (Magnús 2026-11-25): PRS Alpha 120-60 as modelled, stock 3 x 1.5 m, reduced clearance accepted.
 - Stairwell (Magnús 2026-11-25): the windowless box x 29.2–34.3, y 12.8–16.1 at the ShopBot end is its exterior; no
   door from the lab; interior not modelled. The room behind the staff room is electrical/storage.
-- Glass manifestation dots restart per pane (done 2026-11-25).
 - Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which
   re-letters them with Magnús's names (GEISLASKERI, ÞRÍVÍDDARPRENTARI, FRÆSIVÉL, RAFEINDAVERKSTÆÐI, TEXTÍLSVÆÐI,
   VERKFÆRI; VÍNYLSKERI kept). Source PDFs unchanged.
@@ -305,8 +303,12 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Confirmed by the lab: Epilog is 80 W; scanner is a handheld one; presses = a LOKLiK + a classic red industrial
   clam press (+ the Cricut ones); the Flashforge model doesn't matter. Still unknown (stand-ins in the model): clay
   printer (Eazao Zero; lab unsure), handheld scanner model, red press model, LOKLiK model, Brother sewing/embroidery,
-  overlocker, EasyPress generation. Vinyl cutters are both Roland CAMM-1 GS-24 (confirmed).
-- Prusa count: 7 now; list says 5, its power notes 10, "probably 15 printers in total".
+  overlocker, EasyPress generation. Vinyl cutters are both Roland CAMM-1 GS-24 (confirmed). Research 2026-11-25
+  (layout/TRUTH.md 5): sewing = Brother SE600, overlocker = Brother Lock M343D (verified); scanner Creality CR-Scan
+  Lizard and EasyPress 2 likely; red press + LOKLiK unidentified.
+- Prusa count: real fleet 4 MK3S + 2 MK4 (Magnús 2026-11-25); the model keeps 7 MK3S+ by his choice.
+- Door widths: Magnús recalls the escape pair at ~1.40 m and the laser-room door wide enough for the Epilog; updated
+  drawings are expected: re-check doors, stairwell and escape route against them.
 - Finals (renders/final3) are outdated; re-render when the layout settles. New/reframed cameras: Cam_StaffRoom,
   Cam_CNC, Cam_CNCRoom, Cam_LoungeLow. Non-final cameras (Counter, Craft, Interior_01, Mural, ...) were not reframed.
 - After an NVIDIA driver update the first Cycles render recompiles the OptiX kernels (~1 min); then normal again.
