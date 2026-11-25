@@ -32,6 +32,7 @@ Confirmed earlier (from CLAUDE.md, for reference): Epilog is 80 W; the scanner i
 red industrial clam press (+ the Cricut ones); the Flashforge model doesn't matter; both vinyl cutters are Roland
 CAMM-1 GS-24; the room behind the staff room is electrical + general storage, not a stairway; the corner bay
 x 32.6–34.3, y 34.7–38.3 belongs to the lab and the entrance is the EI2 30 fire door from the university hall.
+| 15 | Electronics area overhaul | 3 colleague tool walls behind the SRM-20/soldering bench (drawer cabinets, rails, meters), 3 generic soldering stations + fume extractors, scope/PSU, 3.2 m teaching table + 6 chairs, felt panels fixed to the tool walls' backs ending ~5 cm from the column at (27.61, 30.16) | Remove the permanent tool wall near the soldering stations; one permanent good soldering station, other soldering tools in cabinets/boxes nearby; lock down all multimeters; felt divider movable and not up against the pillar (2026-11-25 ~18:05). Then: "The central table isn't inherently bad... I say we keep that one. We have a Weller station. 6 seats. The idea being we can combine that table with the one in the main room to accommodate larger classes. Let's use a Weller and one of those chinese desoldering stations. AliExpress special. Scope and bench locked in at closing." (2026-11-25 ~18:15 UTC, Talos CLI) | decided except the divider form; to build |
 
 ## To measure on site (Magnús, while construction is on)
 
