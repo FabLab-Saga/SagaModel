@@ -529,42 +529,14 @@ def build():
     for i, sx in enumerate((21.95, 22.55)):                          # the only machines here: 2x Roland SRM-20
         on_bench(mach["srm20"](), f"Roland_SRM20_{i + 1}", sx, by + 0.03, 0.451, 0.426)
     # Soldering (Magnús 2026-11-25): ONE permanent good station (a Weller) + a Chinese desoldering station on the
-    # bench; every other soldering tool, the meters and the scope/PSU live in the lockable hutch on the bench's back
-    # edge (acrylic doors, electronic locks), open during sessions, locked at closing. Hutch and layout are mine.
+    # bench; nothing is stored on or above the bench's back edge (the tool walls there go). Spare soldering tools,
+    # meters and the scope/PSU get lockable storage NEAR the bench (location pending Magnús); until then the
+    # scope/PSU stand on the bench.
     on_bench(weller_we1010(m), "Solder_Weller", 23.40, by + 0.04, 0.245, 0.16)
     on_bench(fume_extractor(m), "Fume_0", 23.72, by + 0.04, 0.20, 0.08)
     on_bench(zd915(m), "Desolder_ZD915", 24.06, by + 0.03, 0.13, 0.225)
     on_bench(magnifier_lamp(m), "Magnifier", 24.45, by + 0.02, 0.06, 0.06)
-    HX0, HX1, HD, HZ0, HZ1 = 23.25, X1 - 0.06, 0.30, top + 0.40, top + 0.86
-    scope_and_psu(m).emit("ScopePSU", col, Vector((26.40 + 0.56, by + 0.04 + 0.25, HZ0 + 0.018)), math.pi)
-    hutch, hd = Part(), Part()
-    ply = MAT["ply"]
-    for x in (HX0, (HX0 + HX1) / 2 - 0.01, HX1 - 0.02):
-        for y in (by, by + HD - 0.02):
-            hutch.profile(0.02, "z", x, y, top, HZ1 - top)                         # posts down to the bench top
-    hutch.box(ply, HX0, HX1, by, by + HD, HZ0, HZ0 + 0.018, bevel=0.0015)          # floor shelf
-    hutch.box(ply, HX0, HX1, by, by + HD, HZ1, HZ1 + 0.018, bevel=0.0015)          # top
-    hutch.box(ply, HX0, HX1, by, by + 0.012, HZ0, HZ1)                             # back
-    ld = {}
-    exec(open(HERE + "lockdown.py").read(), ld)
-    acr = ld["_ld_mats"]()[0]
-    for x in (HX0 - 0.005, HX1):
-        hutch.box(acr, x, x + 0.005, by, by + HD, HZ0, HZ1)                        # acrylic ends
-    z1 = HZ0 + 0.018
-    toolbox(hutch, m, m["red"], 23.45, by + 0.04, z1, w=0.38, d=0.24, h=0.13)      # hot-air rework station case
-    toolbox(hutch, m, m["blue"], 23.90, by + 0.04, z1, w=0.36, d=0.22, h=0.11)     # spare irons + tips
-    toolbox(hutch, m, m["grey"], 24.32, by + 0.04, z1, w=0.34, d=0.22, h=0.09)     # solder, wick, flux, pumps
-    for i in range(4):                                                             # multimeters standing on edge
-        x = 24.80 + i * 0.12
-        hutch.box(m["yellow"], x, x + 0.09, by + 0.20, by + 0.245, z1, z1 + 0.18, bevel=0.006)
-        hutch.box(m["screen"], x + 0.015, x + 0.075, by + 0.245, by + 0.246, z1 + 0.11, z1 + 0.16)
-    toolbox(hutch, m, m["black"], 25.32, by + 0.04, z1, w=0.40, d=0.24, h=0.12)    # probes, leads, logic analyser
-    toolbox(hutch, m, m["blue"], 25.78, by + 0.04, z1, w=0.34, d=0.22, h=0.10)     # spare fume-extractor filters
-    ld["door_run"](hd, "+y", by + HD, HX0, HX1, HZ0 + 0.004, HZ1 - 0.002, leaves=6, lock_z=HZ0 + 0.23)
-    hutch.emit("ElecHutch", col, Vector((0, 0, 0)))
-    dob = hd.emit("ElecHutch_Doors", col, Vector((0, 0, 0)))
-    for o in [dob, *dob.children_recursive]:
-        o["layout_skip"] = True
+    on_bench(scope_and_psu(m), "ScopePSU", 26.56, by + 0.04, 0.56, 0.25)
     anchors = Part()                                                               # SRM-20 anchor cleats
     for sx in (21.95, 22.55):
         for ux, sgn in ((sx, -1), (sx + 0.451, 1)):
