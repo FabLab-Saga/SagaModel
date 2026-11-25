@@ -210,7 +210,11 @@ def glass_toolwall(m, col):
     """Along the NNE glass (x ~20.85, y 24.06-26.46; starts >= 1.0 m past the CNC-room door at y 23.04): profile frame with a work counter (0.90 m),
     under-counter drawer cabinets + toolbox, and above: perforated pegboard with hung tools,
     an open shelf with bins and a small-parts cabinet, a clamp rack, a cable reel - varied, not a
-    plain shelf. Faces +x (into the room)."""
+    plain shelf. Faces +x (into the room).
+    Lock-down (2026-11-25, my design; Magnús: acrylic doors, electronic locks): the whole upper zone (pegboard + shelf
+    block) is a 0.32 m deep cabinet behind four clear acrylic doors (two pairs, an electronic cabinet lock on each
+    pair), acrylic ends and a birch top; the under-counter zone (drawer cabinets, tool chest) is closed by four more
+    acrylic doors on the counter front. Only the bolted vice, a parts tray and the cable reel stay on the counter."""
     Y0, Y1, XB = 24.06, 26.46, 20.88                                   # XB = back (glass side); door clearance 1.02 m
     L = Y1 - Y0
     D, H, TOP = 0.65, 0.90, 2.25
@@ -319,16 +323,34 @@ def glass_toolwall(m, col):
     chest.emit("GlassTW_ToolChest", col, Vector((XB + 0.58, Y1 - 0.75, 0.0)), math.pi / 2)
     # on the counter: a vice, a cordless driver case, a parts tray, a cable reel
     on = Part()
-    on.box(m["grey"], XB + 0.35, XB + 0.55, Y0 + 2.07, Y0 + 2.22, H, H + 0.06, bevel=0.005)          # vice body
-    on.box(m["steel"], XB + 0.53, XB + 0.56, Y0 + 2.05, Y0 + 2.24, H + 0.03, H + 0.11, bevel=0.003)
-    on.cyl(m["steel"], (XB + 0.56, Y0 + 2.145, H + 0.05), (XB + 0.68, Y0 + 2.145, H + 0.05), 0.008, seg=10)
-    toolbox(on, m, m["blue"], XB + 0.12, Y0 + 1.25, H, w=0.40, d=0.32, h=0.10)
-    on.box(m["grey"], XB + 0.15, XB + 0.40, Y0 + 0.40, Y0 + 0.62, H, H + 0.03, bevel=0.003)
-    on.cyl(m["yellow"], (XB + 0.45, Y0 + 0.87, H + 0.085), (XB + 0.45, Y0 + 0.97, H + 0.085), 0.085, seg=32)   # cable reel
-    on.cyl(m["black"], (XB + 0.45, Y0 + 0.865, H + 0.085), (XB + 0.45, Y0 + 0.975, H + 0.085), 0.035, seg=24)
+    dv = 0.07                                                                          # in front of the cabinet doors
+    on.box(m["grey"], XB + 0.35 + dv, XB + 0.55 + dv, Y0 + 2.07, Y0 + 2.22, H, H + 0.06, bevel=0.005)          # vice body
+    on.box(m["steel"], XB + 0.53 + dv, XB + 0.56 + dv, Y0 + 2.05, Y0 + 2.24, H + 0.03, H + 0.11, bevel=0.003)
+    on.cyl(m["steel"], (XB + 0.56 + dv, Y0 + 2.145, H + 0.05), (XB + 0.68, Y0 + 2.145, H + 0.05), 0.008, seg=10)  # handle past the edge (as before)
+    on.box(m["grey"], XB + 0.40, XB + 0.62, Y0 + 0.40, Y0 + 0.62, H, H + 0.03, bevel=0.003)                   # parts tray
+    on.cyl(m["yellow"], (XB + 0.50, Y0 + 0.87, H + 0.085), (XB + 0.50, Y0 + 0.97, H + 0.085), 0.085, seg=32)   # cable reel
+    on.cyl(m["black"], (XB + 0.50, Y0 + 0.865, H + 0.085), (XB + 0.50, Y0 + 0.975, H + 0.085), 0.035, seg=24)
     on.emit("GlassTW_Counter", col, Vector((0, 0, 0)))
     # a stool at the counter
     craft["stool"](0.68).emit("GlassTW_Stool", col, Vector((XB + D + 0.10, Y0 + 1.6, 0.0)), 0.2)
+    # lock-down enclosures
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    acr = ld["_ld_mats"]()[0]
+    FX = PX + 0.32                                                     # upper cabinet door plane
+    for y in (Y0 + 0.02, Y0 + L / 2 - 0.01, Y1 - 0.04):
+        prof(0.02, "z", FX - 0.02, y, H, TOP - H)                      # front posts (doors close on them)
+    prof(0.02, "y", FX - 0.02, Y0 + 0.02, TOP - 0.02, L - 0.04)        # front top rail
+    p.box(ply, XB, FX, Y0, Y1, TOP, TOP + 0.018, bevel=0.002)          # cabinet top
+    for y in (Y0, Y1 - 0.005):
+        p.box(acr, XB + 0.04, FX, y, y + 0.005, H, TOP)                # acrylic ends
+    doors = Part()
+    ld["door_run"](doors, "+x", FX, Y0 + 0.02, Y1 - 0.02, H + 0.006, TOP - 0.004, leaves=4, lock_z=1.45)
+    ux = XB + D                                                        # under-counter door plane (counter front)
+    ld["door_run"](doors, "+x", ux, Y0 + 0.02, Y1 - 0.02, 0.05, H - 0.035, leaves=4, lock_z=0.70)
+    dobj = doors.emit("GlassTW_Doors", col, Vector((0, 0, 0)))
+    for o in [dobj, *dobj.children_recursive]:
+        o["layout_skip"] = True                                        # doors don't count in the footprint
     p.emit("GlassToolWall_Frame", col, Vector((0, 0, 0)))
 
 

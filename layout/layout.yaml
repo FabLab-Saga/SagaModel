@@ -701,7 +701,7 @@ items:
     rot: 0
     size: [0.69, 2.404, 2.25]
     locked: false
-    objects: [GlassToolWall_Frame, GlassTW_Bin_0, GlassTW_PartsCab, GlassTW_Toolbox_top, GlassTW_Tools, GlassTW_UnderCab_0, GlassTW_UnderCab_1, GlassTW_Counter]
+    objects: [GlassToolWall_Frame, GlassTW_Bin_0, GlassTW_PartsCab, GlassTW_Toolbox_top, GlassTW_Tools, GlassTW_UnderCab_0, GlassTW_UnderCab_1, GlassTW_Counter, GlassTW_Doors]
 
   - id: lab.glasstw-stool
     label: GlassTW Stool
