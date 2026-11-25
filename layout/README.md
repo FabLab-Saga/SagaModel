@@ -71,7 +71,7 @@ Generated; regenerate with `blender -b SagaV2_work.blend --python scripts/layout
   outlets are not modelled.
 - `rules`: `walkway_min` 1.2, `aisle_laser_min` 1.0, `door_clear` 0.9 (m).
 
-## Snapshot (`scripts/layout_snapshot.py`, landing on main with P1)
+## Snapshot (`scripts/layout_snapshot.py`)
 
 Compares a TARGET against the BASE layout (default base = `layout.yaml` at git HEAD):
 
@@ -91,6 +91,19 @@ JSON: `{"base", "target", "moves": [{id, from: {pos, rot, z}, to: {...}, dist, d
 Violations are checked for moved and added items only: overlap with another floor item, keepout intrusion
 (door swing / escape route), clearance under `walkway_min` (`aisle_laser_min` in the laser room) to a neighbour or wall, item outside its zone,
 `on:` child not moved with its parent, moving a `locked` item.
+
+## Blender side
+
+- `scripts/layout_blender.py`: `apply([collection])`, `poses()`, `measure()`, `parent_items()`. Every item builder
+  ends with `apply()`. `apply()` first parents companions to their primary (same collection only) and `on:` children
+  to their host (also across builders), keeping world transforms, so dragging a bench in the GUI carries what stands
+  on it; the snapshot then reports the children as "moved with <host>".
+- Checks: `layout_check_identity.py` (apply an unchanged yaml: 0 objects change), `layout_check_rebuild.py` (re-run all
+  16 item builders, compare all 2,506 objects; 2026-11-25: 0.0 mm / 0.0 deg, every item within 0.71 mm of the yaml,
+  i.e. its mm rounding). A builder may lay out its own contents differently after its host moved (build_life
+  re-lays bench props on a rotated table); the item still lands on its yaml pose.
+- `layout_export.py` refreshes room.json and adds new builder objects to the yaml without touching existing
+  placements (`--fresh` regenerates everything; don't use it once people edit the file).
 
 ## Flow
 

@@ -95,14 +95,24 @@ COMPANION = {"Spine_Panel": "Spine_Boxes_Shelving", "ShopBot_DustBoom": "ShopBot
              "Clay_Bucket_0": "GlassBench", "Clay_Bucket_1": "GlassBench", "Lounge_Table": None}
 
 
+def known_layout_objects():
+    """Objects named in layout.yaml: after apply() parents them (companions, on: children) they are no longer
+    roots, but they are still layout objects."""
+    p = os.path.join(OUT, "layout.yaml")
+    if not os.path.exists(p):
+        return set()
+    return {n for it in layout_io.load(p)["items"] for n in (it.get("objects") or [])}
+
+
 def candidates():
+    known = known_layout_objects()
     out = []
     for cn in FURN:
         col = bpy.data.collections.get(cn)
         if not col:
             continue
         for o in col.objects:
-            if o.parent is not None or o.name in [c.name for c in out]:
+            if (o.parent is not None and o.name not in known) or o.name in [c.name for c in out]:
                 continue
             if (EXCLUDE.search(o.name) or (o.name.endswith("_Frame") and o.name not in KEEP_FRAME)):
                 continue
@@ -124,7 +134,8 @@ def obb(m, pad=0.0):
 
 def build_items(existing):
     objs = candidates()
-    meas = {o.name: measure([o]) for o in objs}
+    allnames = frozenset(o.name for o in objs)
+    meas = {o.name: measure([o], allnames - {o.name}) for o in objs}
     by_name = {o.name: o for o in objs}
     host = {}                                                         # companion -> primary
     names = [o.name for o in objs]
@@ -137,7 +148,8 @@ def build_items(existing):
         rx = [h for rgx, h in COMPANION_RE if rgx.search(n) and h in by_name]
         if rx:
             host[n] = rx[0]; continue
-        pre = [p for p in names if p != n and n.startswith(p + "_") and not MACHINE.match(n)]
+        pre = [p for p in names if p != n and n.startswith(p + "_") and not MACHINE.match(n)
+               and set(by_name[p].users_collection) == set(by_name[n].users_collection)]
         if pre:
             host[n] = max(pre, key=len); continue
     clusters = []                                                     # same origin + rotation -> one piece
@@ -147,7 +159,8 @@ def build_items(existing):
             continue
         for cl in clusters:
             q = by_name[cl[0]]
-            if (q.location.xy - o.location.xy).length < 0.005 and abs(q.rotation_euler.z - o.rotation_euler.z) < 1e-3:
+            if (q.location.xy - o.location.xy).length < 0.005 and abs(q.rotation_euler.z - o.rotation_euler.z) < 1e-3 \
+                    and set(q.users_collection) == set(o.users_collection):
                 cl.append(n); break
         else:
             clusters.append([n])
@@ -157,13 +170,14 @@ def build_items(existing):
             for x in cl:
                 if x != prim:
                     host[x] = prim
-    floor = [n for n in names if n not in host and meas[n]["z"] < FLOOR_Z]
+    floor = [n for n in names if n not in host and meas[n]["z"] < 0.3 and not MACHINE.match(n)]   # possible hosts
     on = {}
+    _ = on
     for n in names:                                                   # things standing/hanging on another item
         if n in host or meas[n]["z"] < FLOOR_Z or n in LOCKED:
             continue
         p = meas[n]["pos"]
-        hits = [f for f in floor if f != n and in_poly(p, obb(meas[f], 0.2))
+        hits = [f for f in floor if f != n and meas[f]["z"] < meas[n]["z"] and in_poly(p, obb(meas[f], 0.2))
                 and meas[f]["z"] + meas[f]["size"][2] >= meas[n]["z"] - 0.2]
         if not hits:
             continue
@@ -172,6 +186,11 @@ def build_items(existing):
             on[n] = h
         else:
             host[n] = h
+    for n in list(host):                                              # one builder per item: other collection
+        if set(by_name[n].users_collection) != set(by_name[host[n]].users_collection):
+            if meas[n]["z"] >= FLOOR_Z:
+                on[n] = host[n]                                       # stands/hangs on it: own item with on:
+            del host[n]
     for n in list(host):                                              # resolve chains
         while host[n] in host:
             host[n] = host[host[n]]
@@ -187,7 +206,7 @@ def build_items(existing):
     items = []
     ids = {}
     for prim, members in groups.items():
-        m = measure([by_name[x] for x in members])
+        m = measure([by_name[x] for x in members], allnames - set(members))
         zone = zone_of(m["pos"])
         kind = "machine" if MACHINE.match(prim) or prim in ("ShopBot_Control",) else \
             "fixture" if prim in LOCKED else "storage" if STORAGE.search(prim) else \
@@ -453,7 +472,9 @@ if existing and not FRESH:                                            # keep han
     have = {it["id"]: it for it in existing["items"]}
     for it in items:
         if it["id"] in have:
-            have[it["id"]]["size"] = it["size"]
+            old = have[it["id"]].get("size") or [0, 0, 0]
+            if any(abs(a - b) > 0.002 for a, b in zip(old, it["size"])):   # ignore float noise
+                have[it["id"]]["size"] = it["size"]
         else:
             existing["items"].append(it)
     data = existing

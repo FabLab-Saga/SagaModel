@@ -229,3 +229,8 @@ def wall_details():
 
 
 wall_details()
+
+# Placements come from layout/layout.yaml (layout/README.md): built at this builder's coordinates, then moved there.
+_lay = {}
+exec(open(bpy.path.abspath("//scripts/layout_blender.py")).read(), _lay)
+_lay["apply"]()

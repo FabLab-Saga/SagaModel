@@ -23,7 +23,7 @@ ROOT = os.environ.get("SAGA_ROOT") or bpy.path.abspath("//")
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 import layout_io  # noqa: E402
 
-LAYOUT = os.path.join(ROOT, "layout", "layout.yaml")
+LAYOUT = os.environ.get("SAGA_LAYOUT") or os.path.join(ROOT, "layout", "layout.yaml")   # override for tests
 EPS_POS, EPS_ROT = 0.0008, 0.06
 
 
@@ -47,13 +47,21 @@ def frame_of(o):
     return Matrix.Translation(m.translation) @ Matrix.Rotation(_angle(m), 4, "Z")
 
 
-def measure(objs):
-    """Pose of a group of root objects (see module doc). Returns None if nothing has geometry."""
+def _tree_excl(o, exclude):
+    yield o
+    for c in o.children:
+        if c.name not in exclude:
+            yield from _tree_excl(c, exclude)
+
+
+def measure(objs, exclude=frozenset()):
+    """Pose of a group of root objects (see module doc). Children that belong to OTHER items (`exclude`) are left
+    out, so a bench's pose doesn't include the machines parented to it. Returns None if nothing has geometry."""
     F = frame_of(objs[0])
     Fi = F.inverted()
     lo, hi = [1e9] * 3, [-1e9] * 3
     for root in objs:
-        for o in _tree(root):
+        for o in _tree_excl(root, exclude):
             if o.type not in {"MESH", "CURVE", "FONT", "SURFACE", "META"}:
                 continue
             if o.display_type in {"BOUNDS", "WIRE"} or o.hide_render:
@@ -79,12 +87,59 @@ def resolve(item):
     return [o for o in objs if o is not None]
 
 
+def _others(data):
+    """item id -> names of every other item's objects (excluded from that item's measurement)."""
+    allnames = {n for it in data["items"] for n in (it.get("objects") or [])}
+    return {it["id"]: frozenset(allnames - set(it.get("objects") or [])) for it in data["items"]}
+
+
+def _depth(it, by_id):
+    d, cur = 0, it
+    while cur.get("on") and cur["on"] in by_id and d < 8:
+        cur = by_id[cur["on"]]; d += 1
+    return d
+
+
+def parent_items(data):
+    """Parent each item's companion objects to its primary, and each `on:` child's primary to its host's primary,
+    keeping world transforms. Companions only within one collection (one builder; they have no pose of their own).
+    Then a drag in the GUI moves a bench with what stands on it. Returns the number of objects re-parented."""
+    by_id = {it["id"]: it for it in data["items"]}
+    n = 0
+    bpy.context.view_layer.update()            # objects a builder just created have stale matrix_world until this
+    def attach(child, host, same_collection=True):
+        nonlocal n
+        if child is None or host is None or child == host or child.parent is not None:
+            return
+        if same_collection and set(child.users_collection) != set(host.users_collection):
+            return
+        mw = child.matrix_world.copy()
+        child.parent = host
+        child.matrix_parent_inverse = host.matrix_world.inverted()
+        child.matrix_world = mw
+        n += 1
+    for it in data["items"]:
+        objs = resolve(it)
+        if not objs:
+            continue
+        for o in objs[1:]:
+            attach(o, objs[0])
+        h = by_id.get(it.get("on") or "")
+        if h:
+            ho = resolve(h)
+            if ho:                                  # across builders too: the child has its own yaml pose,
+                attach(objs[0], ho[0], False)       # so apply() re-places it even if a host rebuild orphans it
+    return n
+
+
 def poses(path=LAYOUT, data=None):
     data = data or load(path)
+    bpy.context.view_layer.update()
+    others = _others(data)
     out = {}
     for it in data["items"]:
         objs = resolve(it)
-        m = measure(objs) if objs else None
+        m = measure(objs, others[it["id"]]) if objs else None
         if m is None:
             out[it["id"]] = {"missing": True}
             continue
@@ -93,17 +148,23 @@ def poses(path=LAYOUT, data=None):
     return out
 
 
-def apply(collection=None, path=LAYOUT, data=None, verbose=True):
+def apply(collection=None, path=LAYOUT, data=None, verbose=True, parent=True):
     data = data or load(path)
     col = bpy.data.collections.get(collection) if collection else None
     moved, missing = [], []
-    for it in data["items"]:
+    by_id = {it["id"]: it for it in data["items"]}
+    others = _others(data)
+    bpy.context.view_layer.update()
+    if parent:
+        parent_items(data)
+        bpy.context.view_layer.update()
+    for it in sorted(data["items"], key=lambda it: _depth(it, by_id)):   # hosts before what stands on them
         objs = resolve(it)
         if not objs:
             missing.append(it["id"]); continue
         if col is not None and objs[0].name not in col.all_objects:
             continue
-        cur = measure(objs)
+        cur = measure(objs, others[it["id"]])
         if cur is None:
             continue
         tx, ty = it["pos"]
@@ -116,7 +177,10 @@ def apply(collection=None, path=LAYOUT, data=None, verbose=True):
         D = Matrix.Translation(Vector((tx, ty, tz))) @ Matrix.Rotation(math.radians(d_rot), 4, "Z") \
             @ Matrix.Translation(-a)
         for o in objs:
+            if o.parent is not None and o.parent.name in it["objects"]:
+                continue                                            # follows its (moved) parent
             o.matrix_world = D @ o.matrix_world
+        bpy.context.view_layer.update()
         moved.append((it["id"], round(dp, 3), round(d_rot, 1)))
     if verbose:
         print("layout: %d item(s) moved%s%s" % (len(moved), (": " + ", ".join(m[0] for m in moved[:12])) if moved else "",

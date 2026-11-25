@@ -91,6 +91,22 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   tables, print farm, craft corner): don't judge the current model from them; render fresh reviews.
   `renders/final2/` — older set (pre-G1, CPU 32 spp). `renders/tmp/` — scratch previews.
 
+## Layout system (since 2026-11-25; details in layout/README.md)
+- `layout/layout.yaml` is the ONLY source of item positions (137 items: machines, furniture, storage, fixtures). Every
+  item builder ends with `apply()` (scripts/layout_blender.py): it builds at its own coordinates, then each item is
+  moved so its measured footprint centre/rotation equals the yaml. Change positions in the yaml (or drag in Blender
+  and snapshot), never by editing builder coordinates. An unchanged yaml is a no-op: `layout_check_identity.py`
+  (0 objects changed) and `layout_check_rebuild.py` (all 16 item builders re-run: 0.0 mm / 0.0 deg) prove it.
+- Companion objects (drawers, boxes, props of one builder) are parented to their item's primary, and `on:` children
+  (machines on benches, props on tables) to their host, so a GUI drag of a bench carries what stands on it.
+- `scripts/layout_snapshot.py`: moves + rule notes (overlap, keep-outs, walkways, zone, child left behind, locked)
+  of live Blender / a .blend / another yaml against git; `--write` accepts the moves into the yaml.
+- `layout/room.json` (walls, doors with swing, columns, zones, keep-outs, services, rules) comes from
+  `scripts/layout_export.py`; the 2D planner on MPTVPC reads it and commits drafts to branch `layout/drafts`.
+  Read `main..layout/drafts`, post the intent read-back to Magnús, polish, merge to main.
+- `layout/TRUTH.md`: Magnús's answers on what the real lab is (verbatim, dated); open items stay open.
+- MPDESKTOP is the only writer of the .blend. Publishing the public web preview is release-only (tag `web-vN`).
+
 ## Geometry & site facts (verified)
 - Model units metres. Frame: **+Y = ESE (bearing 116°), −Y = WNW, +X = SSW (sunny façade, 206°),
   −X = NNE.** Never say north/south for plan up/down. Viewer facing −Y has +X on their LEFT.
