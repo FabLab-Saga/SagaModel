@@ -227,10 +227,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Felt wall**: Flöff-style recycled-textile felt panels (manual orange/green/blue) on the WNW (bench)
   side of the tool walls; arched tops on the manual's 6x6 grid. NEVER a single raised rounded peak
   between lower shoulders.
-- **Work tables** (`build_worktables.py`, collection WorkTables): 2x2 grid of 1.8x0.9x0.75 m profile tables (centres
-  x 23.50/26.80, y 24.75/27.45), 4 profile chairs each (16), no low shelf (chairs tuck in); 1.5 m central aisle, 1.8 m
-  between rows, ~1 m to the glass tool wall, 1.2 m to the print farm. Props (mats, laptops, drills) by build_life.
-  The colleague's six benches + stools are gone (too dense, chairs overlapped).
+- **Work tables** (`build_worktables.py`, collection WorkTables; option 7b, Magnús 2026-11-25): FOUR 2440 x 915 tables,
+  each top one piece from a 2440 x 1220 board; the two 305 rips per standing table lie side by side as a 610 platform
+  at 0.20 m (stability + misc, NOT storage) -> 4 boards, no waste. All on locking castors. Two lines along y, two
+  tables end to end each (y 23.20-25.64 / 25.74-28.18): SITTING 0.75 m on the hand-tool-wall side (x 23.03-23.945,
+  3 chairs per long side = 12 seats, nothing under the top), STANDING 0.90 m on the print-farm side (x 26.47-27.38,
+  ~6 people each). ~1.45 m aisle between the lines, ~0.9 m to the hand-tool wall / print farm / mural cupboard,
+  ~1.0 m to the felt dividers. Target: ~16 in the main space, 20 with electronics (Magnús). Props by build_life.
 - **Cutter corner** on the NNE glass: 2 Roland vinyl cutters on rolling stands (y 26.5–28.5), Cricut Maker + Mayku
   FormBox counter (y 28.55–29.55), two IKEA BEKANT carts (birch top) against felt panel 1 with the Cricut Maker 3 and
   the HANDHELD 3D scanner kit (Revopoint POP 3 stand-in: head on mini tripod, turntable, case).
