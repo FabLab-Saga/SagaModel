@@ -147,7 +147,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   y 21.95–25.31: one 3.36 m profile wall, 5 bays x 3 rows of birch cells (decks 0.12/0.80/1.48/2.16) + open spool top.
   7 Prusa MK3S+ (user decision), EACH IN ITS OWN CABIN: birch sides/back, clear acrylic door hinged on the left post
   (bar handle, magnet catch), LED strip + power strip inside; one door shown open. Open cells: 3x Creality CR-200B
-  (top row), Bambu P2S + Flashforge AD5M Pro (bottom row; exact Flashforge model doesn't matter); 3 doored dry cells.
+  (top row), Flashforge AD5M Pro (bottom row; exact Flashforge model doesn't matter), and the Bambu P2S WITH AN AMS 2 PRO
+  on top in bay 0, which has no 0.80 deck (one 1.32 m cell; the AMS needs >= 0.80 m clear). Prusa 03 stands in the
+  bottom row's ex-dry cell (Magnús, 2026-11-25); 2 doored dry cells. Prusa object names are fixed in PRUSA_NO.
+  Real fleet: 4 MK3S + 2 MK4; the model keeps 7 MK3S+ (Magnús).
 - **CNC room** (`build_cnc_room.py`, collection CNCRoom; machine models in build_machines.py): its wall to the main
   room is FLUSH WITH THE MURAL WALL (y 21.66–21.82) and is a very tall FRAMELESS glass wall (floor to slab, butt-jointed
   panes, NO aluminium frames) with a tall standard office glass door (1.0 x 2.70, glass transom, BRUSHED aluminium
@@ -207,7 +210,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   glass closes one end, two felt poufs the open lab end -> a ring of 6 (idea = force interaction). Footprint
   x 30.39–32.40, y 30.11–33.29, pushed to the glass. No literal round sofa (user), no TV, no machines. RULE: the
   route from the entrance into the lab passes between the on-call desk corner (29.92, 33.87) and the pit: keep
-  >= 1.2 m there (now 1.21). Real furniture uses real catalogue dimensions. `Cam_LoungeLow` looks down the pit axis.
+  >= 1.2 m there (now 1.21). The pit stands in the clear zone of the SSW escape doors (y 32.4–34.3); Magnús keeps it
+  there (2026-11-25: one of several exits, sofas are easily moved; the re-layouts A/B/C were all worse). Real furniture uses real catalogue dimensions. `Cam_LoungeLow` looks down the pit axis.
   `build_sofas.py` is a no-op; the old `nook()` is unused.
 - **Entrance / on-call desk** (`build_welcome.py`, collection Welcome): the on-call desk is NOT a reception desk -
   one person's sitting desk (1.6 x 0.7, 0.75 m) with its BACK TO THE SPINE BOOKCASE at x 28.93–29.92, y 33.87–35.77,
@@ -274,7 +278,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - On-site 360° photo for the window view → `refs/skybox/` (current HDRI is a CC0 stand-in).
 - Colleague to confirm CNC model (list: PRS Alpha 120-60, modelled at its real 3.66 x 2.31 m; his model had a 96-60 =
   3.05 x 2.31 m; one line in build_machines.py if it is the 96-60).
-- Stairwell location unknown (the room behind the staff room is electrical/storage, not stairs).
+- Stairwell (Magnús 2026-11-25): the windowless box x 29.2–34.3, y 12.8–16.1 at the ShopBot end is its exterior; no
+  door from the lab; interior not modelled. The room behind the staff room is electrical/storage.
 - Glass manifestation dots restart per pane (done 2026-11-25).
 - Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which
   re-letters them with Magnús's names (GEISLASKERI, ÞRÍVÍDDARPRENTARI, FRÆSIVÉL, RAFEINDAVERKSTÆÐI, TEXTÍLSVÆÐI,

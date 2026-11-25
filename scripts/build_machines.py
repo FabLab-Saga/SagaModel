@@ -425,12 +425,38 @@ def prusa(spool):
     return p
 
 
-def bambu(w=0.392, d=0.406, h=0.478):
+def bambu(w=0.392, d=0.406, h=0.478, ams=False):
     p = Part()
     p.box(M["dark"], 0, w, 0, d, 0, h, bevel=0.01)
     p.box(M["smoke"], 0.02, w - 0.02, -0.004, 0.01, 0.06, h - 0.03, bevel=0.004)               # glass door
     p.box(M["smoke"], 0.02, w - 0.02, 0.02, d - 0.02, h, h + 0.004)                             # glass top
+    if ams:
+        ams_2_pro(p, (w - 0.372) / 2, (d - 0.280) / 2, h + 0.004)
     return p
+
+
+def ams_2_pro(p, x0, y0, z0, spools=None):
+    """Bambu Lab AMS 2 Pro, 372 x 280 x 226 mm (spec sheet), from the bambulab.com product photos: dark grey
+    tub with a smoked translucent front, four feeder units behind it, and a smoked half-round lid over four spools
+    lying side by side (axes along the width). Front at y0."""
+    W, D, Hb, R = 0.372, 0.280, 0.115, 0.111                       # Hb + R = 0.226
+    tint = _acrylic("AMS_Smoke", "#3A3430", 0.05, 0.55)
+    grey = mat("AMS_Grey", "#2B2D30", 0.45)
+    p.box(grey, x0, x0 + W, y0, y0 + D, z0, z0 + 0.012, bevel=0.004)              # foot plate
+    p.box(grey, x0, x0 + 0.018, y0, y0 + D, z0, z0 + Hb, bevel=0.005)             # side cheeks
+    p.box(grey, x0 + W - 0.018, x0 + W, y0, y0 + D, z0, z0 + Hb, bevel=0.005)
+    p.box(grey, x0 + 0.018, x0 + W - 0.018, y0 + 0.04, y0 + D, z0, z0 + Hb - 0.004)   # tub behind the front
+    p.box(tint, x0 + 0.018, x0 + W - 0.018, y0 + 0.002, y0 + 0.008, z0 + 0.012, z0 + Hb)   # smoked front
+    p.box(grey, x0 + 0.018, x0 + W - 0.018, y0, y0 + D, z0 + Hb - 0.006, z0 + Hb, bevel=0.002)  # rim
+    for k in range(4):                                                            # feeders, seen through the front
+        fx = x0 + 0.045 + k * 0.094
+        p.cyl(M["dark"], Vector((fx, y0 + 0.03, z0 + 0.012)), Vector((fx, y0 + 0.03, z0 + 0.07)), 0.022, seg=20)
+        p.box(mat("AMS_Gear", "#B36A2C", 0.5), fx - 0.008, fx + 0.008, y0 + 0.022, y0 + 0.04, z0 + 0.07, z0 + 0.09)
+    cy, cz = y0 + D / 2, z0 + Hb                                                  # half-round lid (lower half hidden)
+    p.cyl(tint, Vector((x0 + 0.02, cy, cz)), Vector((x0 + W - 0.02, cy, cz)), R, seg=48)
+    for k, fil in enumerate(spools or [M["spools"][i % len(M["spools"])] for i in (1, 4, 2, 6)]):
+        spool_part(p, fil, x0 + 0.054 + k * 0.088, cy, cz - 0.005, axis="x", r_out=0.100, width=0.064)
+    p.box(M["white"], x0 + W - 0.07, x0 + W - 0.03, y0 + 0.004, y0 + 0.012, z0 + Hb - 0.03, z0 + Hb - 0.018)  # label
 
 
 def srm20(w=0.451, d=0.426, h=0.426):

@@ -800,7 +800,7 @@ items:
     rot: -90
     size: [3.364, 0.724, 2.42]
     locked: false
-    objects: [PrintFarm_Frame, PrintFarm_Spools, DryCell_2, DryCell_3, DryCell_4]
+    objects: [PrintFarm_Frame, PrintFarm_Spools, DryCell_3, DryCell_4]
 
   - id: lab.sewingbench
     label: SewingBench
@@ -1204,7 +1204,7 @@ items:
     pos: [29.081, 24.958]
     z: 0.12
     rot: -90
-    size: [0.392, 0.41, 0.482]
+    size: [0.392, 0.41, 0.708]
     "on": lab.printfarm-frame
     locked: false
     objects: [Bambu_P2S]
@@ -1285,8 +1285,8 @@ items:
     label: Prusa MK3S 03
     kind: machine
     zone: main-lab
-    pos: [29.092, 24.958]
-    z: 0.8
+    pos: [29.092, 23.63]
+    z: 0.12
     rot: -90
     size: [0.46, 0.565, 0.57]
     "on": lab.printfarm-frame

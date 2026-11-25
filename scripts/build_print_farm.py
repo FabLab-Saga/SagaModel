@@ -2,8 +2,10 @@
 ("PrintFarm" collection). One black 40x40 profile wall, 5 bays x 3 rows of birch-ply cells + an open spool shelf:
 
   row 2 (deck 1.48)  Prusa | Prusa | CR-200B | CR-200B | CR-200B        (Prusa cells: cabins, CR-200Bs: open cells)
-  row 1 (deck 0.80)  Prusa | Prusa | Prusa   | Prusa   | Prusa
-  row 0 (deck 0.12)  Bambu P2S | Flashforge AD5M Pro | filament dry cell x3
+  row 1 (deck 0.80)  (P2S) | Prusa | Prusa   | Prusa   | Prusa
+  row 0 (deck 0.12)  Bambu P2S + AMS 2 Pro | Flashforge AD5M Pro | Prusa | filament dry cell x2
+Bay 0 has no 0.80 deck: the P2S with its top-mounted AMS 2 Pro needs >= 0.80 m clear (architects' schedule); the
+double cell gives 1.32 m. Prusa 03 moved from there into the first dry cell (Magnús, 2026-11-25).
   top   (deck 2.16)  spare spools, open
 
 Every Prusa MK3S+ sits in its own cabin: birch sides/back/top, a clear acrylic front door hinged on the bay's left
@@ -37,10 +39,23 @@ D = 0.72
 DECKS = [0.12, 0.80, 1.48, 2.16]
 H = 2.42
 LAYOUT = {                                                           # (bay, row) -> what
-    (0, 1): "prusa", (1, 1): "prusa", (2, 1): "prusa", (3, 1): "prusa", (4, 1): "prusa",
+    (1, 1): "prusa", (2, 1): "prusa", (3, 1): "prusa", (4, 1): "prusa",
     (0, 2): "prusa", (1, 2): "prusa", (2, 2): "cr200b", (3, 2): "cr200b", (4, 2): "cr200b",
-    (0, 0): "bambu", (1, 0): "ad5m", (2, 0): "dry", (3, 0): "dry", (4, 0): "dry",
+    (0, 0): "bambu", (1, 0): "ad5m", (2, 0): "prusa", (3, 0): "dry", (4, 0): "dry",
 }
+MERGED = {0: (0, 2)}                                                # bay -> (row a, row b): one cell from deck a to deck b
+PRUSA_NO = {(0, 2): 1, (1, 2): 2, (2, 0): 3, (1, 1): 4, (2, 1): 5, (3, 1): 6, (4, 1): 7}   # stable object names
+
+
+def skip_deck(b, zi):
+    """True where deck zi is left out of bay b (inside a merged cell)."""
+    return b in MERGED and MERGED[b][0] < zi < MERGED[b][1]
+
+
+def cell_span(b, r):
+    """(z bottom, z top) of the cell at bay b, row r, honouring merged cells."""
+    a, c = MERGED.get(b, (r, r + 1)) if b in MERGED and MERGED[b][0] <= r < MERGED[b][1] else (r, r + 1)
+    return DECKS[a], DECKS[c] - 0.018 - 0.02
 DOORS = {"prusa", "dry"}
 OPEN = {(2, 1): 78.0, (4, 0): 35.0}                                  # doors left open (degrees)
 
@@ -78,6 +93,8 @@ def frame():
         s = POST if zi in (0, len(DECKS)) else 0.02
         zr = z - (0.018 if zi < len(DECKS) else 0.0) - s
         for b in range(NB):
+            if skip_deck(b, zi):
+                continue
             ua, ub = bay_u(b), bay_u(b) + BAY
             for v in (0.0, D - s):
                 p.profile(s, "x", ua, v, zr, ub - ua)
@@ -88,7 +105,9 @@ def frame():
     for b in range(NB):                                              # back panels (rows 0-2) + cell sides
         ua = bay_u(b)
         for r in range(3):
-            z0, z1 = DECKS[r], DECKS[r + 1] - 0.018 - 0.02
+            if b in MERGED and MERGED[b][0] < r < MERGED[b][1]:
+                continue
+            z0, z1 = cell_span(b, r)
             p.box(ply, ua, ua + BAY, D - POST - 0.012, D - POST, z0, z1)
     for u in us:
         for r in range(3):
@@ -155,10 +174,10 @@ def build():
         o = lib["to_world"](loc, rot, (u, v_front, 0.0)) + Vector((0, 0, DECKS[r]))
         return part.emit(name, col, o, rot)
 
-    k = c = 0
+    c = 0
     for (b, r), what in sorted(LAYOUT.items(), key=lambda kv: (-kv[0][1], kv[0][0])):
         if what == "prusa":
-            k += 1
+            k = PRUSA_NO[(b, r)]
             put(mach["prusa"](M["spools"][(k * 3) % len(M["spools"])]), f"Prusa_MK3S_{k:02d}", b, r, 0.50, 0.075)
         elif what == "cr200b":
             c += 1
@@ -166,7 +185,7 @@ def build():
         elif what == "ad5m":
             put(mach["flashforge_ad5m_pro"](), "Flashforge_AD5M_Pro", b, r, 0.380, 0.10)
         elif what == "bambu":
-            put(mach["bambu"](), "Bambu_P2S", b, r, 0.392, 0.10)
+            put(mach["bambu"](ams=True), "Bambu_P2S", b, r, 0.392, 0.10)
         elif what == "dry":                                           # filament dry cell: spools on edge + desiccant
             sp = mach["Part"]()
             for j in range(6):
@@ -182,7 +201,8 @@ def build():
             continue                                                 # skip the post lines
         mach["spool_part"](top, M["spools"][rng.randrange(len(M["spools"]))], top_u, 0.30, 0.10, axis="x", width=0.062)
     top.emit("PrintFarm_Spools", col, lib["to_world"](loc, rot, (0.0, 0.0, 0.0)) + Vector((0, 0, DECKS[3])), rot)
-    print("print farm: %d Prusa cabins, %d CR-200B, AD5M Pro, P2S, 3 dry cells" % (k, c))
+    print("print farm: %d Prusa cabins, %d CR-200B, AD5M Pro, P2S + AMS 2 Pro, %d dry cells"
+          % (len(PRUSA_NO), c, sum(v == "dry" for v in LAYOUT.values())))
 
 
 build()
