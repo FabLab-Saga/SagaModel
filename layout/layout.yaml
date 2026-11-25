@@ -1,0 +1,1426 @@
+# Fab Lab SAGA layout: the ONLY source of item positions. Format: layout/README.md.
+# Blender model coordinates, metres. +Y = ESE, +X = SSW (sunny facade). rot = degrees CCW about +Z, seen from above.
+# pos = footprint centre [x, y], z = base height, size = [w, d, h] in the item's own frame. `objects` = Blender
+# root objects that move together (first = primary). Builders read this file; scripts/layout_snapshot.py diffs it.
+version: 1
+items:
+  - id: laser.epilog-fusionedge24
+    label: Epilog FusionEdge24
+    kind: machine
+    zone: laser-room
+    pos: [30.27, 20.878]
+    z: 0
+    rot: 90
+    size: [1.055, 0.872, 0.994]
+    locked: false
+    objects: [Epilog_FusionEdge24, Epilog_Logo, Epilog_Model]
+
+  - id: laser.exhaust-central
+    label: Exhaust Central
+    kind: fixture
+    zone: laser-room
+    pos: [31.114, 22.859]
+    z: 0.625
+    rot: 0
+    size: [2.883, 4.953, 3.305]
+    locked: true
+    objects: [Exhaust_Central]
+
+  - id: laser.laserbench
+    label: LaserBench
+    kind: furniture
+    zone: laser-room
+    pos: [32.096, 22.67]
+    z: 0
+    rot: -90
+    size: [4.864, 0.728, 0.798]
+    locked: false
+    objects: [LaserBench, LaserBench_Drawers, LaserBench_Staging]
+
+  - id: laser.laserprepcounter
+    label: LaserPrepCounter
+    kind: furniture
+    zone: laser-room
+    pos: [30.024, 24.61]
+    z: 0
+    rot: 90
+    size: [2.024, 0.728, 1.152]
+    locked: false
+    objects: [LaserPrepCounter, LaserPrepCounter_Top]
+
+  - id: laser.lasersafety
+    label: LaserSafety
+    kind: fixture
+    zone: laser-room
+    pos: [31.641, 23.53]
+    z: 0
+    rot: 0
+    size: [1.699, 6.78, 1.92]
+    locked: true
+    objects: [LaserSafety]
+
+  - id: laser.laserstockrack
+    label: LaserStockRack
+    kind: storage
+    zone: laser-room
+    pos: [29.97, 22.57]
+    z: 0
+    rot: 90
+    size: [1.944, 0.604, 2.1]
+    locked: false
+    objects: [LaserStockRack, LaserStockRack_Contents]
+
+  - id: laser.glowforge-aura
+    label: Glowforge Aura
+    kind: machine
+    zone: laser-room
+    pos: [32.146, 22.818]
+    z: 0.78
+    rot: -90
+    size: [0.556, 0.559, 0.13]
+    "on": laser.laserbench
+    locked: false
+    objects: [Glowforge_Aura]
+
+  - id: laser.glowforge-prohd-1
+    label: Glowforge ProHD 1
+    kind: machine
+    zone: laser-room
+    pos: [32.143, 20.792]
+    z: 0.78
+    rot: -90
+    size: [0.965, 0.565, 0.215]
+    "on": laser.laserbench
+    locked: false
+    objects: [Glowforge_ProHD_1]
+
+  - id: laser.glowforge-prohd-2
+    label: Glowforge ProHD 2
+    kind: machine
+    zone: laser-room
+    pos: [32.143, 21.907]
+    z: 0.78
+    rot: -90
+    size: [0.965, 0.565, 0.215]
+    "on": laser.laserbench
+    locked: false
+    objects: [Glowforge_ProHD_2]
+
+  - id: laser.xtool-f1-ultra
+    label: xTool F1 Ultra
+    kind: machine
+    zone: laser-room
+    pos: [32.214, 23.452]
+    z: 0.78
+    rot: -90
+    size: [0.464, 0.425, 0.492]
+    "on": laser.laserbench
+    locked: false
+    objects: [xTool_F1_Ultra, xTool_Wordmark, xTool_F1_Ultra_Controller]
+
+  - id: cnc.acword-ft100
+    label: ACword FT100
+    kind: machine
+    zone: cnc-room
+    pos: [21.5, 16.45]
+    z: 0
+    rot: 180
+    size: [0.68, 0.54, 2.2]
+    locked: false
+    objects: [ACword_FT100]
+
+  - id: cnc.boardrack
+    label: BoardRack
+    kind: storage
+    zone: cnc-room
+    pos: [25.06, 15.925]
+    z: 0
+    rot: 0
+    size: [1.34, 1.57, 3.5]
+    locked: false
+    objects: [BoardRack]
+
+  - id: cnc.cnc-pcstation
+    label: CNC PCStation
+    kind: furniture
+    zone: cnc-room
+    pos: [24.695, 19.031]
+    z: 0
+    rot: 0
+    size: [0.87, 0.462, 1.585]
+    locked: false
+    objects: [CNC_PCStation]
+
+  - id: cnc.cnc-toolbench
+    label: CNC ToolBench
+    kind: furniture
+    zone: cnc-room
+    pos: [25.438, 18.65]
+    z: 0
+    rot: 0
+    size: [0.61, 1.22, 1.95]
+    locked: false
+    objects: [CNC_ToolBench]
+
+  - id: cnc.cnc-utilities
+    label: CNC Utilities
+    kind: storage
+    zone: cnc-room
+    pos: [23.205, 16.468]
+    z: 0
+    rot: 0
+    size: [2.39, 0.415, 1.02]
+    locked: false
+    objects: [CNC_Utilities]
+
+  - id: cnc.offcutcart
+    label: OffcutCart
+    kind: storage
+    zone: cnc-room
+    pos: [21.13, 15.625]
+    z: 0
+    rot: 0
+    size: [0.52, 1, 1.095]
+    locked: false
+    objects: [OffcutCart]
+
+  - id: cnc.shopbot-control
+    label: ShopBot Control
+    kind: machine
+    zone: cnc-room
+    pos: [24.62, 19.07]
+    z: 0
+    rot: 0
+    size: [0.5, 0.32, 0.7]
+    locked: false
+    objects: [ShopBot_Control]
+
+  - id: cnc.shopbot-prsalpha-120
+    label: ShopBot PRSAlpha 120
+    kind: machine
+    zone: cnc-room
+    pos: [22.747, 19.198]
+    z: 0
+    rot: 0
+    size: [2.606, 4.951, 3.93]
+    locked: false
+    objects: [ShopBot_PRSAlpha_120, ShopBot_DustBoom, ShopBot_DustHose]
+
+  - id: cnc.stepstool
+    label: StepStool
+    kind: furniture
+    zone: cnc-room
+    pos: [24.17, 15.925]
+    z: 0
+    rot: 0
+    size: [0.3, 0.45, 0.5]
+    locked: false
+    objects: [StepStool]
+
+  - id: staff.staff-armchair-poang
+    label: Staff Armchair POANG
+    kind: furniture
+    zone: staff-room
+    pos: [31.838, 19.479]
+    z: -0.004
+    rot: 20
+    size: [0.681, 0.804, 1.037]
+    locked: false
+    objects: [Staff_Armchair_POANG]
+
+  - id: staff.staff-chair-1
+    label: Staff Chair 1
+    kind: furniture
+    zone: staff-room
+    pos: [29.61, 17.985]
+    z: 0
+    rot: 90
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Staff_Chair_1]
+
+  - id: staff.staff-chair-2
+    label: Staff Chair 2
+    kind: furniture
+    zone: staff-room
+    pos: [29.61, 18.565]
+    z: 0
+    rot: 90
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Staff_Chair_2]
+
+  - id: staff.staff-chair-3
+    label: Staff Chair 3
+    kind: furniture
+    zone: staff-room
+    pos: [30.79, 17.985]
+    z: 0
+    rot: -90
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Staff_Chair_3]
+
+  - id: staff.staff-chair-4
+    label: Staff Chair 4
+    kind: furniture
+    zone: staff-room
+    pos: [30.79, 18.565]
+    z: 0
+    rot: -90
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Staff_Chair_4]
+
+  - id: staff.staff-coathooks
+    label: Staff CoatHooks
+    kind: fixture
+    zone: staff-room
+    pos: [29.377, 20.847]
+    z: 0.86
+    rot: 0
+    size: [0.28, 1.365, 1.04]
+    locked: true
+    objects: [Staff_CoatHooks, Staff_Coat_1, Staff_Coat_2, Staff_Coat_3, Staff_Tote]
+
+  - id: staff.staff-kitchen
+    label: Staff Kitchen
+    kind: fixture
+    zone: staff-room
+    pos: [28.075, 18.86]
+    z: 0
+    rot: 0
+    size: [0.69, 2.41, 2.15]
+    locked: true
+    objects: [Staff_Kitchen, Staff_Appliances, Staff_Mugs]
+
+  - id: staff.staff-meetingtable
+    label: Staff MeetingTable
+    kind: furniture
+    zone: staff-room
+    pos: [30.2, 18.265]
+    z: 0
+    rot: 0
+    size: [0.8, 1.2, 0.835]
+    locked: false
+    objects: [Staff_MeetingTable]
+
+  - id: staff.staff-sidetable
+    label: Staff SideTable
+    kind: furniture
+    zone: staff-room
+    pos: [31.15, 19.02]
+    z: 0
+    rot: 0
+    size: [0.4, 0.4, 0.545]
+    locked: false
+    objects: [Staff_SideTable]
+
+  - id: staff.staff-sofa-glostad
+    label: Staff Sofa GLOSTAD
+    kind: furniture
+    zone: staff-room
+    pos: [31.79, 18.045]
+    z: -0.001
+    rot: 180
+    size: [1.21, 0.78, 0.833]
+    locked: false
+    objects: [Staff_Sofa_GLOSTAD]
+
+  - id: staff.staff-whiteboard
+    label: Staff Whiteboard
+    kind: fixture
+    zone: staff-room
+    pos: [30.25, 19.944]
+    z: 0.9
+    rot: 0
+    size: [1.44, 0.08, 1.02]
+    locked: true
+    objects: [Staff_Whiteboard]
+
+  - id: bank.bank-a1-shelving
+    label: Bank A1 Shelving
+    kind: storage
+    zone: bank
+    pos: [23.005, 38.03]
+    z: 0
+    rot: 0
+    size: [3.914, 0.604, 2.42]
+    locked: false
+    objects: [Bank_A1_Shelving, Bank_A1_Boxes, Bank_DeskNiche]
+
+  - id: bank.bank-b-smallboxshelving
+    label: Bank B SmallBoxShelving
+    kind: storage
+    zone: bank
+    pos: [24.555, 34.62]
+    z: 0
+    rot: 180
+    size: [5.794, 0.404, 2.42]
+    locked: false
+    objects: [Bank_B_SmallBoxShelving, Bank_B_Boxes]
+
+  - id: bank.bank-c-shelving
+    label: Bank C Shelving
+    kind: storage
+    zone: bank
+    pos: [21.35, 36.67]
+    z: 0
+    rot: 90
+    size: [2.024, 0.604, 2.42]
+    locked: false
+    objects: [Bank_C_Shelving, Bank_C_Boxes]
+
+  - id: bank.bank-c0-cornershelving
+    label: Bank C0 CornerShelving
+    kind: storage
+    zone: bank
+    pos: [21.35, 35.03]
+    z: 0
+    rot: 90
+    size: [1.254, 0.604, 2.42]
+    locked: false
+    objects: [Bank_C0_CornerShelving, Bank_C0_Boxes]
+
+  - id: bank.bank-packingtable
+    label: Bank PackingTable
+    kind: furniture
+    zone: bank
+    pos: [24.5, 36.275]
+    z: 0
+    rot: 0
+    size: [3.004, 0.72, 1.34]
+    locked: false
+    objects: [Bank_PackingTable, Bank_PackingTable_Props]
+
+  - id: lounge.bank-a2-shelving
+    label: Bank A2 Shelving
+    kind: storage
+    zone: lounge
+    pos: [28.705, 38.03]
+    z: 0
+    rot: 0
+    size: [7.484, 0.604, 2.42]
+    locked: false
+    objects: [Bank_A2_Shelving, Demo_Pieces, Bank_A2_Boxes]
+
+  - id: lounge.lounge-sofa-1
+    label: Lounge Sofa 1
+    kind: furniture
+    zone: lounge
+    pos: [31.69, 30.525]
+    z: 0
+    rot: 180
+    size: [1.436, 0.831, 0.802]
+    locked: false
+    objects: [Lounge_Sofa_1]
+
+  - id: lounge.lounge-sofa-2
+    label: Lounge Sofa 2
+    kind: furniture
+    zone: lounge
+    pos: [31.69, 32.875]
+    z: 0
+    rot: 0
+    size: [1.436, 0.831, 0.802]
+    locked: false
+    objects: [Lounge_Sofa_2]
+
+  - id: lounge.lounge-table
+    label: Lounge Table
+    kind: furniture
+    zone: lounge
+    pos: [31.69, 31.7]
+    z: 0
+    rot: 0
+    size: [1.02, 0.57, 0.5]
+    locked: false
+    objects: [Lounge_Table]
+
+  - id: lounge.oncall-chair
+    label: OnCall Chair
+    kind: furniture
+    zone: lounge
+    pos: [28.65, 34.95]
+    z: 0
+    rot: 84
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [OnCall_Chair]
+
+  - id: lounge.oncall-desk
+    label: OnCall Desk
+    kind: furniture
+    zone: lounge
+    pos: [29.425, 34.82]
+    z: 0
+    rot: 90
+    size: [1.9, 0.99, 1.27]
+    locked: false
+    objects: [OnCall_Desk, OnCall_Desk_Props]
+
+  - id: lounge.pouf-1
+    label: Pouf 1
+    kind: furniture
+    zone: lounge
+    pos: [30.62, 31.37]
+    z: 0
+    rot: 0
+    size: [0.46, 0.46, 0.421]
+    locked: false
+    objects: [Pouf_1]
+
+  - id: lounge.pouf-2
+    label: Pouf 2
+    kind: furniture
+    zone: lounge
+    pos: [30.62, 32.03]
+    z: 0
+    rot: 0
+    size: [0.46, 0.46, 0.421]
+    locked: false
+    objects: [Pouf_2]
+
+  - id: lab.bekant-cart-1
+    label: Bekant Cart 1
+    kind: storage
+    zone: main-lab
+    pos: [21.805, 29.394]
+    z: 0
+    rot: 0
+    size: [0.63, 0.472, 1.028]
+    locked: false
+    objects: [Bekant_Cart_1, Bekant_Cart_1_Boxes]
+
+  - id: lab.bekant-cart-2
+    label: Bekant Cart 2
+    kind: storage
+    zone: main-lab
+    pos: [22.465, 29.394]
+    z: 0
+    rot: 0
+    size: [0.63, 0.472, 1.028]
+    locked: false
+    objects: [Bekant_Cart_2, Bekant_Cart_2_Boxes]
+
+  - id: lab.cardboardbox-1
+    label: CardboardBox 1
+    kind: storage
+    zone: main-lab
+    pos: [27.3, 31.75]
+    z: 0
+    rot: 17.2
+    size: [0.398, 0.53, 0.351]
+    locked: false
+    objects: [CardboardBox_1]
+
+  - id: lab.chair-0
+    label: Chair 0
+    kind: furniture
+    zone: main-lab
+    pos: [30.046, 28.082]
+    z: 0
+    rot: -6.2
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Chair_0]
+
+  - id: lab.chair-1
+    label: Chair 1
+    kind: furniture
+    zone: main-lab
+    pos: [30.767, 28.031]
+    z: 0
+    rot: 0
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Chair_1]
+
+  - id: lab.chair-2
+    label: Chair 2
+    kind: furniture
+    zone: main-lab
+    pos: [31.37, 28.041]
+    z: 0
+    rot: 0.9
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Chair_2]
+
+  - id: lab.componentstorage
+    label: ComponentStorage
+    kind: storage
+    zone: main-lab
+    pos: [21.137, 32.18]
+    z: 0
+    rot: 90
+    size: [3.764, 0.525, 1.66]
+    locked: false
+    objects: [ComponentStorage, ComponentStorage_Top, ComponentStorage_Drawers, SMD_Reels, CompCab_0_1, CompCab_1_1, CompCab_2_1, CompCab_0_0, CompCab_1_0, CompCab_2_0]
+
+  - id: lab.cuttercounter
+    label: CutterCounter
+    kind: furniture
+    zone: main-lab
+    pos: [21.175, 29.05]
+    z: 0
+    rot: 90
+    size: [1.004, 0.57, 0.92]
+    locked: false
+    objects: [CutterCounter, CutterCounter_Bins]
+
+  - id: lab.elec-chair-1-0
+    label: Elec Chair 1 0
+    kind: furniture
+    zone: main-lab
+    pos: [24.569, 33.613]
+    z: 0
+    rot: -7.9
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Elec_Chair_1_0]
+
+  - id: lab.elec-chair-1-10
+    label: Elec Chair 1 10
+    kind: furniture
+    zone: main-lab
+    pos: [25.637, 33.613]
+    z: 0
+    rot: 8.6
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Elec_Chair_1_10]
+
+  - id: lab.elec-chair-1-m10
+    label: Elec Chair 1 -10
+    kind: furniture
+    zone: main-lab
+    pos: [23.481, 33.658]
+    z: 0
+    rot: -1.3
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Elec_Chair_1_-10]
+
+  - id: lab.elec-chair-m1-0
+    label: Elec Chair -1 0
+    kind: furniture
+    zone: main-lab
+    pos: [24.56, 32.002]
+    z: 0
+    rot: -179.2
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Elec_Chair_-1_0]
+
+  - id: lab.elec-chair-m1-10
+    label: Elec Chair -1 10
+    kind: furniture
+    zone: main-lab
+    pos: [25.582, 32.136]
+    z: 0
+    rot: -177.2
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Elec_Chair_-1_10]
+
+  - id: lab.elec-chair-m1-m10
+    label: Elec Chair -1 -10
+    kind: furniture
+    zone: main-lab
+    pos: [23.53, 32.019]
+    z: 0
+    rot: 172.8
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Elec_Chair_-1_-10]
+
+  - id: lab.electronics-boardrun
+    label: Electronics BoardRun
+    kind: fixture
+    zone: main-lab
+    pos: [24.5, 34.165]
+    z: 0.95
+    rot: 0
+    size: [5.4, 0.3, 1.567]
+    locked: true
+    objects: [Electronics_BoardRun, WB_Text, WB_Text.001, WB_Text.002, WB_Text.003, WB_Text.004, WB_Text.005, WB_Text.006, WB_Text.007]
+
+  - id: lab.electronics-table
+    label: Electronics Table
+    kind: furniture
+    zone: main-lab
+    pos: [24.55, 32.85]
+    z: 0
+    rot: 0
+    size: [3.204, 1.22, 0.81]
+    locked: false
+    objects: [Electronics_Table, Electronics_Table_Stuff]
+
+  - id: lab.glassbench
+    label: GlassBench
+    kind: furniture
+    zone: main-lab
+    pos: [32.05, 29.13]
+    z: 0
+    rot: -90
+    size: [1.904, 0.82, 0.75]
+    locked: false
+    objects: [GlassBench, Clay_Bucket_0, Clay_Bucket_1, GlassBench_Spools]
+
+  - id: lab.glasstoolwall-frame
+    label: GlassToolWall Frame
+    kind: storage
+    zone: main-lab
+    pos: [21.215, 25.26]
+    z: 0
+    rot: 0
+    size: [0.69, 2.404, 2.25]
+    locked: false
+    objects: [GlassToolWall_Frame, GlassTW_Bin_0, GlassTW_PartsCab, GlassTW_Toolbox_top, GlassTW_Tools, GlassTW_UnderCab_0, GlassTW_UnderCab_1, GlassTW_Counter]
+
+  - id: lab.glasstw-stool
+    label: GlassTW Stool
+    kind: furniture
+    zone: main-lab
+    pos: [21.771, 25.872]
+    z: 0
+    rot: 11.5
+    size: [0.384, 0.384, 0.68]
+    locked: false
+    objects: [GlassTW_Stool]
+
+  - id: lab.glasstw-toolchest
+    label: GlassTW ToolChest
+    kind: storage
+    zone: main-lab
+    pos: [21.263, 25.985]
+    z: 0
+    rot: 90
+    size: [0.55, 0.406, 0.62]
+    locked: false
+    objects: [GlassTW_ToolChest]
+
+  - id: lab.microbench
+    label: MicroBench
+    kind: furniture
+    zone: main-lab
+    pos: [24.191, 30.456]
+    z: 0
+    rot: 0
+    size: [5.962, 1.015, 1.905]
+    locked: false
+    objects: [MicroBench, DrawerCab_0_0, DrawerCab_0_1, ToolRail_0, DrawerCab_1_0, DrawerCab_1_1, ToolRail_1, DrawerCab_2_0, DrawerCab_2_1, ToolRail_2, Solder_0, Fume_0, Solder_1, Fume_1, Solder_2, Fume_2, ScopePSU, Magnifier, BenchStuff]
+
+  - id: lab.microstool-0
+    label: MicroStool 0
+    kind: furniture
+    zone: main-lab
+    pos: [22.443, 31.284]
+    z: 0
+    rot: 10.9
+    size: [0.384, 0.384, 0.68]
+    locked: false
+    objects: [MicroStool_0]
+
+  - id: lab.microstool-1
+    label: MicroStool 1
+    kind: furniture
+    zone: main-lab
+    pos: [23.576, 31.257]
+    z: 0
+    rot: 1.2
+    size: [0.384, 0.384, 0.68]
+    locked: false
+    objects: [MicroStool_1]
+
+  - id: lab.microstool-2
+    label: MicroStool 2
+    kind: furniture
+    zone: main-lab
+    pos: [24.965, 31.267]
+    z: 0
+    rot: 4.5
+    size: [0.384, 0.384, 0.68]
+    locked: false
+    objects: [MicroStool_2]
+
+  - id: lab.microstool-3
+    label: MicroStool 3
+    kind: furniture
+    zone: main-lab
+    pos: [26.405, 31.224]
+    z: 0
+    rot: -8.6
+    size: [0.384, 0.384, 0.68]
+    locked: false
+    objects: [MicroStool_3]
+
+  - id: lab.muralcupboard
+    label: MuralCupboard
+    kind: storage
+    zone: main-lab
+    pos: [25.01, 22.084]
+    z: 0
+    rot: 180
+    size: [1.39, 0.472, 0.905]
+    locked: false
+    objects: [MuralCupboard]
+
+  - id: lab.printfarm-frame
+    label: PrintFarm Frame
+    kind: storage
+    zone: main-lab
+    pos: [29.14, 23.63]
+    z: 0
+    rot: -90
+    size: [3.364, 0.724, 2.42]
+    locked: false
+    objects: [PrintFarm_Frame, PrintFarm_Spools, DryCell_2, DryCell_3, DryCell_4]
+
+  - id: lab.sewingbench
+    label: SewingBench
+    kind: furniture
+    zone: main-lab
+    pos: [31.05, 27.335]
+    z: 0
+    rot: 180
+    size: [2.604, 0.77, 0.883]
+    locked: false
+    objects: [SewingBench, SewingBench_Props]
+
+  - id: lab.spine-boxes-shelving
+    label: Spine Boxes Shelving
+    kind: storage
+    zone: main-lab
+    pos: [27.774, 34.01]
+    z: 0
+    rot: -90
+    size: [4.924, 0.311, 2.42]
+    locked: false
+    objects: [Spine_Boxes_Shelving, Spine_Panel, ToolLibrary, ToolLib_Drill_0, ToolLib_Drill_1, ToolLib_Cab_3_0, ToolLib_Cab_3_1, ToolLib_ScopePSU, ToolLib_Cab_2_0, ToolLib_Cab_2_1]
+
+  - id: lab.spine-lounge-shelving
+    label: Spine Lounge Shelving
+    kind: storage
+    zone: main-lab
+    pos: [28.129, 34.01]
+    z: 0
+    rot: 90
+    size: [4.924, 0.423, 2.515]
+    locked: false
+    objects: [Spine_Lounge_Shelving, Spine_Lounge_Contents, TV_Wall]
+
+  - id: lab.vinylstand-1
+    label: VinylStand 1
+    kind: furniture
+    zone: main-lab
+    pos: [21.15, 26.98]
+    z: 0
+    rot: 90
+    size: [0.954, 0.53, 0.82]
+    locked: false
+    objects: [VinylStand_1]
+
+  - id: lab.vinylstand-2
+    label: VinylStand 2
+    kind: furniture
+    zone: main-lab
+    pos: [21.15, 28]
+    z: 0
+    rot: 90
+    size: [0.954, 0.53, 0.82]
+    locked: false
+    objects: [VinylStand_2]
+
+  - id: lab.workchair-0-1-0
+    label: WorkChair 0 1 0
+    kind: furniture
+    zone: main-lab
+    pos: [23.089, 25.314]
+    z: 0
+    rot: -1.3
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_0_1_0]
+
+  - id: lab.workchair-0-1-1
+    label: WorkChair 0 1 1
+    kind: furniture
+    zone: main-lab
+    pos: [23.903, 25.335]
+    z: 0
+    rot: 0.1
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_0_1_1]
+
+  - id: lab.workchair-0-m1-0
+    label: WorkChair 0 -1 0
+    kind: furniture
+    zone: main-lab
+    pos: [23.064, 24.196]
+    z: 0
+    rot: 176.1
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_0_-1_0]
+
+  - id: lab.workchair-0-m1-1
+    label: WorkChair 0 -1 1
+    kind: furniture
+    zone: main-lab
+    pos: [23.922, 24.082]
+    z: 0
+    rot: -177
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_0_-1_1]
+
+  - id: lab.workchair-1-1-0
+    label: WorkChair 1 1 0
+    kind: furniture
+    zone: main-lab
+    pos: [26.381, 25.301]
+    z: 0
+    rot: 5.3
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_1_1_0]
+
+  - id: lab.workchair-1-1-1
+    label: WorkChair 1 1 1
+    kind: furniture
+    zone: main-lab
+    pos: [27.27, 25.354]
+    z: 0
+    rot: -5.9
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_1_1_1]
+
+  - id: lab.workchair-1-m1-0
+    label: WorkChair 1 -1 0
+    kind: furniture
+    zone: main-lab
+    pos: [26.303, 24.168]
+    z: 0
+    rot: -177.4
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_1_-1_0]
+
+  - id: lab.workchair-1-m1-1
+    label: WorkChair 1 -1 1
+    kind: furniture
+    zone: main-lab
+    pos: [27.254, 24.165]
+    z: 0
+    rot: -178.5
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_1_-1_1]
+
+  - id: lab.workchair-2-1-0
+    label: WorkChair 2 1 0
+    kind: furniture
+    zone: main-lab
+    pos: [23.081, 28.117]
+    z: 0
+    rot: 0.6
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_2_1_0]
+
+  - id: lab.workchair-2-1-1
+    label: WorkChair 2 1 1
+    kind: furniture
+    zone: main-lab
+    pos: [23.997, 28.061]
+    z: 0
+    rot: 0.9
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_2_1_1]
+
+  - id: lab.workchair-2-m1-0
+    label: WorkChair 2 -1 0
+    kind: furniture
+    zone: main-lab
+    pos: [23.096, 26.846]
+    z: 0
+    rot: 173
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_2_-1_0]
+
+  - id: lab.workchair-2-m1-1
+    label: WorkChair 2 -1 1
+    kind: furniture
+    zone: main-lab
+    pos: [23.91, 26.764]
+    z: 0
+    rot: -178.2
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_2_-1_1]
+
+  - id: lab.workchair-3-1-0
+    label: WorkChair 3 1 0
+    kind: furniture
+    zone: main-lab
+    pos: [26.323, 28.046]
+    z: 0
+    rot: -7.2
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_3_1_0]
+
+  - id: lab.workchair-3-1-1
+    label: WorkChair 3 1 1
+    kind: furniture
+    zone: main-lab
+    pos: [27.223, 28.016]
+    z: 0
+    rot: -3.8
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_3_1_1]
+
+  - id: lab.workchair-3-m1-0
+    label: WorkChair 3 -1 0
+    kind: furniture
+    zone: main-lab
+    pos: [26.383, 26.801]
+    z: 0
+    rot: -173.8
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_3_-1_0]
+
+  - id: lab.workchair-3-m1-1
+    label: WorkChair 3 -1 1
+    kind: furniture
+    zone: main-lab
+    pos: [27.258, 26.787]
+    z: 0
+    rot: 172.2
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [WorkChair_3_-1_1]
+
+  - id: lab.worktable-0
+    label: WorkTable 0
+    kind: furniture
+    zone: main-lab
+    pos: [23.5, 24.75]
+    z: 0
+    rot: 0
+    size: [1.804, 0.92, 0.975]
+    locked: false
+    objects: [WorkTable_0, Laptop_0, BenchProps_0, Drill_0]
+
+  - id: lab.worktable-1
+    label: WorkTable 1
+    kind: furniture
+    zone: main-lab
+    pos: [26.8, 24.75]
+    z: 0
+    rot: 0
+    size: [1.804, 0.92, 0.959]
+    locked: false
+    objects: [WorkTable_1, BenchProps_1, Drill_1]
+
+  - id: lab.worktable-2
+    label: WorkTable 2
+    kind: furniture
+    zone: main-lab
+    pos: [23.5, 27.45]
+    z: 0
+    rot: 0
+    size: [1.804, 0.92, 0.975]
+    locked: false
+    objects: [WorkTable_2, Laptop_2, BenchProps_2]
+
+  - id: lab.worktable-3
+    label: WorkTable 3
+    kind: furniture
+    zone: main-lab
+    pos: [26.8, 27.45]
+    z: 0
+    rot: 0
+    size: [1.804, 0.92, 0.761]
+    locked: false
+    objects: [WorkTable_3, BenchProps_3]
+
+  - id: lab.cricut-maker-3
+    label: Cricut Maker 3
+    kind: machine
+    zone: main-lab
+    pos: [21.805, 29.3]
+    z: 1.028
+    rot: 0
+    size: [0.538, 0.478, 0.233]
+    "on": lab.bekant-cart-1
+    locked: false
+    objects: [Cricut_Maker_3]
+
+  - id: lab.handheld-3dscanner
+    label: Handheld 3DScanner
+    kind: machine
+    zone: main-lab
+    pos: [22.467, 29.382]
+    z: 1.026
+    rot: 0
+    size: [0.365, 0.375, 0.212]
+    "on": lab.bekant-cart-2
+    locked: false
+    objects: [Handheld_3DScanner]
+
+  - id: lab.cricut-maker-1
+    label: Cricut Maker 1
+    kind: machine
+    zone: main-lab
+    pos: [21.22, 28.9]
+    z: 0.92
+    rot: 90
+    size: [0.6, 0.479, 0.238]
+    "on": lab.cuttercounter
+    locked: false
+    objects: [Cricut_Maker_1]
+
+  - id: lab.mayku-formbox
+    label: Mayku FormBox
+    kind: machine
+    zone: main-lab
+    pos: [21.15, 29.37]
+    z: 0.92
+    rot: 90
+    size: [0.274, 0.466, 0.315]
+    "on": lab.cuttercounter
+    locked: false
+    objects: [Mayku_FormBox]
+
+  - id: lab.clay-microwave
+    label: Clay Microwave
+    kind: machine
+    zone: main-lab
+    pos: [31.948, 29.1]
+    z: 0.16
+    rot: -90
+    size: [0.45, 0.354, 0.26]
+    "on": lab.glassbench
+    locked: false
+    objects: [Clay_Microwave]
+
+  - id: lab.creality-cr10-max
+    label: Creality CR10 Max
+    kind: machine
+    zone: main-lab
+    pos: [32.028, 28.56]
+    z: 0.75
+    rot: -90
+    size: [0.65, 0.799, 0.94]
+    "on": lab.glassbench
+    locked: false
+    objects: [Creality_CR10_Max]
+
+  - id: lab.eazao-zero
+    label: Eazao Zero
+    kind: machine
+    zone: main-lab
+    pos: [31.949, 29.2]
+    z: 0.75
+    rot: -90
+    size: [0.55, 0.302, 0.5]
+    "on": lab.glassbench
+    locked: false
+    objects: [Eazao_Zero]
+
+  - id: lab.heatpress-redclam
+    label: HeatPress RedClam
+    kind: machine
+    zone: main-lab
+    pos: [32.019, 29.77]
+    z: 0.75
+    rot: -90
+    size: [0.462, 0.644, 0.852]
+    "on": lab.glassbench
+    locked: false
+    objects: [HeatPress_RedClam]
+
+  - id: lab.roland-srm20-1
+    label: Roland SRM20 1
+    kind: machine
+    zone: main-lab
+    pos: [22.175, 30.447]
+    z: 0.9
+    rot: 180
+    size: [0.451, 0.427, 0.426]
+    "on": lab.microbench
+    locked: false
+    objects: [Roland_SRM20_1]
+
+  - id: lab.roland-srm20-2
+    label: Roland SRM20 2
+    kind: machine
+    zone: main-lab
+    pos: [22.775, 30.447]
+    z: 0.9
+    rot: 180
+    size: [0.451, 0.427, 0.426]
+    "on": lab.microbench
+    locked: false
+    objects: [Roland_SRM20_2]
+
+  - id: lab.bambu-p2s
+    label: Bambu P2S
+    kind: machine
+    zone: main-lab
+    pos: [29.081, 24.958]
+    z: 0.12
+    rot: -90
+    size: [0.392, 0.41, 0.482]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Bambu_P2S]
+
+  - id: lab.creality-cr200b-1
+    label: Creality CR200B 1
+    kind: machine
+    zone: main-lab
+    pos: [29.096, 23.616]
+    z: 1.48
+    rot: -90
+    size: [0.443, 0.437, 0.499]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Creality_CR200B_1]
+
+  - id: lab.creality-cr200b-2
+    label: Creality CR200B 2
+    kind: machine
+    zone: main-lab
+    pos: [29.096, 22.952]
+    z: 1.48
+    rot: -90
+    size: [0.443, 0.438, 0.499]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Creality_CR200B_2]
+
+  - id: lab.creality-cr200b-3
+    label: Creality CR200B 3
+    kind: machine
+    zone: main-lab
+    pos: [29.096, 22.288]
+    z: 1.48
+    rot: -90
+    size: [0.443, 0.438, 0.499]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Creality_CR200B_3]
+
+  - id: lab.flashforge-ad5m-pro
+    label: Flashforge AD5M Pro
+    kind: machine
+    zone: main-lab
+    pos: [29.078, 24.294]
+    z: 0.12
+    rot: -90
+    size: [0.38, 0.404, 0.456]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Flashforge_AD5M_Pro]
+
+  - id: lab.prusa-mk3s-01
+    label: Prusa MK3S 01
+    kind: machine
+    zone: main-lab
+    pos: [29.092, 24.958]
+    z: 1.48
+    rot: -90
+    size: [0.46, 0.565, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_01]
+
+  - id: lab.prusa-mk3s-02
+    label: Prusa MK3S 02
+    kind: machine
+    zone: main-lab
+    pos: [29.092, 24.294]
+    z: 1.48
+    rot: -90
+    size: [0.46, 0.565, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_02]
+
+  - id: lab.prusa-mk3s-03
+    label: Prusa MK3S 03
+    kind: machine
+    zone: main-lab
+    pos: [29.092, 24.958]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.565, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_03]
+
+  - id: lab.prusa-mk3s-04
+    label: Prusa MK3S 04
+    kind: machine
+    zone: main-lab
+    pos: [29.092, 24.294]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.565, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_04]
+
+  - id: lab.prusa-mk3s-05
+    label: Prusa MK3S 05
+    kind: machine
+    zone: main-lab
+    pos: [29.092, 23.63]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.565, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_05]
+
+  - id: lab.prusa-mk3s-06
+    label: Prusa MK3S 06
+    kind: machine
+    zone: main-lab
+    pos: [29.092, 22.966]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.565, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_06]
+
+  - id: lab.prusa-mk3s-07
+    label: Prusa MK3S 07
+    kind: machine
+    zone: main-lab
+    pos: [29.092, 22.302]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.565, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_07]
+
+  - id: lab.brother-embroidery
+    label: Brother Embroidery
+    kind: machine
+    zone: main-lab
+    pos: [30.717, 27.451]
+    z: 0.76
+    rot: 180
+    size: [0.525, 0.241, 0.37]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Brother_Embroidery]
+
+  - id: lab.brother-sewing
+    label: Brother Sewing
+    kind: machine
+    zone: main-lab
+    pos: [30.037, 27.451]
+    z: 0.76
+    rot: 180
+    size: [0.445, 0.201, 0.35]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Brother_Sewing]
+
+  - id: lab.cricut-easypress3-1
+    label: Cricut EasyPress3 1
+    kind: machine
+    zone: main-lab
+    pos: [32.05, 27.37]
+    z: 0.16
+    rot: 180
+    size: [0.345, 0.294, 0.119]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Cricut_EasyPress3_1]
+
+  - id: lab.cricut-easypress3-2
+    label: Cricut EasyPress3 2
+    kind: machine
+    zone: main-lab
+    pos: [31.63, 27.37]
+    z: 0.16
+    rot: 180
+    size: [0.345, 0.294, 0.119]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Cricut_EasyPress3_2]
+
+  - id: lab.cricut-mugpress
+    label: Cricut MugPress
+    kind: machine
+    zone: main-lab
+    pos: [31.591, 27.492]
+    z: 0.76
+    rot: 180
+    size: [0.393, 0.161, 0.166]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Cricut_MugPress]
+
+  - id: lab.loklik-autopress
+    label: LOKLiK AutoPress
+    kind: machine
+    zone: main-lab
+    pos: [32.06, 27.42]
+    z: 0.76
+    rot: 180
+    size: [0.5, 0.42, 0.302]
+    "on": lab.sewingbench
+    locked: false
+    objects: [LOKLiK_AutoPress]
+
+  - id: lab.overlock
+    label: Overlock
+    kind: machine
+    zone: main-lab
+    pos: [31.21, 27.41]
+    z: 0.76
+    rot: 180
+    size: [0.33, 0.28, 0.363]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Overlock]
+
+  - id: lab.roland-vinylcutter-1
+    label: Roland VinylCutter 1
+    kind: machine
+    zone: main-lab
+    pos: [21.115, 26.98]
+    z: 0.82
+    rot: 90
+    size: [0.851, 0.4, 0.245]
+    "on": lab.vinylstand-1
+    locked: false
+    objects: [Roland_VinylCutter_1]
+
+  - id: lab.roland-vinylcutter-2
+    label: Roland VinylCutter 2
+    kind: machine
+    zone: main-lab
+    pos: [21.115, 28]
+    z: 0.82
+    rot: 90
+    size: [0.851, 0.4, 0.245]
+    "on": lab.vinylstand-2
+    locked: false
+    objects: [Roland_VinylCutter_2]
