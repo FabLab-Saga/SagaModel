@@ -1,10 +1,11 @@
 name: Web preview
-# Rebuilds and deploys the live web preview (github.com/MagnusPetursson/SagaModel-web, GitHub Pages) whenever
-# the .blend or assets change. Runs entirely on GitHub; no local machine involved. Manual: Actions tab -> Run workflow.
+# Rebuilds and deploys the PUBLIC web preview (github.com/MagnusPetursson/SagaModel-web, GitHub Pages).
+# Release-only since 2026-11-25 (Magnus): pushes to main never deploy. Publish = push a tag `web-vN`
+# (e.g. git tag web-v1 && git push origin web-v1), only with Magnus's explicit yes for that release,
+# or Actions tab -> Run workflow. Runs entirely on GitHub; no local machine involved.
 on:
   push:
-    branches: [main]
-    paths: ['*.blend', '**/*.blend', 'assets/**', '.github/workflows/web-preview.yml']
+    tags: ['web-v*']
   workflow_dispatch:
 
 concurrency:

@@ -77,10 +77,11 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   chairs, 673 m 40x40; the lab has ~2.5 km 20x20 and ~1 km 40x40 in stock).
 - `assets/` — CC0 textures/models/HDRI (HDRI .exr is git-ignored: `./setup.sh` re-fetches `buikslotermeerplein`
   4k exr from Poly Haven into `assets/polyhaven/hdri/`; it is the ONLY external file not in git), mural, signs.
-- `.github/workflows/web-preview.yml` — live web preview: every push to main that touches a `.blend` or `assets/`
-  rebuilds the site in the separate repo `MagnusPetursson/SagaModel-web` (sibling folder `../SagaModel-web`,
+- `.github/workflows/web-preview.yml` — PUBLIC web preview, release-only (2026-11-25): pushes to main never deploy.
+  Publishing = tag `web-vN` + push the tag (or Actions -> Run workflow), only with Magnús's explicit yes per release.
+  It rebuilds the site in the separate repo `MagnusPetursson/SagaModel-web` (sibling folder `../SagaModel-web`,
   `tools/publish.sh`, Blender 5.2.2 headless on GitHub Actions) and deploys it to GitHub Pages. Needs the repo secret
-  `SAGA_WEB_DEPLOY_KEY`. Manual run: Actions tab → Web preview → Run workflow. Script-only commits don't trigger it.
+  `SAGA_WEB_DEPLOY_KEY`. Manual run: Actions tab → Web preview → Run workflow. No push to main triggers it.
 - `PLAN.md` — the review-fix goals G1–G11 (all done). New multi-step work: write a similar plan.
 - `RENDER.md` — render/video phase: final stills, presentation video script, video brand rules, pipeline, budget.
 - `MACHINES.md` — machine register (see above).
