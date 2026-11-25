@@ -234,7 +234,11 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   3 chairs per long side = 12 seats, nothing under the top), STANDING 1.10 m (European tall table; Icelandic adults
   avg ~181/168 cm, staff 185+) on the print-farm side (x 26.47-27.38,
   ~6 people each). ~1.45 m aisle between the lines, ~0.9 m to the hand-tool wall / print farm / mural cupboard,
-  ~1.0 m to the felt dividers. Target: ~16 in the main space, 20 with electronics (Magnús). Props by build_life.
+  ~1.0 m to the felt dividers. Target: ~16 in the main space, 20 with electronics (Magnús). Props by build_life:
+  ONE project in progress per table (Magnús: less mess, imagined real work; tools in use are fine; laptops mixed
+  on/closed; never move stock-list items onto tables): laser-cut box design (laptop on assets/screens/vector.png),
+  electronics (SRM-20 board, breadboard, laptop on code.png), CNC stool dry fit (mallet, clamps), textile cutting
+  (pinned pattern pieces, rotary cutter, ruler). Screens from scripts/make_screens.py.
 - **Cutter corner** on the NNE glass: 2 Roland vinyl cutters on rolling stands (y 26.5–28.5), Cricut Maker + Mayku
   FormBox counter (y 28.55–29.55), two IKEA BEKANT carts (birch top) against felt panel 1 with the Cricut Maker 3 and
   the HANDHELD 3D scanner kit (Revopoint POP 3 stand-in: head on mini tripod, turntable, case).

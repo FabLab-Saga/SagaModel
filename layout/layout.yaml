@@ -1432,10 +1432,10 @@ items:
     label: BenchProps 0
     kind: furniture
     zone: main-lab
-    pos: [23.471, 24.025]
+    pos: [23.575, 24.331]
     z: 0.75
     rot: 0
-    size: [0.757, 1.39, 0.012]
+    size: [0.725, 1.067, 0.08]
     "on": lab.worktable-0
     locked: false
     objects: [BenchProps_0]
@@ -1444,34 +1444,58 @@ items:
     label: Laptop 0
     kind: fixture
     zone: main-lab
-    pos: [23.487, 23.576]
-    z: 0.761
-    rot: 0
-    size: [0.32, 0.062, 0.214]
+    pos: [23.321, 25.23]
+    z: 0.75
+    rot: -90
+    size: [0.32, 0.288, 0.221]
     "on": lab.worktable-0
     locked: false
-    objects: [Laptop_0]
+    objects: [Laptop_0_Base, Laptop_0]
 
   - id: lab.benchprops-1
     label: BenchProps 1
     kind: furniture
     zone: main-lab
-    pos: [23.492, 26.991]
+    pos: [23.358, 27.051]
     z: 0.75
     rot: 0
-    size: [0.582, 1.584, 0.011]
+    size: [0.406, 1.061, 0.035]
     "on": lab.worktable-1
     locked: false
     objects: [BenchProps_1]
+
+  - id: lab.laptop-1
+    label: Laptop 1
+    kind: fixture
+    zone: main-lab
+    pos: [23.321, 27.77]
+    z: 0.75
+    rot: -90
+    size: [0.32, 0.288, 0.221]
+    "on": lab.worktable-1
+    locked: false
+    objects: [Laptop_1_Base, Laptop_1]
+
+  - id: lab.laptop-1b
+    label: Laptop 1b
+    kind: fixture
+    zone: main-lab
+    pos: [23.727, 26.15]
+    z: 0.75
+    rot: 90
+    size: [0.32, 0.22, 0.018]
+    "on": lab.worktable-1
+    locked: false
+    objects: [Laptop_1b]
 
   - id: lab.benchprops-2
     label: BenchProps 2
     kind: furniture
     zone: main-lab
-    pos: [26.832, 24.807]
+    pos: [26.891, 24.354]
     z: 1.1
     rot: 0
-    size: [0.581, 1.414, 0.012]
+    size: [0.403, 1.453, 0.43]
     "on": lab.worktable-2
     locked: false
     objects: [BenchProps_2]
@@ -1480,10 +1504,10 @@ items:
     label: Laptop 2
     kind: fixture
     zone: main-lab
-    pos: [26.923, 25.536]
-    z: 1.111
-    rot: 0
-    size: [0.32, 0.062, 0.214]
+    pos: [26.722, 25.32]
+    z: 1.1
+    rot: -90
+    size: [0.32, 0.22, 0.018]
     "on": lab.worktable-2
     locked: false
     objects: [Laptop_2]
@@ -1492,10 +1516,34 @@ items:
     label: BenchProps 3
     kind: furniture
     zone: main-lab
-    pos: [26.868, 27.25]
+    pos: [26.923, 26.9]
     z: 1.1
     rot: 0
-    size: [0.563, 1.267, 0.011]
+    size: [0.6, 1.78, 0.048]
     "on": lab.worktable-3
     locked: false
     objects: [BenchProps_3]
+
+  - id: lab.laptop-0-2
+    label: Laptop 0
+    kind: fixture
+    zone: main-lab
+    pos: [23.321, 25.23]
+    z: 0.75
+    rot: -90
+    size: [0.32, 0.288, 0.221]
+    "on": lab.worktable-0
+    locked: false
+    objects: [Laptop_0, Laptop_0_Base]
+
+  - id: lab.laptop-1-2
+    label: Laptop 1
+    kind: fixture
+    zone: main-lab
+    pos: [23.321, 27.77]
+    z: 0.75
+    rot: -90
+    size: [0.32, 0.288, 0.221]
+    "on": lab.worktable-1
+    locked: false
+    objects: [Laptop_1, Laptop_1_Base]
