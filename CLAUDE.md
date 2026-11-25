@@ -201,18 +201,19 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   the hallway wall (x 24.40–25.70, y 15.15–16.70), offcut boxes/foam on its deck at 2.60 m, rods/profile on cantilever
   arms at 2.95/3.30 m; low offcut cart in the window corner; step stool. Loading door -> loading zone -> ShopBot bed in
   a straight line.
-- **Microelectronics** (overhauled 2026-11-25, Magnús): the three colleague tool walls behind the bench are GONE
-  (hidden by build_microelectronics, deleted by purge_hidden); nothing is stored on or above the bench's back edge.
-  Bench (x 21.75–27.17, y 30.20–30.95, no low shelf) with 2x Roland SRM-20 on anchor cleats, ONE permanent soldering
-  station (a Weller; WE1010 stand-in) + a Chinese desoldering station (ZD-915 stand-in), fume extractor, magnifier,
-  scope/PSU (locked away at closing). Locked storage near the bench, all three of my options combined (his pick):
-  two lockable acrylic-door cabinets under the bench's back half, a rolling locked cabinet parked under the ESE end
-  (own layout item), and the middle bay of the component storage on the NNE glass behind acrylic doors. The 3.2 m
-  teaching table + 6 chairs STAYS (6 seats; combinable with the main-room tables for bigger classes).
+- **Microelectronics** (overhauled 2026-11-25, Magnús: de-crowd it into flexible teaching space, modularity first,
+  more into storage): the colleague tool walls AND the tall soldering/SRM-20 bench are GONE. Window counter (component
+  storage on the NNE glass) carries a 2.5 m lockable acrylic-door cabinet (scope/PSU, hot air, spare irons, meters,
+  kits, component drawers, SMD reels) and, at the bank-wall end, the 2 SRM-20s under a lockable acrylic hood (hood
+  and its place are my choice); its middle drawer bay is behind acrylic doors too. Soldering desk on the bank wall
+  under the old pin-up board (1.8 x 0.62, 2 places: the permanent Weller (WE1010 stand-in) + fume extractor, the
+  Chinese desoldering station (ZD-915 stand-in) + magnifier; size/layout mine); whiteboard stays, pin-up board,
+  cable pegboard and open kit shelf removed. Teaching table (3.2 m, 6 seats) moved towards the column (centre
+  y 31.15), props cleared; combinable with the main-room tables for bigger classes.
   **Felt dividers** (`build_felt_dividers.py`, collection FeltDividers): the three Flöff panels are separate mobile
-  screens on black 40x40 castor frames (feet set in 0.20 m, locking castors); default spot = the old row line
-  y 29.765, 0.08 m between frames, panel 3 stepped 0.30 m towards the workshop to clear the column at (27.61, 30.16)
-  by 0.25 m (my default; the line is too short for three 2 m panels plus a real gap). Each is a layout item, movable
+  screens on black 40x40 castor frames (feet set in 0.20 m, locking castors); default spot (Magnús: the old row line
+  moved 0.30 m towards the workshop) y 29.465, x 21.50–27.82 (starts past the cutter counter), 0.04 m between
+  frames; panel 3's column-end foot is set in 0.30 m and clears the column by ~6 cm. Each is a layout item, movable
   to block noise or divide the area. The electronics sign hangs over the bench.
 - **Lock-down detail** (`scripts/lockdown.py`, exec'd by builders): clear acrylic leaves hung in pairs, one surface
   RFID electronic cabinet lock per pair (Magnús: acrylic doors, electronic locks where reasonable; the detail is my

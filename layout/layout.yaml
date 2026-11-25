@@ -509,7 +509,7 @@ items:
     label: Bekant Cart 1
     kind: storage
     zone: main-lab
-    pos: [21.805, 29.394]
+    pos: [21.805, 28.944]
     z: 0
     rot: 0
     size: [0.63, 0.472, 1.028]
@@ -520,7 +520,7 @@ items:
     label: Bekant Cart 2
     kind: storage
     zone: main-lab
-    pos: [22.465, 29.394]
+    pos: [22.465, 28.944]
     z: 0
     rot: 0
     size: [0.63, 0.472, 1.028]
@@ -575,12 +575,12 @@ items:
     label: ComponentStorage
     kind: storage
     zone: main-lab
-    pos: [21.137, 32.18]
+    pos: [21.138, 32.181]
     z: 0
     rot: 90
-    size: [3.764, 0.525, 1.66]
+    size: [3.767, 0.525, 2.218]
     locked: false
-    objects: [ComponentStorage, ComponentStorage_Top, ComponentStorage_Drawers, SMD_Reels, CompCab_0_1, CompCab_1_1, CompCab_2_1, CompCab_0_0, CompCab_1_0, CompCab_2_0, ComponentStorage_Doors]
+    objects: [ComponentStorage, ComponentStorage_Top, ComponentStorage_Drawers, ComponentStorage_Doors, WindowCabinets, WindowCabinets_Doors, CompCab_0_0, CompCab_1_0, ScopePSU]
 
   - id: lab.cuttercounter
     label: CutterCounter
@@ -597,7 +597,7 @@ items:
     label: Elec Chair 1 0
     kind: furniture
     zone: main-lab
-    pos: [24.569, 33.613]
+    pos: [24.569, 31.913]
     z: 0
     rot: -7.9
     size: [0.464, 0.464, 0.86]
@@ -608,7 +608,7 @@ items:
     label: Elec Chair 1 10
     kind: furniture
     zone: main-lab
-    pos: [25.637, 33.613]
+    pos: [25.637, 31.913]
     z: 0
     rot: 8.6
     size: [0.464, 0.464, 0.86]
@@ -619,7 +619,7 @@ items:
     label: Elec Chair 1 -10
     kind: furniture
     zone: main-lab
-    pos: [23.481, 33.658]
+    pos: [23.481, 31.958]
     z: 0
     rot: -1.3
     size: [0.464, 0.464, 0.86]
@@ -630,7 +630,7 @@ items:
     label: Elec Chair -1 0
     kind: furniture
     zone: main-lab
-    pos: [24.56, 32.002]
+    pos: [24.56, 30.302]
     z: 0
     rot: -179.2
     size: [0.464, 0.464, 0.86]
@@ -641,7 +641,7 @@ items:
     label: Elec Chair -1 10
     kind: furniture
     zone: main-lab
-    pos: [25.582, 32.136]
+    pos: [25.582, 30.436]
     z: 0
     rot: -177.2
     size: [0.464, 0.464, 0.86]
@@ -652,7 +652,7 @@ items:
     label: Elec Chair -1 -10
     kind: furniture
     zone: main-lab
-    pos: [23.53, 32.019]
+    pos: [23.53, 30.319]
     z: 0
     rot: 172.8
     size: [0.464, 0.464, 0.86]
@@ -663,23 +663,34 @@ items:
     label: Electronics BoardRun
     kind: fixture
     zone: main-lab
-    pos: [24.5, 34.165]
+    pos: [24.5, 34.275]
     z: 0.95
     rot: 0
-    size: [5.4, 0.3, 1.567]
+    size: [5.4, 0.08, 1.32]
     locked: true
     objects: [Electronics_BoardRun, WB_Text, WB_Text.001, WB_Text.002, WB_Text.003, WB_Text.004, WB_Text.005, WB_Text.006, WB_Text.007]
+
+  - id: lab.solderdesk
+    label: Soldering desk (Weller + desoldering)
+    kind: furniture
+    zone: main-lab
+    pos: [22.85, 33.985]
+    z: 0
+    rot: 0
+    size: [1.804, 0.64, 1.178]
+    locked: false
+    objects: [SolderDesk, Solder_Weller, Fume_0, Desolder_ZD915, Magnifier]
 
   - id: lab.electronics-table
     label: Electronics Table
     kind: furniture
     zone: main-lab
-    pos: [24.55, 32.85]
+    pos: [24.55, 31.15]
     z: 0
     rot: 0
-    size: [3.204, 1.22, 0.81]
+    size: [3.204, 1.22, 0.75]
     locked: false
-    objects: [Electronics_Table, Electronics_Table_Stuff]
+    objects: [Electronics_Table]
 
   - id: lab.glassbench
     label: GlassBench
@@ -724,61 +735,6 @@ items:
     size: [0.55, 0.406, 0.62]
     locked: false
     objects: [GlassTW_ToolChest]
-
-  - id: lab.microbench
-    label: MicroBench
-    kind: furniture
-    zone: main-lab
-    pos: [24.462, 30.588]
-    z: 0
-    rot: 0
-    size: [5.424, 0.77, 1.328]
-    locked: false
-    objects: [MicroBench, Solder_Weller, Fume_0, Desolder_ZD915, ScopePSU, Magnifier, BenchStuff, SRM20_Anchors, ElecBench_Cabinets, ElecBench_CabDoors]
-
-  - id: lab.microstool-0
-    label: MicroStool 0
-    kind: furniture
-    zone: main-lab
-    pos: [22.443, 31.284]
-    z: 0
-    rot: 10.9
-    size: [0.384, 0.384, 0.68]
-    locked: false
-    objects: [MicroStool_0]
-
-  - id: lab.microstool-1
-    label: MicroStool 1
-    kind: furniture
-    zone: main-lab
-    pos: [23.576, 31.257]
-    z: 0
-    rot: 1.2
-    size: [0.384, 0.384, 0.68]
-    locked: false
-    objects: [MicroStool_1]
-
-  - id: lab.microstool-2
-    label: MicroStool 2
-    kind: furniture
-    zone: main-lab
-    pos: [24.965, 31.267]
-    z: 0
-    rot: 4.5
-    size: [0.384, 0.384, 0.68]
-    locked: false
-    objects: [MicroStool_2]
-
-  - id: lab.microstool-3
-    label: MicroStool 3
-    kind: furniture
-    zone: main-lab
-    pos: [26.405, 31.224]
-    z: 0
-    rot: -8.6
-    size: [0.384, 0.384, 0.68]
-    locked: false
-    objects: [MicroStool_3]
 
   - id: lab.muralcupboard
     label: MuralCupboard
@@ -1081,7 +1037,7 @@ items:
     label: Cricut Maker 3
     kind: machine
     zone: main-lab
-    pos: [21.805, 29.3]
+    pos: [21.805, 28.85]
     z: 1.028
     rot: 0
     size: [0.538, 0.478, 0.233]
@@ -1093,7 +1049,7 @@ items:
     label: Handheld 3DScanner
     kind: machine
     zone: main-lab
-    pos: [22.467, 29.382]
+    pos: [22.467, 28.932]
     z: 1.026
     rot: 0
     size: [0.365, 0.375, 0.212]
@@ -1177,11 +1133,11 @@ items:
     label: Roland SRM20 1
     kind: machine
     zone: main-lab
-    pos: [22.175, 30.447]
-    z: 0.9
-    rot: 180
+    pos: [21.112, 33.155]
+    z: 1.075
+    rot: 90
     size: [0.451, 0.427, 0.426]
-    "on": lab.microbench
+    "on": lab.componentstorage
     locked: false
     objects: [Roland_SRM20_1]
 
@@ -1189,11 +1145,11 @@ items:
     label: Roland SRM20 2
     kind: machine
     zone: main-lab
-    pos: [22.775, 30.447]
-    z: 0.9
-    rot: 180
+    pos: [21.112, 33.696]
+    z: 1.075
+    rot: 90
     size: [0.451, 0.427, 0.426]
-    "on": lab.microbench
+    "on": lab.componentstorage
     locked: false
     objects: [Roland_SRM20_2]
 
@@ -1557,22 +1513,11 @@ items:
     locked: false
     objects: [BenchProps_3]
 
-  - id: lab.elecrollcab
-    label: Electronics rolling cabinet (locked)
-    kind: storage
-    zone: main-lab
-    pos: [25.918, 30.453]
-    z: 0
-    rot: 0
-    size: [0.832, 0.42, 0.72]
-    locked: false
-    objects: [ElecRollCab, ElecRollCab_Door]
-
   - id: lab.feltframe-1
     label: Felt divider 1 (mobile)
     kind: furniture
     zone: main-lab
-    pos: [21.99, 29.765]
+    pos: [22.54, 29.465]
     z: 0
     rot: 0
     size: [2.08, 0.509, 2.767]
@@ -1583,7 +1528,7 @@ items:
     label: Felt divider 2 (mobile)
     kind: furniture
     zone: main-lab
-    pos: [24.15, 29.765]
+    pos: [24.66, 29.465]
     z: 0
     rot: 0
     size: [2.08, 0.509, 2.433]
@@ -1594,9 +1539,31 @@ items:
     label: Felt divider 3 (mobile)
     kind: furniture
     zone: main-lab
-    pos: [26.31, 29.465]
+    pos: [26.78, 29.465]
     z: 0
     rot: 0
     size: [2.08, 0.509, 2.767]
     locked: false
     objects: [FeltFrame_3]
+
+  - id: lab.solder-chair-1
+    label: Solder Chair 1
+    kind: furniture
+    zone: main-lab
+    pos: [22.4, 33.375]
+    z: 0
+    rot: 179
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Solder_Chair_1]
+
+  - id: lab.solder-chair-2
+    label: Solder Chair 2
+    kind: furniture
+    zone: main-lab
+    pos: [23.3, 33.375]
+    z: 0
+    rot: -178.9
+    size: [0.464, 0.464, 0.86]
+    locked: false
+    objects: [Solder_Chair_2]

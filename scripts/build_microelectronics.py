@@ -450,25 +450,64 @@ def component_storage(m, col):
                    xa + 0.04, xa + 0.14, -0.0025, -0.002, z + hh - 0.06, z + hh - 0.035)  # label card
             z += hh
     dr.emit("ComponentStorage_Drawers", col, loc, rot)
-    # on top: three stacks of drawer cabinets + an SMD reel rack
-    for i in range(3):
-        for k in range(2):
-            c2, cw2, ch2 = drawer_cabinet(m, cols=6, rows=6)
-            c2.emit(f"CompCab_{i}_{k}", col, Vector((XB + 0.06 + 0.142, Y0 + 0.10 + i * 1.22, H + 0.025 + k * (ch2 + 0.005))), math.pi / 2)
-    reels = Part()
-    ry = Y0 + 0.10 + 3 * 1.22 - 0.30
-    reels.box(m["steel"], XB + 0.10, XB + 0.12, ry, ry + 0.02, H, H + 0.30)
-    reels.box(m["steel"], XB + 0.10, XB + 0.12, ry + 0.22, ry + 0.24, H, H + 0.30)
-    reels.cyl(m["steel"], (XB + 0.11, ry, H + 0.20), (XB + 0.11, ry + 0.24, H + 0.20), 0.005, seg=8)
-    for j in range(12):
-        yy = ry + 0.012 + j * 0.018
-        reels.cyl(mat("Reel_Blue", "#1E5FA8", 0.3) if j % 3 else mat("Reel_Clear", "#D8DEE2", 0.1),
-                  (XB + 0.11, yy, H + 0.20), (XB + 0.11, yy + 0.010, H + 0.20), 0.09, seg=32)
-    reels.emit("SMD_Reels", col, Vector((0, 0, 0)))
-    # (C) one bay (the second from the bench, so its doors swing clear of the bench end) behind acrylic doors:
-    # locked drawers for meters and soldering spares (lockdown, Magnús 2026-11-25; my placement).
+    # On top (Magnús 2026-11-25: "the equipment in cabinets on top of the shelf alongside the window"; layout mine):
+    # a 2.5 m lockable acrylic-door cabinet (4 leaves, 2 e-locks) holding the scope/PSU, hot-air station, spare irons,
+    # meters, kits, component drawers and SMD reels; and at the bank-wall end the two SRM-20s under a lockable acrylic
+    # hood (2 leaves, 1 e-lock), run from the counter.
     ld = {}
     exec(open(HERE + "lockdown.py").read(), ld)
+    acr = ld["_ld_mats"]()[0]
+    T = H + 0.025                                                      # counter top
+    CX0, CX1, CY0, CY1, CZ1 = XB + 0.01, XB + 0.47, Y0, Y0 + 2.50, 2.20
+    cabs, cdoor = Part(), Part()
+    ply = MAT["ply"]
+    cabs.box(ply, CX0, CX1, CY0, CY1, CZ1, CZ1 + 0.018, bevel=0.002)                  # top
+    for y in (CY0, (CY0 + CY1) / 2 - 0.009, CY1 - 0.018):
+        cabs.box(ply, CX0, CX1, y, y + 0.018, T, CZ1)                                 # ends + middle divider
+    cabs.box(ply, CX0, CX0 + 0.012, CY0, CY1, T, CZ1)                                 # back (glass side)
+    for z in (T + 0.40, T + 0.78):
+        cabs.box(ply, CX0 + 0.012, CX1 - 0.01, CY0 + 0.018, CY1 - 0.018, z, z + 0.018, bevel=0.0015)   # shelves
+    z0, z1, z2 = T, T + 0.418, T + 0.798
+    scope_and_psu(m).emit("ScopePSU", col, Vector((CX1 - 0.03, CY0 + 0.05, z0)), math.pi / 2)   # front faces +x
+    for k in range(2):
+        c2, cw2, ch2 = drawer_cabinet(m, cols=6, rows=6)
+        c2.emit(f"CompCab_{k}_0", col, Vector((CX0 + 0.04 + 0.142, CY0 + 1.30 + k * (cw2 + 0.03), z0)), math.pi / 2)
+    toolbox(cabs, m, m["red"], CX0 + 0.04, CY0 + 0.05, z1, w=0.36, d=0.38, h=0.14)        # hot-air rework station
+    toolbox(cabs, m, m["blue"], CX0 + 0.04, CY0 + 0.45, z1, w=0.34, d=0.36, h=0.11)       # spare irons + tips
+    toolbox(cabs, m, m["grey"], CX0 + 0.04, CY0 + 0.83, z1, w=0.32, d=0.36, h=0.09)       # solder, wick, flux
+    for k in range(4):                                                                   # multimeters
+        y = CY0 + 1.32 + k * 0.12
+        cabs.box(m["yellow"], CX0 + 0.20, CX0 + 0.245, y, y + 0.09, z1, z1 + 0.18, bevel=0.006)
+    toolbox(cabs, m, m["black"], CX0 + 0.04, CY0 + 1.85, z1, w=0.36, d=0.36, h=0.12)      # probes, leads
+    kits = [mat("Kit_Teal", "#0E8C8C", 0.5), mat("Kit_Blue", "#1245DE", 0.5), m["red"], mat("Kit_Grey", "#5E6266", 0.5)]
+    y = CY0 + 0.05
+    while y < CY1 - 0.30:                                                                # kit boxes, top shelf
+        w = rng.uniform(0.18, 0.30)
+        cabs.box(rng.choice(kits), CX0 + 0.05, CX0 + 0.38, y, y + w, z2, z2 + rng.uniform(0.10, 0.22), bevel=0.004)
+        y += w + 0.02
+    for j in range(10):                                                                  # SMD reels, top shelf end
+        yy = CY1 - 0.26 + j * 0.02
+        cabs.cyl(mat("Reel_Blue", "#1E5FA8", 0.3) if j % 3 else mat("Reel_Clear", "#D8DEE2", 0.1),
+                 (CX0 + 0.22, yy, z2 + 0.09), (CX0 + 0.22, yy + 0.012, z2 + 0.09), 0.09, seg=32)
+    ld["door_run"](cdoor, "+x", CX1, CY0 + 0.005, CY1 - 0.005, T + 0.006, CZ1 - 0.004, leaves=4, lock_z=1.55)
+    # SRM-20 hood at the bank-wall end
+    SY0, SY1, SZ1 = Y0 + 2.58, Y1 - 0.04, T + 0.56
+    for x in (CX0, CX1 - 0.02):
+        for y in (SY0, SY1 - 0.02):
+            cabs.profile(0.02, "z", x, y, T, SZ1 - T)
+    cabs.box(acr, CX0, CX1, SY0, SY1, SZ1, SZ1 + 0.005)                                  # acrylic lid
+    for y in (SY0 - 0.005, SY1):
+        cabs.box(acr, CX0, CX1, y, y + 0.005, T, SZ1)                                     # acrylic ends
+    cabs.box(acr, CX0, CX0 + 0.005, SY0, SY1, T, SZ1)                                     # back
+    for k, sy in enumerate((SY0 + 0.05, SY0 + 0.59)):
+        mach["srm20"]().emit(f"Roland_SRM20_{k + 1}", col, Vector((CX1 - 0.025, sy, T)), math.pi / 2)  # front +x
+    ld["door_run"](cdoor, "+x", CX1, SY0 + 0.005, SY1 - 0.005, T + 0.006, SZ1 - 0.004, leaves=2, lock_z=T + 0.28)
+    cabs.emit("WindowCabinets", col, Vector((0, 0, 0)))
+    dob = cdoor.emit("WindowCabinets_Doors", col, Vector((0, 0, 0)))
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
+    # (C) one bay (the second from the bench, so its doors swing clear of the bench end) behind acrylic doors:
+    # locked drawers for meters and soldering spares (lockdown, Magnús 2026-11-25; my placement).
     cd = Part()
     b0, b1 = Y0 + Lu / 3, Y0 + 2 * Lu / 3
     ld["door_run"](cd, "+x", XB + D + 0.024, b0 + 0.02, b1 - 0.02, 0.10, H - 0.03, leaves=2, lock_z=0.75)
@@ -500,86 +539,14 @@ def build():
                 k.hide_set(True)
     yf = 29.953
     rot = math.pi                                                    # local front (-y) faces +y
-    # ---- workbench in front of the row
-    L, D, H = X1 - 21.75, 0.75, 0.90
-    legs = [0.0, L / 3, 2 * L / 3, L - 0.04]
-    bench, _ = lib["table_unit"](L, D, H, legs, lower=())         # no low shelf: lockable cabinets + a rolling one under
-    bloc, brot = lib["placement"](21.75 + L / 2, yf + 0.25 + D / 2, L, D, "-y")
-    bench.emit("MicroBench", col, bloc, brot)
-    top = H
-
-    def on_bench(part, name, wx, wy, w, d, facing=math.pi):
-        part.emit(name, col, Vector((wx + w, wy + d, top)), facing)
-    by = yf + 0.25                                                   # bench back edge (against the tool wall)
-    for i, sx in enumerate((21.95, 22.55)):                          # the only machines here: 2x Roland SRM-20
-        on_bench(mach["srm20"](), f"Roland_SRM20_{i + 1}", sx, by + 0.03, 0.451, 0.426)
-    # Soldering (Magnús 2026-11-25): ONE permanent good station (a Weller) + a Chinese desoldering station on the
-    # bench; nothing is stored on or above the bench's back edge (the tool walls there go). Spare soldering tools,
-    # meters and the scope/PSU get lockable storage NEAR the bench (location pending Magnús); until then the
-    # scope/PSU stand on the bench.
-    on_bench(weller_we1010(m), "Solder_Weller", 23.40, by + 0.04, 0.245, 0.16)
-    on_bench(fume_extractor(m), "Fume_0", 23.72, by + 0.04, 0.20, 0.08)
-    on_bench(zd915(m), "Desolder_ZD915", 24.06, by + 0.03, 0.13, 0.225)
-    on_bench(magnifier_lamp(m), "Magnifier", 24.45, by + 0.02, 0.06, 0.06)
-    on_bench(scope_and_psu(m), "ScopePSU", 26.56, by + 0.04, 0.56, 0.25)
-    anchors = Part()                                                               # SRM-20 anchor cleats
-    for sx in (21.95, 22.55):
-        for ux, sgn in ((sx, -1), (sx + 0.451, 1)):
-            anchors.box(MAT["profile"], min(ux, ux + sgn * 0.04), max(ux, ux + sgn * 0.04), by + 0.20, by + 0.24, top, top + 0.003)
-            anchors.box(MAT["profile"], min(ux, ux + sgn * 0.003), max(ux, ux + sgn * 0.003), by + 0.20, by + 0.24, top, top + 0.04)
-    anchors.emit("SRM20_Anchors", col, Vector((0, 0, 0)))
-    # Locked storage NEAR the bench (Magnús 2026-11-25: all three of my options combined; sizes/places are mine):
-    # (A) two lockable cabinets under the back half of the bench, (B) a rolling lockable cabinet for the scope/PSU
-    # parked under the ESE end, (C) one bay of the component storage on the glass behind acrylic doors (lockdown()).
-    ld = {}
-    exec(open(HERE + "lockdown.py").read(), ld)
-    acr = ld["_ld_mats"]()[0]
-    ply = MAT["ply"]
-    cab, cdoors = Part(), Part()
-    CY0, CY1, CZ0, CZ1 = by + 0.03, by + 0.40, 0.06, 0.78
-    for xa, xb in ((21.80, 23.52), (23.62, 25.34)):
-        cab.box(ply, xa, xb, CY0, CY1, CZ0, CZ0 + 0.018)                          # bottom
-        cab.box(ply, xa, xb, CY0, CY1, CZ1 - 0.018, CZ1)                          # top
-        cab.box(ply, xa, xb, CY0, CY0 + 0.012, CZ0, CZ1)                          # back
-        for x in (xa, xb - 0.018):
-            cab.box(ply, x, x + 0.018, CY0, CY1, CZ0, CZ1)                        # sides
-        cab.box(ply, xa + 0.018, xb - 0.018, CY0 + 0.012, CY1 - 0.01, 0.42, 0.438)   # shelf
-        for k in range(3):                                                        # boxed spares inside
-            toolbox(cab, m, (m["red"], m["blue"], m["grey"])[k], xa + 0.06 + k * 0.52, CY0 + 0.04, CZ0 + 0.018,
-                    w=0.44, d=0.28, h=0.16 + 0.03 * (k % 2))
-            hx = xa + 0.08 + k * 0.52
-            cab.box(m["yellow"], hx, hx + 0.09, CY0 + 0.20, CY0 + 0.245, 0.438, 0.618, bevel=0.006)   # meters
-        ld["door_run"](cdoors, "+y", CY1, xa + 0.004, xb - 0.004, CZ0 + 0.02, CZ1 - 0.004, leaves=2, lock_z=0.60)
-    cab.emit("ElecBench_Cabinets", col, Vector((0, 0, 0)))
-    roll, rdoors = Part(), Part()
-    RX0, RX1, RY0, RY1, RZ1 = 25.50, 26.32, by + 0.03, by + 0.45, 0.72
-    for xx in (RX0 + 0.06, RX1 - 0.06):                                           # locking castors
-        for yy in (RY0 + 0.06, RY1 - 0.06):
-            roll.cyl(m["black"], (xx - 0.012, yy, 0.04), (xx + 0.012, yy, 0.04), 0.04, seg=16)
-    roll.box(m["black"], RX0, RX1, RY0, RY1, 0.08, 0.10)
-    roll.box(ply, RX0, RX1, RY0, RY1, 0.10, RZ1, bevel=0.003)                    # carcass
-    roll.box(m["black"], RX1 - 0.02, RX1 + 0.012, RY0 + 0.10, RY1 - 0.10, 0.62, 0.64)   # push bar
-    ld["acrylic_door"](rdoors, "+y", RY1, RX0 + 0.01, RX1 - 0.01, 0.12, RZ1 - 0.02, hinge="a", lock_z=0.55)
-    roll.emit("ElecRollCab", col, Vector((0, 0, 0)))
-    for part, name in ((cdoors, "ElecBench_CabDoors"), (rdoors, "ElecRollCab_Door")):
-        dob = part.emit(name, col, Vector((0, 0, 0)))
-        for o in [dob, *dob.children_recursive]:
-            o["layout_skip"] = True
-    pc = Part()                                                      # PCBs + parts tray + solder spool on the bench
-    for i in range(5):
-        x, y = 22.6 + i * 0.9 + rng.uniform(-0.1, 0.1), by + 0.42 + rng.uniform(-0.05, 0.08)
-        pc.box(m["pcb"], x, x + rng.uniform(0.06, 0.12), y, y + rng.uniform(0.04, 0.09), top, top + 0.0016)
-    pc.box(m["grey"], 25.3, 25.55, by + 0.30, by + 0.45, top, top + 0.02, bevel=0.003)
-    pc.cyl(m["solder"], (24.9, by + 0.35, top + 0.025), (24.9, by + 0.38, top + 0.025), 0.025, seg=24)
-    pc.emit("BenchStuff", col, Vector((0, 0, 0)))
-    for i, sx in enumerate((22.3, 23.4, 24.8, 26.2)):                 # stools on the open side
-        craft["stool"](0.68).emit(f"MicroStool_{i}", col, Vector((sx, by + D + 0.12, 0.0)), rng.uniform(-0.2, 0.2))
-
+    # ---- (2026-11-25, Magnús) the tall soldering/SRM-20 bench is GONE: the area is de-crowded into flexible teaching
+    # space. Soldering moves to a desk on the bank wall (electronics_commons), the SRM-20s and every portable
+    # instrument into locked cabinets on the window counter (component_storage), the teaching table towards the column.
     glass_toolwall(m, col)
     component_storage(m, col)
     electronics_commons(m, col)
     tool_library(m, col)
-    print("microelectronics built; bench length %.2f m" % L)
+    print("microelectronics built (no tall bench; soldering desk on the bank wall)")
 
 
 
@@ -777,17 +744,7 @@ def electronics_commons(m, col):
     # frame rails (20x20) along the run
     for z in (0.95, 2.25):
         b.profile(0.02, "x", 21.80, YW - 0.02, z, 5.40)
-    # pin-up board x 21.85-23.75
-    b.box(cork, 21.85, 23.75, YW - 0.015, YW, 0.97, 2.25)
-    for k in range(14):
-        x0 = 21.92 + (k % 7) * 0.26 + rng.uniform(-0.02, 0.02)
-        z0 = 1.05 + (k // 7) * 0.58 + rng.uniform(-0.04, 0.04)
-        w, h = (0.21, 0.297) if k % 3 else (0.297, 0.21)
-        b.box(paper, x0, x0 + w, YW - 0.017, YW - 0.015, z0, z0 + h)
-        for line in range(6):                                          # schematic / text lines
-            lz = z0 + 0.03 + line * (h - 0.06) / 6
-            b.box(ink[1], x0 + 0.02, x0 + w * rng.uniform(0.5, 0.9), YW - 0.0172, YW - 0.017, lz, lz + 0.002)
-        b.cyl(rng.choice(MAT["bins"]), (x0 + w / 2, YW - 0.017, z0 + h - 0.015), (x0 + w / 2, YW - 0.025, z0 + h - 0.015), 0.006, seg=10)
+    # (pin-up board removed 2026-11-25, Magnús)
     # whiteboard x 23.85-25.65 with circuit sketches
     b.box(MAT["profile"], 23.83, 25.67, YW - 0.03, YW, 0.97, 2.23)
     b.box(wb, 23.86, 25.64, YW - 0.032, YW - 0.03, 1.00, 2.20)
@@ -795,53 +752,32 @@ def electronics_commons(m, col):
     b.box(MAT["profile"], 23.95, 25.55, YW - 0.08, YW - 0.03, 0.96, 0.98)          # marker tray
     for k, c in enumerate(ink):
         b.cyl(c, (24.1 + k * 0.08, YW - 0.06, 0.985), (24.17 + k * 0.08, YW - 0.06, 0.985), 0.008, seg=10)
-    # pegboard x 25.75-27.20 with coiled cables + jumper wire bundles
-    b.box(peg, 25.75, 27.20, YW - 0.004, YW - 0.002, 0.97, 2.20)
-    for k in range(6):
-        cx, cz = 25.90 + k * 0.23, 1.80
-        col_k = (m["black"], m["blue"], m["red"], mat("Wire_White", "#EDEDE8", 0.4), m["yellow"], m["black"])[k]
-        for r in range(4):                                             # coil = a few stacked rings
-            bmesh.ops.create_cone(b.bm(col_k), cap_ends=False, segments=24, radius1=0.07 - r * 0.004, radius2=0.07 - r * 0.004,
-                                  depth=0.008, matrix=Matrix.Translation((cx, YW - 0.03 - r * 0.008, cz - r * 0.01)) @ Matrix.Rotation(math.pi / 2, 4, "X"))
-        b.box(m["steel"], cx - 0.004, cx + 0.004, YW - 0.06, YW, cz + 0.06, cz + 0.07)  # peg hook
-    for k in range(5):                                                 # jumper wire bundles
-        cx = 25.95 + k * 0.26
-        for j in range(8):
-            b.box(MAT["bins"][j % 6], cx + j * 0.006, cx + j * 0.006 + 0.002, YW - 0.02, YW - 0.018, 1.10, 1.40)
-    # kit shelf above the run
-    b.box(MAT["ply"], 21.85, 27.15, YW - 0.30, YW, 2.30, 2.318, bevel=0.002)
-    kits = [mat("Kit_Teal", "#0E8C8C", 0.5), mat("Kit_Blue", "#1245DE", 0.5), m["red"], mat("Kit_Grey", "#5E6266", 0.5)]
-    x = 21.90
-    while x < 27.0:
-        w = rng.uniform(0.18, 0.32)
-        hgt = rng.uniform(0.08, 0.20)
-        b.box(rng.choice(kits), x, x + w, YW - 0.27, YW - 0.03, 2.318, 2.318 + hgt, bevel=0.004)
-        x += w + 0.02
+    # (cable pegboard + open kit shelf removed 2026-11-25: kits and cables live in the locked window cabinets)
     b.emit("Electronics_BoardRun", col, Vector((0, 0, 0)))
 
-    # teaching table with 6 chairs
+    # Soldering desk on the bank wall under the old pin-up board (Magnús 2026-11-25: soldering "up against the wall on
+    # the other side of the low table"; desk size, 2 places and the layout are mine): 1.8 x 0.62 m, 0.75 m high,
+    # the permanent Weller + fume extractor at one place, the desoldering station + magnifier at the other.
+    DX0, DX1, DD, DH = 21.95, 23.75, 0.62, 0.75
+    dy1 = YW - 0.02
+    d, _ = lib["table_unit"](DX1 - DX0, DD, DH, [0.0, DX1 - DX0 - 0.04], lower=())
+    dloc, drot = lib["placement"]((DX0 + DX1) / 2, dy1 - DD / 2, DX1 - DX0, DD, "-y")
+    d.emit("SolderDesk", col, dloc, drot)
+    weller_we1010(m).emit("Solder_Weller", col, Vector((22.05, dy1 - 0.19, DH)), 0.0)
+    fume_extractor(m).emit("Fume_0", col, Vector((22.45, dy1 - 0.10, DH)), 0.0)            # filter faces the user
+    zd915(m).emit("Desolder_ZD915", col, Vector((23.00, dy1 - 0.25, DH)), 0.0)
+    magnifier_lamp(m).emit("Magnifier", col, Vector((23.45, dy1 - 0.08, DH)), 0.0)
+    for k, cx in enumerate((22.40, 23.30)):
+        r = math.pi + rng.uniform(-0.12, 0.12)
+        off = Matrix.Rotation(r, 4, "Z") @ Vector((-0.22, -0.22, 0))
+        tex["chair"]().emit(f"Solder_Chair_{k + 1}", col, Vector((cx, dy1 - DD - 0.30, 0)) + off, r)
+
+    # teaching table with 6 chairs, moved towards the column (Magnús 2026-11-25); props cleared (lock-down)
     TL, TD, TH = 3.20, 1.20, 0.75
-    tc = Vector((24.55, 32.85))
+    tc = Vector((24.55, 31.15))
     t, _ = lib["table_unit"](TL, TD, TH, [0.0, TL / 2 - 0.02, TL - 0.04], lower=())
     loc, rot = lib["placement"](tc.x, tc.y, TL, TD, "-y")
     t.emit("Electronics_Table", col, loc, rot)
-    stuff = Part()
-    bb_white = mat("Breadboard", "#EEEDE6", 0.5)
-    for k in range(6):
-        side = -1 if k < 3 else 1
-        x = tc.x - TL / 2 + 0.55 + (k % 3) * 1.05
-        y = tc.y + side * 0.30
-        stuff.box(bb_white, x - 0.085, x + 0.085, y - 0.028, y + 0.028, TH, TH + 0.009, bevel=0.0015)   # breadboard
-        stuff.box(m["blue"] if k % 2 else m["pcb"], x + 0.10, x + 0.17, y - 0.027, y + 0.027, TH, TH + 0.003)  # Arduino-ish board
-        for j in range(5):                                             # jumper wires on the breadboard
-            jx = x - 0.06 + j * 0.03
-            stuff.box(MAT["bins"][(j + k) % 6], jx, jx + 0.002, y - 0.015, y + 0.015, TH + 0.009, TH + 0.016)
-        if k % 2 == 0:                                                 # laptop
-            stuff.box(bpy.data.materials.get("Laptop_Body") or m["grey"], x - 0.16, x + 0.16, y + side * 0.12 - 0.11, y + side * 0.12 + 0.11, TH, TH + 0.012, bevel=0.003)
-    for k in range(3):                                                 # kit boxes on the table centre line
-        x = tc.x - 0.9 + k * 0.9
-        stuff.box(kits[k], x - 0.12, x + 0.12, tc.y - 0.08, tc.y + 0.08, TH, TH + 0.06, bevel=0.004)
-    stuff.emit("Electronics_Table_Stuff", col, Vector((0, 0, 0)))
     for side, ry in ((-1, math.pi), (1, 0.0)):
         for dx in (-1.05, 0.0, 1.05):
             cx = tc.x + dx + rng.uniform(-0.05, 0.05)

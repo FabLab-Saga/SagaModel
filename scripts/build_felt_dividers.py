@@ -6,8 +6,8 @@ spot but they're intended to be movable to block specific noise or divide the ar
 My design: each panel keeps its felt mesh (Floff_Panel_1..3, arched tops on the manual's grid, unchanged) and gets
 its own black 40x40 frame: two posts at the panel ends, a bottom rail under the felt, two 0.50 m feet set in 0.20 m
 from the ends, four locking castors. Default spot = the old row line (felt plane y ~29.765), panels slid towards the
-NNE glass with 0.08 m between frames so each stands alone; three 2 m panels + frames fill the line to within 0.07 m of
-the column at (27.61, 30.16), so panel 3 is stepped 0.30 m towards the workshop by default (0.3 m clear).
+NNE glass with 0.08 m between frames so each stands alone. Magnús moved the default line 0.30 m towards the workshop
+(2026-11-25) to make room for the electronics re-layout; that also clears the column at (27.61, 30.16).
 Each panel is its own layout item (movable in Blender or the planner).
 """
 import bpy
@@ -20,10 +20,11 @@ MAT = lib["materials"]()
 Part = lib["Part"]
 
 PANELS = ["Floff_Panel_1", "Floff_Panel_2", "Floff_Panel_3"]
-X_START, GAP, POST = 20.95, 0.08, 0.04
-YC = 29.765                                          # felt mid-plane (the old row line)
-DY = [0.0, 0.0, -0.30]                               # panel 3 stepped 0.30 m towards the workshop: clear of the column
+X_START, GAP, POST = 21.50, 0.04, 0.04           # start past the cutter counter's end (x 21.45)
+YC = 29.465                                          # felt mid-plane: old row line moved 0.30 m towards the workshop (Magnús)
+DY = [0.0, 0.0, 0.0]
 FOOT, SETIN, CASTOR = 0.50, 0.20, 0.09
+SETIN_END = {2: 0.30}                               # panel 3's column-end foot set in further (column at x 27.61)
 
 
 def clear(name):
@@ -65,13 +66,14 @@ def build():
         mx0, mx1, mz0, end_h = mesh_bounds(o.data)                            # mesh is in world coords at origin
         w = mx1 - mx0
         fx0 = x + POST                                                        # felt starts after the left post
-        o.matrix_world = Matrix.Translation((fx0 - mx0, DY[i], 0.0))
+        my = sum(v.co.y for v in o.data.vertices) / len(o.data.vertices)      # felt mid-plane in the mesh
+        o.matrix_world = Matrix.Translation((fx0 - mx0, yc - my, 0.0))
         f = Part()
         y0 = yc - POST / 2
         for px in (fx0 - POST, fx0 + w):
             f.profile(POST, "z", px, y0, CASTOR + 0.04, end_h - CASTOR - 0.04)    # posts (from the feet up)
         f.profile(POST, "x", fx0 - POST, y0, mz0 - POST, w + 2 * POST)            # bottom rail under the felt
-        for px in (fx0 + SETIN - POST, fx0 + w - SETIN):
+        for px in (fx0 + SETIN - POST, fx0 + w - SETIN_END.get(i, SETIN)):
             f.profile(POST, "y", px, yc - FOOT / 2, CASTOR, FOOT)                 # feet
             for py in (yc - FOOT / 2 + 0.03, yc + FOOT / 2 - 0.03):              # locking castors
                 cx = px + POST / 2
