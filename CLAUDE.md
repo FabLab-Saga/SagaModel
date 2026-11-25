@@ -69,7 +69,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (`exec(open(path).read())` via MCP). Order if rebuilding several:
   `build_services` → `build_lighting` → `build_machines` → `build_print_farm` → `build_laser_room` → `build_bank_lounge` →
   `build_sofas` (ALWAYS after bank_lounge) → `build_craft_spine` → `build_worktables` → `build_life` (needs WorkTables) →
-  `build_microelectronics` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
+  `build_microelectronics` → `build_felt_dividers` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
   `build_material_storage` → `build_entrance_bay` → `build_escape_doors` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_cnc_room` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
   `add_cameras` → `purge_hidden`.
   Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
@@ -201,15 +201,23 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   the hallway wall (x 24.40–25.70, y 15.15–16.70), offcut boxes/foam on its deck at 2.60 m, rods/profile on cantilever
   arms at 2.95/3.30 m; low offcut cart in the window corner; step stool. Loading door -> loading zone -> ShopBot bed in
   a straight line.
-- **Microelectronics** (ESE side of the tool-wall row): tool walls refitted with drawer cabinets, tool
-  rails, wire spools, multimeters; bench with **2× Roland SRM-20 (the only machines here)**, soldering
-  stations + fume extractors, scope/PSU. Component storage with DRAWER units on the NNE glass
-  (y 30.3–34.1). Electronics commons on the bank wall: pin-up board, whiteboard, cable pegboard, kit
-  shelf, 3.2 m teaching table + 6 chairs.
+- **Microelectronics** (overhauled 2026-11-25, Magnús): the three colleague tool walls behind the bench are GONE
+  (hidden by build_microelectronics, deleted by purge_hidden); nothing is stored on or above the bench's back edge.
+  Bench (x 21.75–27.17, y 30.20–30.95, no low shelf) with 2x Roland SRM-20 on anchor cleats, ONE permanent soldering
+  station (a Weller; WE1010 stand-in) + a Chinese desoldering station (ZD-915 stand-in), fume extractor, magnifier,
+  scope/PSU (locked away at closing). Locked storage near the bench, all three of my options combined (his pick):
+  two lockable acrylic-door cabinets under the bench's back half, a rolling locked cabinet parked under the ESE end
+  (own layout item), and the middle bay of the component storage on the NNE glass behind acrylic doors. The 3.2 m
+  teaching table + 6 chairs STAYS (6 seats; combinable with the main-room tables for bigger classes).
+  **Felt dividers** (`build_felt_dividers.py`, collection FeltDividers): the three Flöff panels are separate mobile
+  screens on black 40x40 castor frames (feet set in 0.20 m, locking castors); default spot = the old row line
+  y 29.765, 0.08 m between frames, panel 3 stepped 0.30 m towards the workshop to clear the column at (27.61, 30.16)
+  by 0.25 m (my default; the line is too short for three 2 m panels plus a real gap). Each is a layout item, movable
+  to block noise or divide the area. The electronics sign hangs over the bench.
 - **Lock-down detail** (`scripts/lockdown.py`, exec'd by builders): clear acrylic leaves hung in pairs, one surface
   RFID electronic cabinet lock per pair (Magnús: acrylic doors, electronic locks where reasonable; the detail is my
   design). Enclosure door objects carry `layout_skip` and belong to their item's `objects`. Portable tools live behind
-  such doors, not on tables or open walls. Done: print farm, hand-tool wall.
+  such doors, not on tables or open walls. Done: print farm, hand-tool wall, electronics (see Microelectronics).
 - **Hand-tool wall** on the NNE glass (y 24.06–26.46; starts ≥1.0 m past the old CNC-room door line y 23.04;
   the CNC door is now at y 21.66): pegboard + shelves + counter + tool chest.
   Rule: along glass = varied tool wall + storage WITH A TABLE BELOW, not plain shelving.

@@ -465,6 +465,16 @@ def component_storage(m, col):
         reels.cyl(mat("Reel_Blue", "#1E5FA8", 0.3) if j % 3 else mat("Reel_Clear", "#D8DEE2", 0.1),
                   (XB + 0.11, yy, H + 0.20), (XB + 0.11, yy + 0.010, H + 0.20), 0.09, seg=32)
     reels.emit("SMD_Reels", col, Vector((0, 0, 0)))
+    # (C) one bay (the second from the bench, so its doors swing clear of the bench end) behind acrylic doors:
+    # locked drawers for meters and soldering spares (lockdown, Magnús 2026-11-25; my placement).
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    cd = Part()
+    b0, b1 = Y0 + Lu / 3, Y0 + 2 * Lu / 3
+    ld["door_run"](cd, "+x", XB + D + 0.024, b0 + 0.02, b1 - 0.02, 0.10, H - 0.03, leaves=2, lock_z=0.75)
+    dob = cd.emit("ComponentStorage_Doors", col, Vector((0, 0, 0)))
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
 
 
 # ---------------------------------------------------------------- build
@@ -479,46 +489,21 @@ def build():
         bpy.data.objects.remove(o)
         if isinstance(data, bpy.types.Mesh) and data.users == 0:
             bpy.data.meshes.remove(data)
-    # colleague's hammers/saws off every tool wall in the row
+    # The three colleague tool walls behind the bench are REMOVED (Magnús 2026-11-25: no permanent tool wall, nothing
+    # stored there); hidden here, deleted by purge_hidden. The felt panels that hung on their backs are free-standing
+    # mobile screens now (build_felt_dividers.py). yf = the walls' old ESE face, kept so the bench stays put.
     for n in ROW:
-        for c in bpy.data.objects[n].children:
-            if c.name.split(".")[0] in ("Hammer", "Component_1212695"):
-                for k in (c, *c.children_recursive):
-                    k.hide_render = k.hide_viewport = True
-    # ESE face of the boards (ray from the open side)
-    dg = bpy.context.evaluated_depsgraph_get()
-    hit, loc, *_ = scene.ray_cast(dg, Vector((24.1, 31.0, 1.4)), Vector((0, -1, 0)))
-    yf = loc.y + 0.001
-    print("tool-wall ESE face at y %.3f" % yf)
+        o = bpy.data.objects.get(n)
+        if o:
+            for k in (o, *o.children_recursive):
+                k.hide_render = True
+                k.hide_set(True)
+    yf = 29.953
     rot = math.pi                                                    # local front (-y) faces +y
-    for wi, (wx0, wx1) in enumerate(((21.05, 23.05), (23.11, 25.11), (25.17, 27.17))):
-        wall = Part()
-        # two drawer cabinets left, tool rail + wire rod + multimeter right (mirrored per wall for variety)
-        for k in range(2):                                           # cabinets stand off the board (body local y 0..0.14)
-            c2, cw2, ch2 = drawer_cabinet(m)
-            c2.emit(f"DrawerCab_{wi}_{k}", col, Vector((wx0 + 0.12 + (k + 1) * (cw2 + 0.04), yf + 0.14, 1.00)), rot)
-        rx = wx0 + 1.15                                              # rail zone (local x measured in world, mirrored by rot)
-        tools = Part()
-        tools.box(m["steel"], 0.0, 0.75, -0.02, 0.0, 1.55, 1.57)
-        x = 0.05
-        for t in range(9):
-            kind = t % 4
-            if kind == 0:
-                pliers(tools, m, x, 1.48, rng.choice((m["red"], m["blue"])))
-            elif kind == 1:
-                screwdriver(tools, m, x, 1.40, rng.choice((m["red"], m["yellow"], m["blue"])))
-            elif kind == 2:
-                tweezers(tools, m, x, 1.53)
-            else:
-                pliers(tools, m, x, 1.48, m["black"])
-            x += 0.08
-        wire_rod(tools, m, 0.05, 1.86)
-        multimeter(tools, m, 0.55, 1.12)
-        tools.emit(f"ToolRail_{wi}", col, Vector((rx + 0.75, yf, 0.0)), rot)
     # ---- workbench in front of the row
     L, D, H = X1 - 21.75, 0.75, 0.90
     legs = [0.0, L / 3, 2 * L / 3, L - 0.04]
-    bench, _ = lib["table_unit"](L, D, H, legs, lower=(0.16,))
+    bench, _ = lib["table_unit"](L, D, H, legs, lower=())         # no low shelf: lockable cabinets + a rolling one under
     bloc, brot = lib["placement"](21.75 + L / 2, yf + 0.25 + D / 2, L, D, "-y")
     bench.emit("MicroBench", col, bloc, brot)
     top = H
@@ -543,6 +528,43 @@ def build():
             anchors.box(MAT["profile"], min(ux, ux + sgn * 0.04), max(ux, ux + sgn * 0.04), by + 0.20, by + 0.24, top, top + 0.003)
             anchors.box(MAT["profile"], min(ux, ux + sgn * 0.003), max(ux, ux + sgn * 0.003), by + 0.20, by + 0.24, top, top + 0.04)
     anchors.emit("SRM20_Anchors", col, Vector((0, 0, 0)))
+    # Locked storage NEAR the bench (Magnús 2026-11-25: all three of my options combined; sizes/places are mine):
+    # (A) two lockable cabinets under the back half of the bench, (B) a rolling lockable cabinet for the scope/PSU
+    # parked under the ESE end, (C) one bay of the component storage on the glass behind acrylic doors (lockdown()).
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    acr = ld["_ld_mats"]()[0]
+    ply = MAT["ply"]
+    cab, cdoors = Part(), Part()
+    CY0, CY1, CZ0, CZ1 = by + 0.03, by + 0.40, 0.06, 0.78
+    for xa, xb in ((21.80, 23.52), (23.62, 25.34)):
+        cab.box(ply, xa, xb, CY0, CY1, CZ0, CZ0 + 0.018)                          # bottom
+        cab.box(ply, xa, xb, CY0, CY1, CZ1 - 0.018, CZ1)                          # top
+        cab.box(ply, xa, xb, CY0, CY0 + 0.012, CZ0, CZ1)                          # back
+        for x in (xa, xb - 0.018):
+            cab.box(ply, x, x + 0.018, CY0, CY1, CZ0, CZ1)                        # sides
+        cab.box(ply, xa + 0.018, xb - 0.018, CY0 + 0.012, CY1 - 0.01, 0.42, 0.438)   # shelf
+        for k in range(3):                                                        # boxed spares inside
+            toolbox(cab, m, (m["red"], m["blue"], m["grey"])[k], xa + 0.06 + k * 0.52, CY0 + 0.04, CZ0 + 0.018,
+                    w=0.44, d=0.28, h=0.16 + 0.03 * (k % 2))
+            hx = xa + 0.08 + k * 0.52
+            cab.box(m["yellow"], hx, hx + 0.09, CY0 + 0.20, CY0 + 0.245, 0.438, 0.618, bevel=0.006)   # meters
+        ld["door_run"](cdoors, "+y", CY1, xa + 0.004, xb - 0.004, CZ0 + 0.02, CZ1 - 0.004, leaves=2, lock_z=0.60)
+    cab.emit("ElecBench_Cabinets", col, Vector((0, 0, 0)))
+    roll, rdoors = Part(), Part()
+    RX0, RX1, RY0, RY1, RZ1 = 25.50, 26.32, by + 0.03, by + 0.45, 0.72
+    for xx in (RX0 + 0.06, RX1 - 0.06):                                           # locking castors
+        for yy in (RY0 + 0.06, RY1 - 0.06):
+            roll.cyl(m["black"], (xx - 0.012, yy, 0.04), (xx + 0.012, yy, 0.04), 0.04, seg=16)
+    roll.box(m["black"], RX0, RX1, RY0, RY1, 0.08, 0.10)
+    roll.box(ply, RX0, RX1, RY0, RY1, 0.10, RZ1, bevel=0.003)                    # carcass
+    roll.box(m["black"], RX1 - 0.02, RX1 + 0.012, RY0 + 0.10, RY1 - 0.10, 0.62, 0.64)   # push bar
+    ld["acrylic_door"](rdoors, "+y", RY1, RX0 + 0.01, RX1 - 0.01, 0.12, RZ1 - 0.02, hinge="a", lock_z=0.55)
+    roll.emit("ElecRollCab", col, Vector((0, 0, 0)))
+    for part, name in ((cdoors, "ElecBench_CabDoors"), (rdoors, "ElecRollCab_Door")):
+        dob = part.emit(name, col, Vector((0, 0, 0)))
+        for o in [dob, *dob.children_recursive]:
+            o["layout_skip"] = True
     pc = Part()                                                      # PCBs + parts tray + solder spool on the bench
     for i in range(5):
         x, y = 22.6 + i * 0.9 + rng.uniform(-0.1, 0.1), by + 0.42 + rng.uniform(-0.05, 0.08)

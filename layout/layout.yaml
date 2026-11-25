@@ -580,7 +580,7 @@ items:
     rot: 90
     size: [3.764, 0.525, 1.66]
     locked: false
-    objects: [ComponentStorage, ComponentStorage_Top, ComponentStorage_Drawers, SMD_Reels, CompCab_0_1, CompCab_1_1, CompCab_2_1, CompCab_0_0, CompCab_1_0, CompCab_2_0]
+    objects: [ComponentStorage, ComponentStorage_Top, ComponentStorage_Drawers, SMD_Reels, CompCab_0_1, CompCab_1_1, CompCab_2_1, CompCab_0_0, CompCab_1_0, CompCab_2_0, ComponentStorage_Doors]
 
   - id: lab.cuttercounter
     label: CutterCounter
@@ -699,7 +699,7 @@ items:
     pos: [21.215, 25.26]
     z: 0
     rot: 0
-    size: [0.69, 2.404, 2.25]
+    size: [0.69, 2.404, 2.268]
     locked: false
     objects: [GlassToolWall_Frame, GlassTW_Bin_0, GlassTW_PartsCab, GlassTW_Toolbox_top, GlassTW_Tools, GlassTW_UnderCab_0, GlassTW_UnderCab_1, GlassTW_Counter, GlassTW_Doors]
 
@@ -729,12 +729,12 @@ items:
     label: MicroBench
     kind: furniture
     zone: main-lab
-    pos: [24.191, 30.456]
+    pos: [24.462, 30.588]
     z: 0
     rot: 0
-    size: [5.962, 1.015, 1.905]
+    size: [5.424, 0.77, 1.328]
     locked: false
-    objects: [MicroBench, DrawerCab_0_0, DrawerCab_0_1, ToolRail_0, DrawerCab_1_0, DrawerCab_1_1, ToolRail_1, DrawerCab_2_0, DrawerCab_2_1, ToolRail_2, Solder_Weller, Fume_0, Desolder_ZD915, ScopePSU, Magnifier, BenchStuff, SRM20_Anchors]
+    objects: [MicroBench, Solder_Weller, Fume_0, Desolder_ZD915, ScopePSU, Magnifier, BenchStuff, SRM20_Anchors, ElecBench_Cabinets, ElecBench_CabDoors]
 
   - id: lab.microstool-0
     label: MicroStool 0
@@ -1556,3 +1556,47 @@ items:
     "on": lab.worktable-3
     locked: false
     objects: [BenchProps_3]
+
+  - id: lab.elecrollcab
+    label: Electronics rolling cabinet (locked)
+    kind: storage
+    zone: main-lab
+    pos: [25.918, 30.453]
+    z: 0
+    rot: 0
+    size: [0.832, 0.42, 0.72]
+    locked: false
+    objects: [ElecRollCab, ElecRollCab_Door]
+
+  - id: lab.feltframe-1
+    label: FeltFrame 1
+    kind: furniture
+    zone: main-lab
+    pos: [21.99, 29.765]
+    z: 0
+    rot: 0
+    size: [2.08, 0.509, 2.767]
+    locked: false
+    objects: [FeltFrame_1]
+
+  - id: lab.feltframe-2
+    label: FeltFrame 2
+    kind: furniture
+    zone: main-lab
+    pos: [24.15, 29.765]
+    z: 0
+    rot: 0
+    size: [2.08, 0.509, 2.433]
+    locked: false
+    objects: [FeltFrame_2]
+
+  - id: lab.feltframe-3
+    label: FeltFrame 3
+    kind: furniture
+    zone: main-lab
+    pos: [26.31, 29.465]
+    z: 0
+    rot: 0
+    size: [2.08, 0.509, 2.767]
+    locked: false
+    objects: [FeltFrame_3]

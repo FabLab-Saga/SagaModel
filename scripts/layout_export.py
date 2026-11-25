@@ -72,7 +72,7 @@ def zone_of(p):
 
 # ------------------------------------------------------------------ items
 FURN = ["Machines", "LaserRoom", "PrintFarm", "CraftZone", "Textile", "WorkTables", "Welcome", "Lounge", "Spine",
-        "MaterialStorage", "Microelectronics", "EquipmentBank", "MuralCupboard", "CNCRoom", "StaffArea", "Life"]
+        "MaterialStorage", "Microelectronics", "EquipmentBank", "MuralCupboard", "CNCRoom", "StaffArea", "Life", "FeltDividers"]
 EXCLUDE = re.compile(r"(Door|Glass(?!Bench|TW|ToolWall)|Infill|Tiles|Paving|Fixture|Plaque|Wall_Details|^WC_|"
                      r"Exterior|^Hall_|Window|SecretDoor|Art_HexRelief|Floff|Mural$|^Staff_LaserWall)")
 KEEP_FRAME = {"PrintFarm_Frame", "GlassToolWall_Frame"}
@@ -81,7 +81,7 @@ MACHINE = re.compile(r"^(Glowforge|Epilog_FusionEdge|xTool_F1_Ultra$|ShopBot_PRS
                      r"Handheld_3DScanner|HeatPress|LOKLiK)")
 STORAGE = re.compile(r"Shelving|Rack|Storage|Cab|Cupboard|Cart|ToolLibrary|BoardRack|Bin|DryCell|Demo_Pieces|Box|"
                      r"PrintFarm_Frame|ToolWall|ToolChest|Utilities")
-FURNITURE = re.compile(r"Table|Chair|Stool|Sofa|Pouf|Desk|Bench|Counter|Armchair|PCStation|Stand")
+FURNITURE = re.compile(r"Table|Chair|Stool|Sofa|Pouf|Desk|Bench|Counter|Armchair|PCStation|Stand|FeltFrame")
 LOCKED = {"Exhaust_Central", "Staff_Kitchen", "Electronics_BoardRun", "LaserSafety", "Staff_CoatHooks",
           "Staff_Whiteboard"}
 COMPANION_RE = [(re.compile(r"^WB_Text"), "Electronics_BoardRun"), (re.compile(r"^Staff_Coat_"), "Staff_CoatHooks"),
