@@ -1569,7 +1569,7 @@ items:
     objects: [ElecRollCab, ElecRollCab_Door]
 
   - id: lab.feltframe-1
-    label: FeltFrame 1
+    label: Felt divider 1 (mobile)
     kind: furniture
     zone: main-lab
     pos: [21.99, 29.765]
@@ -1580,7 +1580,7 @@ items:
     objects: [FeltFrame_1]
 
   - id: lab.feltframe-2
-    label: FeltFrame 2
+    label: Felt divider 2 (mobile)
     kind: furniture
     zone: main-lab
     pos: [24.15, 29.765]
@@ -1591,7 +1591,7 @@ items:
     objects: [FeltFrame_2]
 
   - id: lab.feltframe-3
-    label: FeltFrame 3
+    label: Felt divider 3 (mobile)
     kind: furniture
     zone: main-lab
     pos: [26.31, 29.465]
