@@ -170,6 +170,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   (top row), Flashforge AD5M Pro (bottom row; exact Flashforge model doesn't matter), and the Bambu P2S WITH AN AMS 2 PRO
   on top in bay 0, which has no 0.80 deck (one 1.32 m cell; the AMS needs >= 0.80 m clear). Prusa 03 stands in the
   bottom row's ex-dry cell (Magnús, 2026-11-25); 2 doored dry cells. Prusa object names are fixed in PRUSA_NO.
+  Every cell has a lockable acrylic door (standard cabinet-lock detail) and every printer stands between two steel
+  angle cleats (PrintFarm_Anchors); door leaves carry `layout_skip` so open doors don't count in the item footprint.
   Real fleet: 4 MK3S + 2 MK4; the model keeps 7 MK3S+ (Magnús).
 - **CNC room** (`build_cnc_room.py`, collection CNCRoom; machine models in build_machines.py): its wall to the main
   room is FLUSH WITH THE MURAL WALL (y 21.66–21.82) and is a very tall FRAMELESS glass wall (floor to slab, butt-jointed
