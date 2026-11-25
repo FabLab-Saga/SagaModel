@@ -402,7 +402,7 @@ items:
     rot: 0
     size: [7.484, 0.604, 2.42]
     locked: false
-    objects: [Bank_A2_Shelving, Demo_Pieces, Bank_A2_Boxes]
+    objects: [Bank_A2_Shelving, Bank_A2_Boxes]
 
   - id: lounge.lounge-sofa-1
     label: Lounge Sofa 1
@@ -480,6 +480,30 @@ items:
     size: [0.46, 0.46, 0.421]
     locked: false
     objects: [Pouf_2]
+
+  - id: lounge.tv-wall
+    label: TV Wall
+    kind: fixture
+    zone: lounge
+    pos: [28.29, 34.95]
+    z: 1.445
+    rot: -90
+    size: [1.89, 0.101, 1.07]
+    "on": lab.spine-lounge-shelving
+    locked: false
+    objects: [TV_Wall]
+
+  - id: lounge.demo-pieces
+    label: Demo Pieces
+    kind: storage
+    zone: lounge
+    pos: [29.941, 37.945]
+    z: 0.117
+    rot: 0
+    size: [4.512, 0.407, 2.123]
+    "on": lounge.bank-a2-shelving
+    locked: false
+    objects: [Demo_Pieces]
 
   - id: lab.bekant-cart-1
     label: Bekant Cart 1
@@ -798,18 +822,18 @@ items:
     rot: -90
     size: [4.924, 0.311, 2.42]
     locked: false
-    objects: [Spine_Boxes_Shelving, Spine_Panel, ToolLibrary, ToolLib_Drill_0, ToolLib_Drill_1, ToolLib_Cab_3_0, ToolLib_Cab_3_1, ToolLib_ScopePSU, ToolLib_Cab_2_0, ToolLib_Cab_2_1]
+    objects: [Spine_Boxes_Shelving, Spine_Panel]
 
   - id: lab.spine-lounge-shelving
     label: Spine Lounge Shelving
     kind: storage
     zone: main-lab
-    pos: [28.129, 34.01]
+    pos: [28.07, 34.01]
     z: 0
     rot: 90
-    size: [4.924, 0.423, 2.515]
+    size: [4.924, 0.304, 2.42]
     locked: false
-    objects: [Spine_Lounge_Shelving, Spine_Lounge_Contents, TV_Wall]
+    objects: [Spine_Lounge_Shelving, Spine_Lounge_Contents]
 
   - id: lab.vinylstand-1
     label: VinylStand 1
@@ -1016,9 +1040,9 @@ items:
     pos: [23.5, 24.75]
     z: 0
     rot: 0
-    size: [1.804, 0.92, 0.975]
+    size: [1.804, 0.92, 0.75]
     locked: false
-    objects: [WorkTable_0, Laptop_0, BenchProps_0, Drill_0]
+    objects: [WorkTable_0]
 
   - id: lab.worktable-1
     label: WorkTable 1
@@ -1027,9 +1051,9 @@ items:
     pos: [26.8, 24.75]
     z: 0
     rot: 0
-    size: [1.804, 0.92, 0.959]
+    size: [1.804, 0.92, 0.75]
     locked: false
-    objects: [WorkTable_1, BenchProps_1, Drill_1]
+    objects: [WorkTable_1]
 
   - id: lab.worktable-2
     label: WorkTable 2
@@ -1038,9 +1062,9 @@ items:
     pos: [23.5, 27.45]
     z: 0
     rot: 0
-    size: [1.804, 0.92, 0.975]
+    size: [1.804, 0.92, 0.75]
     locked: false
-    objects: [WorkTable_2, Laptop_2, BenchProps_2]
+    objects: [WorkTable_2]
 
   - id: lab.worktable-3
     label: WorkTable 3
@@ -1049,9 +1073,9 @@ items:
     pos: [26.8, 27.45]
     z: 0
     rot: 0
-    size: [1.804, 0.92, 0.761]
+    size: [1.804, 0.92, 0.75]
     locked: false
-    objects: [WorkTable_3, BenchProps_3]
+    objects: [WorkTable_3]
 
   - id: lab.cricut-maker-3
     label: Cricut Maker 3
@@ -1401,6 +1425,18 @@ items:
     locked: false
     objects: [Overlock]
 
+  - id: lab.toollibrary
+    label: ToolLibrary
+    kind: storage
+    zone: main-lab
+    pos: [27.771, 34.01]
+    z: 0.1
+    rot: -90
+    size: [4.76, 0.278, 2.12]
+    "on": lab.spine-boxes-shelving
+    locked: false
+    objects: [ToolLibrary, ToolLib_Drill_0, ToolLib_Drill_1, ToolLib_Cab_3_0, ToolLib_Cab_3_1, ToolLib_ScopePSU, ToolLib_Cab_2_0, ToolLib_Cab_2_1]
+
   - id: lab.roland-vinylcutter-1
     label: Roland VinylCutter 1
     kind: machine
@@ -1424,3 +1460,99 @@ items:
     "on": lab.vinylstand-2
     locked: false
     objects: [Roland_VinylCutter_2]
+
+  - id: lab.benchprops-0
+    label: BenchProps 0
+    kind: furniture
+    zone: main-lab
+    pos: [23.208, 24.708]
+    z: 0.75
+    rot: 0
+    size: [1.039, 0.649, 0.012]
+    "on": lab.worktable-0
+    locked: false
+    objects: [BenchProps_0]
+
+  - id: lab.drill-0
+    label: Drill 0
+    kind: fixture
+    zone: main-lab
+    pos: [24.152, 24.49]
+    z: 0.75
+    rot: 173.9
+    size: [0.207, 0.059, 0.209]
+    "on": lab.worktable-0
+    locked: false
+    objects: [Drill_0]
+
+  - id: lab.laptop-0
+    label: Laptop 0
+    kind: fixture
+    zone: main-lab
+    pos: [22.984, 24.75]
+    z: 0.761
+    rot: -90
+    size: [0.32, 0.062, 0.214]
+    "on": lab.worktable-0
+    locked: false
+    objects: [Laptop_0]
+
+  - id: lab.benchprops-1
+    label: BenchProps 1
+    kind: furniture
+    zone: main-lab
+    pos: [26.836, 24.791]
+    z: 0.75
+    rot: 0
+    size: [1.21, 0.508, 0.011]
+    "on": lab.worktable-1
+    locked: false
+    objects: [BenchProps_1]
+
+  - id: lab.drill-1
+    label: Drill 1
+    kind: fixture
+    zone: main-lab
+    pos: [27.452, 24.49]
+    z: 0.75
+    rot: -58.8
+    size: [0.207, 0.059, 0.209]
+    "on": lab.worktable-1
+    locked: false
+    objects: [Drill_1]
+
+  - id: lab.benchprops-2
+    label: BenchProps 2
+    kind: furniture
+    zone: main-lab
+    pos: [23.746, 27.351]
+    z: 0.75
+    rot: 0
+    size: [1.131, 0.572, 0.012]
+    "on": lab.worktable-2
+    locked: false
+    objects: [BenchProps_2]
+
+  - id: lab.laptop-2
+    label: Laptop 2
+    kind: fixture
+    zone: main-lab
+    pos: [24.288, 27.45]
+    z: 0.761
+    rot: -90
+    size: [0.32, 0.062, 0.214]
+    "on": lab.worktable-2
+    locked: false
+    objects: [Laptop_2]
+
+  - id: lab.benchprops-3
+    label: BenchProps 3
+    kind: furniture
+    zone: main-lab
+    pos: [27.023, 27.427]
+    z: 0.75
+    rot: 0
+    size: [0.987, 0.505, 0.011]
+    "on": lab.worktable-3
+    locked: false
+    objects: [BenchProps_3]
