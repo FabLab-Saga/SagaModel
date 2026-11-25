@@ -71,7 +71,21 @@ def live_poses():
             json.loads(buf); break
         except ValueError:
             pass
-    return _parse_poses(buf.decode("utf-8", "replace"))
+    text = buf.decode("utf-8", "replace")
+    try:                               # the add-on wraps stdout in a JSON reply: unwrap it (quotes come escaped)
+        def strings(o):
+            if isinstance(o, str):
+                yield o
+            elif isinstance(o, dict):
+                for v in o.values():
+                    yield from strings(v)
+            elif isinstance(o, list):
+                for v in o:
+                    yield from strings(v)
+        text = next((s for s in strings(json.loads(text)) if "@@POSES@@" in s), text)
+    except ValueError:
+        pass
+    return _parse_poses(text)
 
 
 def blend_poses(path):
