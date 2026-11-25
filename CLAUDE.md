@@ -53,6 +53,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   re-renders of out-of-sync film shots or web builds on our own initiative. Review peeks for checking an edit are
   part of the edit. The film being out of sync with the model is expected and stays that way until he asks.
   Web preview: only when he says push.
+- Internal working documents (e.g. security and theft-prevention planning) live in the PRIVATE repo
+  FabLab-Saga/Vinnuskjol (sibling folder `../Vinnuskjol`). Never copy their content into this repo, the web preview
+  or the film; model changes that follow from them are committed here without the reasoning.
 - No new drawings yet (contractors slow, construction ongoing): work from Magnús's manual measurements and visual
   estimates; label every such dimension as his estimate or mine.
 - The modelling workstation (RTX 4070 Ti SUPER, OptiX) is the render machine: finals via `scripts/render_finals.py`
