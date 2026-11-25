@@ -42,8 +42,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Push after each commit (remote: github.com/FabLab-Saga/SagaModel, PUBLIC since Magnús moved it to the FabLab-Saga org
   on 2026-11-25, public on purpose so it can be forked; the web repo stays MagnusPetursson/SagaModel-web).
 - Everything scripted and re-runnable; commit after each step (attribution lines per system prompt).
-- **Privacy (Magnús, 2026-11-25):** the repo is private and SagaModel-web is the only public face. Agent traces are
-  fine, but tracked files name machines by role (the modelling workstation, the render host, the coordinator host),
+- **Privacy (Magnús, 2026-11-25):** the repo is PUBLIC (source and history; SagaModel-web is the published viewer). Agent
+  traces are fine, but tracked files name machines by role (the modelling workstation, the render host, the coordinator host),
   use repo-relative or `<repo>`/`<work>` paths, and never carry hostnames, tailnet names, IPs, tokens or contact
   details. The .blend stores image/font paths relative (`layout_blender.apply()` relativizes on every build).
   Agent-work media for the film come from `$SAGA_VIDEO_DIR` or the gitignored symlink `.local/saga-video`.
