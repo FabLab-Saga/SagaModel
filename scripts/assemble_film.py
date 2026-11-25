@@ -9,6 +9,8 @@ Music: CC0 "Stairwell Harmony" (Amarent), from MUSIC_IN, faded out at the end.
 import ast
 import glob
 import os
+import os as _os
+SAGA_VIDEO = _os.environ.get("SAGA_VIDEO_DIR") or _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), ".local", "saga-video")   # agent-work media outside the repo; .local/ is gitignored (symlink it)
 import subprocess
 import sys
 
@@ -16,10 +18,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 frames = os.path.join(ROOT, sys.argv[1] if len(sys.argv) > 1 else "renders/walk_test")
 out = os.path.join(ROOT, sys.argv[2] if len(sys.argv) > 2 else "renders/walk_test.mp4")
 T = os.path.join(ROOT, "renders/video_titles")
-MUSIC = os.path.expanduser("~/Documents/AgentWork/saga-video/music/1_Amarent_-_Stairwell_Harmony.mp3")
+MUSIC = os.path.join(SAGA_VIDEO, "music/1_Amarent_-_Stairwell_Harmony.mp3")
 MUSIC_IN, OUTRO_S = 25.57, 5.4
-CARD = os.path.expanduser("~/Documents/AgentWork/saga-video/fframes-title/title_card.mp4")   # fframes intro
-OUTRO_CARD = os.path.expanduser("~/Documents/AgentWork/saga-video/fframes-title/outro_card.mp4")  # fframes outro
+CARD = os.path.join(SAGA_VIDEO, "fframes-title/title_card.mp4")   # fframes intro
+OUTRO_CARD = os.path.join(SAGA_VIDEO, "fframes-title/outro_card.mp4")  # fframes outro
 #   (cd fframes-title && cargo run --release -- render --card outro -o outro_card.mp4); falls back to outro.png
 
 src = ast.parse(open(os.path.join(ROOT, "scripts/build_walkthrough.py")).read())

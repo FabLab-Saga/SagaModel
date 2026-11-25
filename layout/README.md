@@ -1,7 +1,7 @@
 # Layout files (contract v1)
 
-Owner of the format: Talos (MPDESKTOP). v1 is contract v0 plus a few additive fields; nothing in v0 was renamed or
-removed. Changes to field names are posted to Hermes on MPTVPC (the 2D planner follows this file).
+Owner of the format: Talos (the modelling workstation's agent). v1 is contract v0 plus a few additive fields; nothing in v0 was renamed or
+removed. Changes to field names are posted to Hermes, the coordinator (the 2D planner follows this file).
 
 | File | Who writes it | What it is |
 |---|---|---|

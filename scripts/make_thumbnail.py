@@ -3,12 +3,14 @@ lockup and the tagline. Claude's design, for comparison with the title-card fram
     /usr/bin/python3 scripts/make_thumbnail.py <frame_no> <out.png> [top|left]
 """
 import os
+import os as _os
+SAGA_VIDEO = _os.environ.get("SAGA_VIDEO_DIR") or _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), ".local", "saga-video")   # agent-work media outside the repo; .local/ is gitignored (symlink it)
 import sys
 
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FT = os.path.expanduser("~/Documents/AgentWork/saga-video/fframes-title/media")
+FT = os.path.join(SAGA_VIDEO, "fframes-title/media")
 W, H = 1920, 1080
 fno, out = int(sys.argv[1]), sys.argv[2]
 mode = sys.argv[3] if len(sys.argv) > 3 else "top"

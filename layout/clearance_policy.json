@@ -625,10 +625,10 @@
   }
  ],
  "provenance": {
-  "source": "MPTVPC saga-research/rules/rules.yaml (clearance research, proposal)",
+  "source": "coordinator saga-research/rules/rules.yaml (clearance research, proposal)",
   "received": "2026-11-25",
   "sha256": "3fb734ef89df347f974f7f3e509eb34e29607e10f14cc881e2fe3ca7a979a845",
-  "report": "Saga-clearance-and-layout.pdf (MPTVPC)"
+  "report": "Saga-clearance-and-layout.pdf (coordinator)"
  },
  "overrides": [
   {

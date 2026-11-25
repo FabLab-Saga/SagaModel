@@ -14,6 +14,7 @@ Rule from the felt panels: never a lone raised rounded peak between lower should
 
 Usage: python3 scripts/mural.py out.svg
 """
+import os
 import sys
 from pathlib import Path
 
@@ -100,15 +101,15 @@ def logo(x, y, icon_size=620):
     tx = x + icon_size * 1.10
     line = lambda i, fam, t: (f'<text x="{tx}" y="{y + cap + i * pitch}" font-family="{fam}" font-size="{fs}" '
                               f'letter-spacing="{-0.05 * fs}" fill="{INK}">{t}</text>')
-    return (f'<image href="{ICON.as_uri()}" x="{x}" y="{y}" width="{icon_size}" height="{icon_size}"/>'
+    return (f'<image href="{os.path.relpath(ICON, ROOT / "assets/mural")}" x="{x}" y="{y}" width="{icon_size}" height="{icon_size}"/>'
             + line(0, "RCB", "FAB") + line(1, "RCL", "LAB") + line(2, "RCL", "SAGA"))
 
 
 def build():
     shapes = "".join(band() + cascade() + [door_portal()])
     vx0, vx1 = W - DOOR_X1, W - DOOR_X0          # door in the viewer frame
-    fonts = (f'@font-face{{font-family:RCB;src:url("{(FONTS / "RobotoCondensed-Bold.ttf").as_uri()}")}}'
-             f'@font-face{{font-family:RCL;src:url("{(FONTS / "RobotoCondensed-Light.ttf").as_uri()}")}}')
+    fonts = (f'@font-face{{font-family:RCB;src:url("{os.path.relpath(FONTS / "RobotoCondensed-Bold.ttf", ROOT / "assets/mural")}")}}'
+             f'@font-face{{font-family:RCL;src:url("{os.path.relpath(FONTS / "RobotoCondensed-Light.ttf", ROOT / "assets/mural")}")}}')
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">'
             f'<style>{fonts}</style>'
             f'<clipPath id="wall"><path d="M0,0 H{W} V{H} H{vx1} V{H - DOOR_H} H{vx0} V{H} H0 Z"/></clipPath>'

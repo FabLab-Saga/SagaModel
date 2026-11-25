@@ -10,7 +10,7 @@ Requirements on the new machine: Linux x86-64, Claude Code (`claude`), Node >= 1
 
 ## 1. Project
 Unpack the bundle so the project lands at the **same path** as before if you can:
-`/home/gnus/Documents/Reposepos/SagaModel` (needed for step 4 to resume the exact conversation).
+`<repo>` = the folder the old machine used (needed for step 4 to resume the exact conversation).
 If your username/path differs, it still works — only step 4 changes (see note there).
 
 ## 2. Blender 5.2.x LTS
@@ -34,10 +34,10 @@ Optional (only to re-convert the .skp): `python3 -m venv .venv && .venv/bin/pip 
 ## 4. Resume the exact Claude conversation (optional but recommended)
 The bundle's `claude_state/` holds the previous session transcript and memory:
 ```
-P=~/.claude/projects/-home-gnus-Documents-Reposepos-SagaModel        # dir name = project path with / -> -
+P=~/.claude/projects/$(echo "$PWD" | tr / -)        # run in <repo>; dir name = project path with / -> -
 mkdir -p "$P" && cp claude_state/transcript/*.jsonl "$P/"
-mkdir -p ~/.claude/projects/-home-gnus-Documents-Reposepos/memory && cp claude_state/memory/*.md ~/.claude/projects/-home-gnus-Documents-Reposepos/memory/
-cd /home/gnus/Documents/Reposepos/SagaModel && claude --continue
+M=~/.claude/projects/$(dirname "$PWD" | tr / -)/memory && mkdir -p "$M" && cp claude_state/memory/*.md "$M/"
+claude --continue      # from <repo>
 ```
 If the project path differs, name the transcript folder after the NEW path (replace every `/` with `-`).
 Even without the transcript, `CLAUDE.md` is loaded automatically and contains the full state.

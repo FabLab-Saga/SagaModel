@@ -6,6 +6,8 @@ Music: CC0 "Stairwell Harmony" (Amarent), window from MUSIC_IN, 90.2 s, fades.
 """
 import ast
 import os
+import os as _os
+SAGA_VIDEO = _os.environ.get("SAGA_VIDEO_DIR") or _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), ".local", "saga-video")   # agent-work media outside the repo; .local/ is gitignored (symlink it)
 import subprocess
 import sys
 
@@ -13,7 +15,7 @@ from PIL import ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 step = int(sys.argv[1]) if len(sys.argv) > 1 else 1
-MUSIC = os.path.expanduser("~/Documents/AgentWork/saga-video/music/1_Amarent_-_Stairwell_Harmony.mp3")
+MUSIC = os.path.join(SAGA_VIDEO, "music/1_Amarent_-_Stairwell_Harmony.mp3")
 MUSIC_IN, FILM = 25.57, 90.2
 
 src = ast.parse(open(os.path.join(ROOT, "scripts/build_walkthrough.py")).read())

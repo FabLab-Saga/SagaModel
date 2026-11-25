@@ -15,3 +15,6 @@ renders/video_titles/
 renders/*.mp4
 renders/FabLabSAGA_thumbnail_*.png
 renders/slides/
+
+# Host-local links (agent-work media outside the repo): .local/saga-video -> <work>/saga-video
+.local/

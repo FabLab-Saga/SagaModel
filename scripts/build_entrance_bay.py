@@ -2,7 +2,7 @@
 "EntranceBay" and "Hall" and the Cut_EntranceWall boolean on ROOT.geo0.
 
 Facts (city drawings, Andrúm SAGA AT 20-10-02 ground-floor plan, approved 2026-06-30, case USK26040333; research
-in ~/Documents/AgentWork/saga-video/hall/HALL.md; fix approved by Magnús 2026-10-08):
+in <work>/saga-video/hall/HALL.md; fix approved by Magnús 2026-10-08):
 - The lab ("háskóli 01-02") includes the corner bay x 32.6-34.3, y 34.6-38.3 that the colleague's model left as
   outdoor paving. The colleague's entrance wall at x 32.43-32.63 (door y 35.11-36.21 + side window) does not exist.
 - The entrance is in the bay's SSW wall (line x ~34.31): a single-leaf fire door EI2 30-CS200, opening y 36.54-37.47

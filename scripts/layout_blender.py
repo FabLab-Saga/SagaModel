@@ -148,8 +148,20 @@ def poses(path=LAYOUT, data=None):
     return out
 
 
+def relativize_paths():
+    """Images and fonts the builders load by absolute path are stored relative to the .blend (no home paths in the
+    file; the repo's CI and other machines resolve them)."""
+    n = 0
+    for d in list(bpy.data.images) + list(bpy.data.fonts):
+        fp = getattr(d, "filepath", "") or ""
+        if fp.startswith(ROOT) and not fp.startswith("//"):
+            d.filepath = bpy.path.relpath(fp); n += 1
+    return n
+
+
 def apply(collection=None, path=LAYOUT, data=None, verbose=True, parent=True):
     data = data or load(path)
+    relativize_paths()
     col = bpy.data.collections.get(collection) if collection else None
     moved, missing = [], []
     by_id = {it["id"]: it for it in data["items"]}

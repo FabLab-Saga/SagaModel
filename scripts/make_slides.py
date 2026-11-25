@@ -5,6 +5,8 @@ zone names are Magnús's (same as the film titles; Rafeindaverkstæði from scri
     /usr/bin/python3 scripts/make_slides.py        -> renders/slides/NN_<name>.png + FabLabSAGA_slides.pdf
 """
 import os
+import os as _os
+SAGA_VIDEO = _os.environ.get("SAGA_VIDEO_DIR") or _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), ".local", "saga-video")   # agent-work media outside the repo; .local/ is gitignored (symlink it)
 import subprocess
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -14,7 +16,7 @@ FR = os.path.join(ROOT, "renders/walk/final")
 OUT = os.path.join(ROOT, "renders/slides")
 FONTS = os.path.join(ROOT, "refs/branding/fonts")
 TIT = os.path.join(ROOT, "renders/video_titles")
-LOCK = os.path.expanduser("~/Documents/AgentWork/saga-video/fframes-title/media/lockup_white.png")
+LOCK = os.path.join(SAGA_VIDEO, "fframes-title/media/lockup_white.png")
 W, H = 1920, 1080
 # brand colours (Fab Lab Ísland brand manual 2021)
 RED, ORANGE, YELLOW, GREEN, BLUE, PINK = "#E03A3F", "#FFA13D", "#F2C200", "#009967", "#1245DE", "#E099AB"

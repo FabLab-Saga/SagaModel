@@ -51,7 +51,7 @@ White versions: Reykjavík official; HÍ schools = our white recolour (HÍ stand
 shield-width of clear space to the next logo; shield + "Reykjavík", no department name.
 
 ## Music
-CC0 only (same rule as every asset). Shortlist being built in `~/Documents/AgentWork/saga-video/music/`;
+CC0 only (same rule as every asset). Shortlist being built in `<work>/saga-video/music/`;
 Magnús picks. Record the pick in LICENSES.md.
 
 ## Hall shot
@@ -60,10 +60,10 @@ corner bay x 32.6-34.3, y 34.6-38.3 and the door (EI2 30 fire door, y 36.54-37.4
 opening onto the university hall "háskóli 01-01". Fixed in the model by `scripts/build_entrance_bay.py` (approved by
 Magnús), which also builds the hall SET for the opening shot (stone floor, acoustic ceiling, glass façade on the
 left, WC box, check-in kiosk, seating; finishes are my inference from lobby photos). Research:
-`~/Documents/AgentWork/saga-video/hall/HALL.md`. The drawing also shows a lab escape door in the SSW façade at
+`<work>/saga-video/hall/HALL.md`. The drawing also shows a lab escape door in the SSW façade at
 y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
 
-## Pipeline + tools (MPDESKTOP)
+## Pipeline + tools (modelling workstation)
 - Blender 5.2.2 (Cycles, OptiX, RTX 4070 Ti SUPER): camera paths keyframed by a builder (planned
   `scripts/build_walkthrough.py`), each shot rendered to its own PNG sequence so shots re-render independently.
 - fframes (Rust/SVG, `cargo fframes`): intro/outro and title overlays as ProRes 4444 with alpha.
@@ -73,20 +73,20 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
 
 ## Cut v3 (2026-10-08, Magnús's notes)
 - Titles: Geislaskerar (shot shows the Epilog), Þrívíddarprentarar, ShopBot Fræsir; 'Hagatorg 1' removed (Magnús).
-- fframes title card (3 bars): ~/Documents/AgentWork/saga-video/fframes-title/ (6x6 brand grid draws on, brand-colour
+- fframes title card (3 bars): `<work>/saga-video/fframes-title/` (agent-work folder, outside the repo) (6x6 brand grid draws on, brand-colour
   cells flash on the beats, white lockup fades in, tagline 'SKÖPUNAR- OG TÆKNISMIÐJA' + 'BÆNDAHÖLLIN · REYKJAVÍK'
   (tagline my wording from the poster; location line "HÍ - Saga" per Magnús: HÍ's Saga building, never "Bændahöllin")). assemble_film.py uses it when present.
 - Context shots (Magnús: show the whole space and where areas sit): dollhouse cutaway orbit 'Overview' (slab,
   services, fixtures hidden by keyed hide_render/hide_viewport for that shot), ElectronicsWide, ToolWide (replaces
   the close tool wall), LoungeWide; Reveal, Corridor, LaserDetail dropped.
 
-## Final render (started 2026-10-09 on MPTVPC, Magnús's go)
-- MPTVPC (RTX 5060 Ti) renders `render_walk_final.py -- 1 2368 final` (64 spp, OIDN, motion blur) into its NVMe;
-  frames come back to MPDESKTOP via Syncthing folder `saga-render-mptvpc` (send-only there; accept receive-only here,
-  then point assemble_film.py at that folder). Messages: ~/Documents/AgentWork/saga-video/mptvpc-render/.
+## Final render (started 2026-10-09 on the render host, Magnús's go)
+- The render host (RTX 5060 Ti) renders `render_walk_final.py -- 1 2368 final` (64 spp, OIDN, motion blur) into its
+  local disk; frames come back to the modelling workstation (planned: a send-only sync folder; in the end copied, below),
+  then assemble_film.py reads that folder. Messages: `<work>/saga-video/` on the workstation.
 - Then: check frame count/sizes (2368, no half-written PNGs), `assemble_film.py <frames> renders/FabLabSAGA_film.mp4`.
-- Done 2026-10-21: 2368 frames pulled with `rsync -a mptvpc:/srv/games/windows/renders/SagaModel/walk/final/
-  renders/walk/final/` (ssh works now; Syncthing folder not used), all decode cleanly. Master:
+- Done 2026-10-21: 2368 frames pulled with `rsync -a <render-host>:<render-dir>/SagaModel/walk/final/
+  renders/walk/final/` (over ssh; the sync folder was not used), all decode cleanly. Master:
   `renders/FabLabSAGA_film.mp4`, 92.87 s, 2786 frames, H.264 CRF 16 + AAC 256k, -15.4 LUFS.
 - Finishing pass (my choices, open to change): fframes outro card (`--card outro`, 3 bars, same layout as
   outro.png: small construction grid round the icon, lockup settles, divider draws, partner logos up one per beat,
@@ -98,7 +98,7 @@ y ~32.4-34.3, where the lounge pit stands; not modelled yet (open question).
   (divider 217-863, logos on beats 4-8), intro card unchanged (PSNR inf), master re-assembled from the same frames,
   slide 11 + slides PDF regenerated. The October master is `renders/FabLabSAGA_film_pre-nymennt.mp4`, the October
   card `fframes-title/outro_card_pre-nymennt.mp4`.
-- 2026-11-20 (Magnús, via MPTVPC): NýMennt now uses the one-line HÍ | NÝMENNT lockup from nymennt.hi.is at 72 px,
+- 2026-11-20 (Magnús, via the coordinator host): NýMennt now uses the one-line HÍ | NÝMENNT lockup from nymennt.hi.is at 72 px,
   same as the school identifiers; order unchanged. Divider 229-851 (OUT_LINE_* in fframes lib.rs), outro card
   re-rendered, intro card unchanged (PSNR inf), master re-assembled: intro+body video and audio identical to the
   previous master (PSNR inf, same audio MD5), -15.4 LUFS. Previous master `renders/FabLabSAGA_film_pre-nymennt-oneline.mp4`,

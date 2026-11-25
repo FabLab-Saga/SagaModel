@@ -1,6 +1,6 @@
 # Fab Lab SAGA — Blender model (project brief for Claude)
 
-Authoritative project state as of 2026-10-08 late evening (MPDESKTOP; PLAN.md G1–G11 done; since then: hidden
+Authoritative project state as of 2026-10-08 late evening (modelling workstation; PLAN.md G1–G11 done; since then: hidden
 leftovers deleted, work tables, print-farm cabins, every listed machine modelled (MACHINES.md), on-call desk + Fab Lab
 TV, GULLVALLA lounge, back staff area (WC, Kaffistofa, store-room door, hallway glass door), CNC room rebuilt (glass
 front with dot manifestation, real-size ShopBot, upright board rack, loading door + windows); entrance moved to the
@@ -42,15 +42,20 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Push after each commit (remote: github.com/FabLab-Saga/SagaModel, PUBLIC since Magnús moved it to the FabLab-Saga org
   on 2026-11-25, public on purpose so it can be forked; the web repo stays MagnusPetursson/SagaModel-web).
 - Everything scripted and re-runnable; commit after each step (attribution lines per system prompt).
+- **Privacy (Magnús, 2026-11-25):** the repo is private and SagaModel-web is the only public face. Agent traces are
+  fine, but tracked files name machines by role (the modelling workstation, the render host, the coordinator host),
+  use repo-relative or `<repo>`/`<work>` paths, and never carry hostnames, tailnet names, IPs, tokens or contact
+  details. The .blend stores image/font paths relative (`layout_blender.apply()` relativizes on every build).
+  Agent-work media for the film come from `$SAGA_VIDEO_DIR` or the gitignored symlink `.local/saga-video`.
 - **Licensing:** only CC0 (Poly Haven) or the Fab Lab's own material in renders; record every new asset
   in `LICENSES.md` and `assets/polyhaven/CREDITS.md`. The user asked for this to be triple-checked.
-- **NO RENDERS UNLESS MAGNÚS REQUESTS THEM (2026-11-25), on any host (MPDESKTOP, MPTVPC, CI)**: no finals, film shots,
+- **NO RENDERS UNLESS MAGNÚS REQUESTS THEM (2026-11-25), on any host (workstation, render/coordinator host, CI)**: no finals, film shots,
   re-renders of out-of-sync film shots or web builds on our own initiative. Review peeks for checking an edit are
   part of the edit. The film being out of sync with the model is expected and stays that way until he asks.
   Web preview: only when he says push.
 - No new drawings yet (contractors slow, construction ongoing): work from Magnús's manual measurements and visual
   estimates; label every such dimension as his estimate or mine.
-- MPDESKTOP (RTX 4070 Ti SUPER, OptiX) is the render machine: finals via `scripts/render_finals.py`
+- The modelling workstation (RTX 4070 Ti SUPER, OptiX) is the render machine: finals via `scripts/render_finals.py`
   (`SAGA_OUT=final3 SAGA_SPP=128`, ~15 s per 1080p still). The old laptop only did quick references.
 
 ## Files
@@ -109,10 +114,10 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - `scripts/layout_snapshot.py`: moves + rule notes (overlap, keep-outs, walkways, zone, child left behind, locked)
   of live Blender / a .blend / another yaml against git; `--write` accepts the moves into the yaml.
 - `layout/room.json` (walls, doors with swing, columns, zones, keep-outs, services, rules) comes from
-  `scripts/layout_export.py`; the 2D planner on MPTVPC reads it and commits drafts to branch `layout/drafts`.
+  `scripts/layout_export.py`; the 2D planner on the coordinator host reads it and commits drafts to branch `layout/drafts`.
   Read `main..layout/drafts`, post the intent read-back to Magnús, polish, merge to main.
 - `layout/TRUTH.md`: Magnús's answers on what the real lab is (verbatim, dated); open items stay open.
-- MPDESKTOP is the only writer of the .blend. Publishing the public web preview is release-only (tag `web-vN`).
+- The modelling workstation is the only writer of the .blend. Publishing the public web preview is release-only (tag `web-vN`).
 
 ## Geometry & site facts (verified)
 - Model units metres. Frame: **+Y = ESE (bearing 116°), −Y = WNW, +X = SSW (sunny façade, 206°),
@@ -126,7 +131,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   convincing in the film (Magnús), not be engineered. Animated open
   in the bank shot. The birch-fin relief is gone.
 - Main entrance (city drawings, Andrúm SAGA AT 20-10-02 ground-floor plan, approved 2026-06-30, USK26040333; research
-  in ~/Documents/AgentWork/saga-video/hall/HALL.md): the lab includes the CORNER BAY x 32.6–34.3, y 34.7–38.3 (the
+  in `<work>/saga-video/hall/HALL.md`, agent-work folder outside the repo): the lab includes the CORNER BAY x 32.6–34.3, y 34.7–38.3 (the
   colleague's model had it as outdoor paving + an entrance wall at x 32.63 that does not exist). The door is a single
   EI2 30 fire door in the bay's SSW wall at x 34.24–34.44, opening y 36.54–37.47, hinged ESE, opens INTO the lab (held
   open); fixed EI30 fire glass at y 35.04–36.30 beside it. It opens onto the university hall "háskóli 01-01" (same
