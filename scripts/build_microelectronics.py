@@ -548,15 +548,18 @@ def build():
 
 
 
+SPINE_Y0 = 31.55 + 1.22      # spine shrunk by one bay at the column end (Magnús 2026-11-25): way in ~2.2 m
+
+
 def tool_library(m, col):
     """Tool library on the workshop face of the spine (faces -x, toward electronics). Spine unit: 4 bays x 1.18 m,
     0.30 deep, levels 0.10..2.00. Since 2026-11-25 the workshop-side unit has only the 2 bays facing the room
     (y 31.55-34.03, still called bays 3 and 2 here); the other two faced the bank wall 5 cm away and are gone."""
     lv = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]
     _, slots4, L4 = lib["shelf_unit"]([1.18] * 4, 0.30, 2.42, lv)      # 2026-11-25: the unit has 2 bays; keep the
-    _, slots2, L = lib["shelf_unit"]([1.18] * 2, 0.30, 2.42, lv)       # old bay numbers 3/2 (names, contents) and map
-    slots = {(bi, li): slots2[(bi - 2, li)] for (bi, li) in slots4 if bi >= 2}   # them onto the 2-bay unit's 1/0
-    loc, rot = lib["placement"](27.62 + 0.15, 31.55 + L / 2, L, 0.30, "-x")
+    _, slots1, L = lib["shelf_unit"]([1.18] * 1, 0.30, 2.42, lv)       # old bay numbers (names, contents); since the
+    slots = {(3, li): slots1[(0, li)] for (bi, li) in slots4 if bi == 3}  # spine shrink (Magnús 2026-11-25) only bay 3
+    loc, rot = lib["placement"](27.62 + 0.15, SPINE_Y0 + L / 2, L, 0.30, "-x")
     W = lambda x, y, z: lib["to_world"](loc, rot, (x, y, z))
     life = {}
     _l = open(HERE + "build_life.py").read()
@@ -578,7 +581,7 @@ def tool_library(m, col):
         p.box(c, x, x + w, 0.02, 0.28, z, z + h, bevel=0.004)
         p.box(m["label"], x + w * 0.25, x + w * 0.75, 0.0185, 0.02, z + h * 0.45, z + h * 0.75)
 
-    for bi in (3, 2):
+    for bi in (3,):
         xa, xb, _, _, z0 = slots[(bi, 0)]                               # bottom: toolboxes + case stack
         if bi == 3:
             z = case(case_blk, xa + 0.05, z0)
@@ -738,124 +741,136 @@ def electronics_commons(m, col):
     wb = mat("Whiteboard", "#F7F7F5", 0.15, coat=0.6)
     ink = [mat("Marker_Blue", "#1A3FB0", 0.4), mat("Marker_Black", "#151515", 0.4), mat("Marker_Red", "#C0262D", 0.4)]
     peg = bpy.data.materials.get("Pegboard_Black") or pegboard_mat()
-    # ---- Electronics wall on the bank wall (overhaul pass 2026-11-25; Magnús: space empty/underused, SRM-20s need a
-    # better place and no enclosure, the soldering table looked depressing). My design:
-    #  * a birch-lined wall (12 mm ply over the OSB, desk height to the wall top) with a black power/USB rail;
-    #  * soldering desk, 4 places (x 21.95-25.55): a raised birch riser at the back carries the stations, each place
-    #    has an ESD mat and its own warm LED task lamp; the Weller + fume extractor and the desoldering station +
-    #    magnifier are out permanently, the other two places get irons from the locked window cabinet for classes;
-    #  * PCB bench (x 25.65-27.20) next to it: the two SRM-20s open on the bench (anchor cleats), a monitor arm for
-    #    the milling PC (mini PC bolted under the top), a lockable drawer pedestal for end mills and FR1 stock.
-    #  The whiteboard leaves the wall: a double-sided mobile whiteboard parks at the column end of the teaching table.
+    # ---- Bank wall (Magnús 2026-11-25): ONE continuous counter along the wall with the soldering place, open work
+    # surface and the two SRM-20s (open, no hood); a big whiteboard in the middle between two wall cabinets; storage
+    # under the counter and in the wall cabinets, all built in-house (40x40 profile + birch ply, laser-cut acrylic doors,
+    # standard e-lock). One fully equipped soldering place: the Weller (reference model) + the desoldering station +
+    # fume extractor (a cheap bought item, Magnús), ESD mat, tip cleaner, solder reel, helping hands, tool tray. No
+    # magnifier, no task lamps (the ceiling LED arrays light the area). Stretch lengths and heights are my choice.
     ld = {}
     exec(open(HERE + "lockdown.py").read(), ld)
     ply = MAT["ply"]
-    esd = mat("ESD_Mat_Blue", "#3D6C8F", 0.85)
-    lampblk = mat("TaskLamp_Black", "#1A1A1C", 0.4)
-    warm = mat("TaskLamp_LED", "#FFE3B8", 0.3, emit=5.0)
-    socket = mat("Rail_Socket_White", "#EDEDEA", 0.4)
-    DH, DD = 0.75, 0.62
-    dy1 = YW - 0.012                                                   # desk back against the birch lining
-    w = Part()
-    w.box(ply, 21.36, 27.25, YW - 0.012, YW, DH, 2.78, bevel=0.002)    # birch lining, desk to wall top
-    w.box(MAT["profile"], 21.90, 27.25, YW - 0.040, YW - 0.012, 0.98, 1.04)   # power/USB rail
-    xs = 22.05
-    while xs < 27.15:
-        w.box(socket, xs, xs + 0.045, YW - 0.0405, YW - 0.040, 0.99, 1.03)    # sockets on the rail
-        xs += 0.30
-    w.box(ply, 21.36, 27.25, YW - 0.012, YW, 0.0, DH, bevel=0.002)      # lining below the desks too (no raw OSB)
-    # PCB gallery above the soldering desk: student boards screwed into shallow birch frames (demo pieces, my idea)
-    pcb_cols = [m["pcb"], mat("PCB_Black", "#151A17", 0.35), mat("PCB_Purple", "#4B2A6B", 0.35), mat("PCB_Blue", "#1C3F8C", 0.35)]
-    gx = 22.10
-    for k in range(9):
-        gw, gh = rng.uniform(0.14, 0.26), rng.uniform(0.10, 0.20)
-        gz = 1.62 + rng.uniform(-0.08, 0.10)
-        w.box(ply, gx - 0.02, gx + gw + 0.02, YW - 0.030, YW - 0.012, gz - 0.02, gz + gh + 0.02, bevel=0.003)
-        w.box(pcb_cols[k % 4], gx, gx + gw, YW - 0.034, YW - 0.030, gz, gz + gh)
-        for c in range(rng.randint(3, 7)):                                        # chips and connectors
-            cx, cz = gx + rng.uniform(0.02, gw - 0.04), gz + rng.uniform(0.02, gh - 0.03)
-            w.box(m["black"], cx, cx + rng.uniform(0.01, 0.03), YW - 0.038, YW - 0.034, cz, cz + rng.uniform(0.008, 0.02))
-        gx += gw + 0.12
-        if gx > 25.2:
-            break
-    w.emit("ElecWall_Lining", col, Vector((0, 0, 0)))
-    # soldering desk: 4 places
-    DX0, DX1 = 21.95, 25.55
-    d, _ = lib["table_unit"](DX1 - DX0, DD, DH, [0.0, (DX1 - DX0) / 2 - 0.02, DX1 - DX0 - 0.04], lower=())
-    dloc, drot = lib["placement"]((DX0 + DX1) / 2, dy1 - DD / 2, DX1 - DX0, DD, "-y")
-    d.emit("SolderDesk", col, dloc, drot)
-    r = Part()
-    RZ = DH + 0.12
-    r.box(ply, DX0 + 0.02, DX1 - 0.02, dy1 - 0.22, dy1, RZ - 0.018, RZ, bevel=0.002)   # riser shelf
-    for x in (DX0 + 0.02, (DX0 + DX1) / 2 - 0.009, DX1 - 0.038):
-        r.box(ply, x, x + 0.018, dy1 - 0.22, dy1, DH, RZ - 0.018)
-    places = [DX0 + 0.45 + k * 0.90 for k in range(4)]
-    for k, cx in enumerate(places):
-        r.box(esd, cx - 0.28, cx + 0.28, dy1 - DD + 0.05, dy1 - 0.26, DH, DH + 0.003)    # ESD mat
-        lx = cx + 0.33                                                                   # task lamp
-        r.box(lampblk, lx - 0.03, lx + 0.03, dy1 - 0.20, dy1 - 0.14, RZ, RZ + 0.02)
-        r.cyl(lampblk, (lx, dy1 - 0.17, RZ + 0.02), (lx - 0.05, dy1 - 0.25, RZ + 0.40), 0.008, seg=10)
-        r.cyl(lampblk, (lx - 0.05, dy1 - 0.25, RZ + 0.40), (lx - 0.20, dy1 - 0.42, RZ + 0.30), 0.007, seg=10)
-        r.box(lampblk, lx - 0.30, lx - 0.12, dy1 - 0.47, dy1 - 0.39, RZ + 0.27, RZ + 0.30, bevel=0.006)
-        r.box(warm, lx - 0.29, lx - 0.13, dy1 - 0.465, dy1 - 0.395, RZ + 0.268, RZ + 0.27)
-    r.emit("SolderDesk_Riser", col, Vector((0, 0, 0)))
-    weller_we1010(m).emit("Solder_Weller", col, Vector((places[0] - 0.22, dy1 - 0.20, RZ)), 0.0)
-    fume_extractor(m).emit("Fume_0", col, Vector((places[0] + 0.05, dy1 - 0.30, DH)), 0.0)
-    zd915(m).emit("Desolder_ZD915", col, Vector((places[1] - 0.05, dy1 - 0.235, RZ)), 0.0)
-    magnifier_lamp(m).emit("Magnifier", col, Vector((places[1] + 0.12, dy1 - 0.12, RZ)), 0.0)
-    for k, cx in enumerate(places):
-        rr = math.pi + rng.uniform(-0.12, 0.12)
-        off = Matrix.Rotation(rr, 4, "Z") @ Vector((-0.22, -0.22, 0))
-        tex["chair"]().emit(f"Solder_Chair_{k + 1}", col, Vector((cx, dy1 - DD - 0.30, 0)) + off, rr)
-    # PCB bench with the two SRM-20s
-    PX0, PX1 = 25.65, 27.20
-    pb, _ = lib["table_unit"](PX1 - PX0, DD, DH, [0.0, PX1 - PX0 - 0.04], lower=())
-    ploc, prot = lib["placement"]((PX0 + PX1) / 2, dy1 - DD / 2, PX1 - PX0, DD, "-y")
-    pb.emit("PCBBench", col, ploc, prot)
-    for k, sx in enumerate((PX0 + 0.06, PX0 + 0.60)):
-        mach["srm20"]().emit(f"Roland_SRM20_{k + 1}", col, Vector((sx, dy1 - 0.04 - 0.426, DH)), 0.0)   # front -y
+    gapm = mat("Drawer_Shadow", "#0E0E0E", 0.9)
+    CX0, CX1, CD, CH = 21.42, 27.50, 0.65, 0.75          # counter (window cabinet ends at x 21.39; wall ends x 27.57)
+    cy1 = YW - 0.005
+    cy0 = cy1 - CD
+    S1, S2 = 23.02, 25.60                                # soldering | open work surface | SRM-20s
+    legs = [0.0, S1 - CX0 - 0.02, S2 - CX0 - 0.02, CX1 - CX0 - 0.04]
+    c, _ = lib["table_unit"](CX1 - CX0, CD, CH, legs, lower=())
+    cloc, crot = lib["placement"]((CX0 + CX1) / 2, (cy0 + cy1) / 2, CX1 - CX0, CD, "-y")
+    c.emit("ElecCounter", col, cloc, crot)
+    # under-counter units (carcass between the legs; knee space left at the soldering chair and the PC chair)
+    UZ0, UZ1 = 0.10, CH - 0.025 - 0.045                  # below the apron
+    yf = cy0 + 0.03                                      # door plane, set back behind the top's front edge
+    units = [(22.44, S1 - 0.02, 1), (S1 + 0.02, S2 - 0.02, 4), (S2 + 0.02, 26.66, 2)]   # (x0, x1, door leaves)
+    un, ud = Part(), Part()
+    for ux0, ux1, nl in units:
+        un.box(ply, ux0, ux1, yf + 0.005, cy1 - 0.02, UZ0 - 0.018, UZ0, bevel=0.0015)        # bottom
+        un.box(ply, ux0, ux1, cy1 - 0.032, cy1 - 0.02, UZ0, UZ1)                           # back
+        for x in (ux0, ux1 - 0.018):
+            un.box(ply, x, x + 0.018, yf + 0.005, cy1 - 0.02, UZ0, UZ1)                    # sides
+        un.box(ply, ux0 + 0.018, ux1 - 0.018, yf + 0.02, cy1 - 0.032, (UZ0 + UZ1) / 2, (UZ0 + UZ1) / 2 + 0.018)  # shelf
+        un.box(gapm, ux0 + 0.018, ux1 - 0.018, cy1 - 0.0325, cy1 - 0.032, UZ0, UZ1)
+        ld["door_run"](ud, "-y", yf, ux0 + 0.003, ux1 - 0.003, UZ0 - 0.015, UZ1, leaves=nl, lock_z=UZ1 - 0.08)
+    # contents seen through the acrylic: grey bins, kit boxes, an end-mill drawer cabinet under the SRM-20s
+    bins = [mat("Bin_Grey", "#6B6F73", 0.6), mat("Kit_Blue", "#1245DE", 0.5), mat("Kit_Teal", "#0E8C8C", 0.5)]
+    zs = (UZ0, (UZ0 + UZ1) / 2 + 0.018)
+    for ux0, ux1, nl in units[:2]:
+        for zz in zs:
+            x = ux0 + 0.03
+            while x < ux1 - 0.30:
+                wdt = rng.uniform(0.22, 0.34)
+                un.box(rng.choice(bins), x, x + wdt, yf + 0.06, cy1 - 0.06, zz, zz + rng.uniform(0.12, 0.22), bevel=0.004)
+                x += wdt + 0.03
+    ec, ecw, ech = drawer_cabinet(m, cols=4, rows=4)
+    ec.emit("EndMill_Drawers", col, Vector((S2 + 0.06, yf + 0.05, zs[1])), 0.0)
+    un.emit("ElecCounter_Units", col, Vector((0, 0, 0)))
+    dob = ud.emit("ElecCounter_Doors", col, Vector((0, 0, 0)))
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
+    # soldering place (window end): Weller, desoldering station, fume extractor on the ESD mat; kit around it
+    esd = mat("ESD_Mat_Grey", "#5C6E78", 0.85)
+    brass = mat("Brass_Wool", "#B8913A", 0.5, metal=0.8)
+    solder = mat("Solder_Wire", "#BFC3C6", 0.3, metal=0.9)
+    k = Part()
+    k.box(esd, 21.56, 22.86, cy1 - 0.58, cy1 - 0.04, CH, CH + 0.003)                        # ESD mat
+    k.box(m["black"], 22.30, 22.33, cy1 - 0.06, cy1 - 0.04, CH + 0.003, CH + 0.04)          # earth stud + lead
+    T = CH + 0.003
+    k.cyl(m["black"], (22.08, cy1 - 0.42, T), (22.08, cy1 - 0.42, T + 0.035), 0.040, seg=24)   # tip cleaner cup
+    k.cyl(brass, (22.08, cy1 - 0.42, T + 0.035), (22.08, cy1 - 0.42, T + 0.05), 0.033, seg=24)
+    k.box(m["black"], 22.18, 22.30, cy1 - 0.47, cy1 - 0.37, T, T + 0.02)                    # solder reel stand
+    k.box(m["black"], 22.235, 22.245, cy1 - 0.42, cy1 - 0.41, T + 0.02, T + 0.08)
+    k.cyl(solder, (22.21, cy1 - 0.415, T + 0.08), (22.27, cy1 - 0.415, T + 0.08), 0.035, seg=24)
+    k.box(m["black"], 22.42, 22.54, cy1 - 0.50, cy1 - 0.40, T, T + 0.015)                   # helping hands base
+    for dx, dz in ((-0.05, 0.16), (0.06, 0.13)):
+        k.cyl(m["black"], (22.48, cy1 - 0.45, T + 0.015), (22.48 + dx, cy1 - 0.47, T + dz), 0.005, seg=8)
+        k.box(solder, 22.48 + dx - 0.01, 22.48 + dx + 0.01, cy1 - 0.48, cy1 - 0.46, T + dz - 0.01, T + dz + 0.005)
+    k.box(m["grey"], 22.60, 22.84, cy1 - 0.52, cy1 - 0.36, T, T + 0.03, bevel=0.003)        # tool tray
+    for n in range(4):                                                                       # tweezers, cutters, pliers
+        x = 22.63 + n * 0.05
+        k.box(m["red"] if n % 2 else m["black"], x, x + 0.018, cy1 - 0.50, cy1 - 0.38, T + 0.03, T + 0.04)
+    k.emit("Solder_Kit", col, Vector((0, 0, 0)))
+    weller_we1010(m).emit("Solder_Weller", col, Vector((21.62, cy1 - 0.20, T)), 0.0)
+    zd915(m).emit("Desolder_ZD915", col, Vector((22.56, cy1 - 0.24, T)), 0.0)
+    fume_extractor(m).emit("Fume_0", col, Vector((21.86, cy1 - 0.14, T)), 0.0)
+    rr = math.pi + rng.uniform(-0.12, 0.12)
+    tex["chair"]().emit("Solder_Chair_1", col, Vector((22.02, cy0 - 0.30, 0))
+                        + Matrix.Rotation(rr, 4, "Z") @ Vector((-0.22, -0.22, 0)), rr)
+    # SRM-20s (column end), open on the counter between anchor cleats; milling PC at the end with knee space
     pk = Part()
-    for sx in (PX0 + 0.06, PX0 + 0.60):                                                 # anchor cleats
-        for ux, sgn in ((sx, -1), (sx + 0.451, 1)):
-            pk.box(MAT["profile"], min(ux, ux + sgn * 0.04), max(ux, ux + sgn * 0.04), dy1 - 0.30, dy1 - 0.26, DH, DH + 0.003)
-            pk.box(MAT["profile"], min(ux, ux + sgn * 0.003), max(ux, ux + sgn * 0.003), dy1 - 0.30, dy1 - 0.26, DH, DH + 0.04)
-    mx = PX1 - 0.17                                                                     # monitor arm + screen
-    pk.box(lampblk, mx - 0.04, mx + 0.04, dy1 - 0.10, dy1 - 0.04, DH, DH + 0.02)
-    pk.cyl(lampblk, (mx, dy1 - 0.07, DH + 0.02), (mx, dy1 - 0.07, DH + 0.42), 0.012, seg=12)
-    pk.box(lampblk, mx - 0.13, mx + 0.13, dy1 - 0.16, dy1 - 0.13, DH + 0.28, DH + 0.46, bevel=0.004)
-    pk.box(m["screen"], mx - 0.12, mx + 0.12, dy1 - 0.1605, dy1 - 0.160, DH + 0.29, DH + 0.45)
-    pk.box(lampblk, PX1 - 0.40, PX1 - 0.06, dy1 - DD + 0.04, dy1 - DD + 0.16, DH, DH + 0.015, bevel=0.003)  # keyboard
-    pk.box(lampblk, PX0 + 1.05, PX0 + 1.25, dy1 - 0.25, dy1 - 0.05, DH - 0.10, DH - 0.03)                  # mini PC under top
-    ped, pdoor = Part(), Part()                                                          # lockable drawer pedestal
-    QX0, QX1 = PX0 + 0.06, PX0 + 0.56
-    ped.box(ply, QX0, QX1, dy1 - 0.58, dy1 - 0.02, 0.05, DH - 0.06, bevel=0.003)
-    for zz in (0.22, 0.42, 0.58):
-        ped.box(MAT["profile"], QX0 + 0.15, QX1 - 0.15, dy1 - 0.595, dy1 - 0.58, zz, zz + 0.012)   # drawer pulls
-        ped.box(mat("Drawer_Shadow", "#0E0E0E", 0.9), QX0, QX1, dy1 - 0.5805, dy1 - 0.58, zz - 0.05, zz - 0.045)
-    ld["elock"](pdoor, "-y", dy1 - 0.58, QX1 - 0.08, 0.62, t=0.0)
-    pk.emit("PCBBench_Kit", col, Vector((0, 0, 0)))
-    ped.emit("PCBBench_Pedestal", col, Vector((0, 0, 0)))
-    pdoor.emit("PCBBench_PedestalLock", col, Vector((0, 0, 0)))
-    tex["chair"]().emit("PCB_Chair", col, Vector((PX1 - 0.27, dy1 - DD - 0.30, 0))
-                        + Matrix.Rotation(math.pi, 4, "Z") @ Vector((-0.22, -0.22, 0)), math.pi)
-    # mobile double-sided whiteboard, default at the column end of the teaching table, facing the table (-x)
-    wbm = Part()
-    WX, WY0, WY1 = 26.95, 30.55, 32.35
-    wbm.box(MAT["profile"], WX - 0.02, WX + 0.02, WY0 - 0.04, WY1 + 0.04, 0.80, 2.00)
-    for face in (-1, 1):
-        wbm.box(wb, WX + face * 0.021 - 0.0005, WX + face * 0.021 + 0.0005, WY0, WY1, 0.82, 1.98)
-    for y in (WY0 - 0.04, WY1):
-        wbm.profile(0.04, "z", WX - 0.02, y, 0.10, 1.95)                                 # posts
-        wbm.profile(0.04, "x", WX - 0.30, y, 0.06, 0.60)                                 # feet
-        for xx in (WX - 0.27, WX + 0.27):
-            wbm.cyl(MAT["foot"], (xx, y + 0.008, 0.035), (xx, y + 0.032, 0.035), 0.035, seg=16)
-    wbm.box(MAT["profile"], WX - 0.08, WX - 0.02, WY0 + 0.2, WY1 - 0.2, 0.79, 0.81)      # marker tray
-    for k, c in enumerate(ink):
-        wbm.cyl(c, (WX - 0.05, WY0 + 0.4 + k * 0.08, 0.815), (WX - 0.05, WY0 + 0.47 + k * 0.08, 0.815), 0.008, seg=10)
-    for k in range(9):                                                                    # a few sketch strokes
-        z = 1.70 - k * 0.09
-        wbm.box(ink[k % 3], WX - 0.0215, WX - 0.021, WY0 + 0.25, WY0 + 0.25 + rng.uniform(0.4, 1.2), z, z + 0.006)
-    wbm.emit("Whiteboard_Mobile", col, Vector((0, 0, 0)))
+    for n, sx in enumerate((S2 + 0.08, S2 + 0.60)):
+        mach["srm20"]().emit(f"Roland_SRM20_{n + 1}", col, Vector((sx, cy1 - 0.05 - 0.426, CH)), 0.0)
+        for ux, sg in ((sx, -1), (sx + 0.451, 1)):
+            for yy in (cy1 - 0.42, cy1 - 0.14):
+                pk.box(MAT["profile"], min(ux, ux + sg * 0.04), max(ux, ux + sg * 0.04), yy, yy + 0.04, CH, CH + 0.003)
+                pk.box(MAT["profile"], min(ux, ux + sg * 0.003), max(ux, ux + sg * 0.003), yy, yy + 0.04, CH, CH + 0.04)
+    mx = 27.14
+    pk.box(m["black"], mx - 0.08, mx + 0.08, cy1 - 0.20, cy1 - 0.08, CH, CH + 0.01)          # monitor foot + stem
+    pk.box(m["black"], mx - 0.015, mx + 0.015, cy1 - 0.15, cy1 - 0.12, CH, CH + 0.12)
+    pk.box(m["black"], mx - 0.27, mx + 0.27, cy1 - 0.17, cy1 - 0.14, CH + 0.10, CH + 0.42, bevel=0.004)
+    pk.box(m["screen"], mx - 0.26, mx + 0.26, cy1 - 0.1705, cy1 - 0.170, CH + 0.11, CH + 0.41)
+    pk.box(m["black"], mx - 0.22, mx + 0.22, cy0 + 0.08, cy0 + 0.22, CH, CH + 0.015, bevel=0.003)   # keyboard
+    pk.box(m["black"], 27.30, 27.45, cy1 - 0.20, cy1 - 0.05, CH - 0.10, CH - 0.03)           # mini PC under the top
+    pk.emit("SRM_Station", col, Vector((0, 0, 0)))
+    rr = math.pi + rng.uniform(-0.12, 0.12)
+    tex["chair"]().emit("PCB_Chair", col, Vector((mx, cy0 - 0.30, 0))
+                        + Matrix.Rotation(rr, 4, "Z") @ Vector((-0.22, -0.22, 0)), rr)
+    # wall cabinets above the soldering place and the SRM-20s; whiteboard between them
+    WZ0, WZ1, WD = 1.45, 2.25, 0.35
+    wc, wdr = Part(), Part()
+    for ax0, ax1 in ((CX0 + 0.02, S1 - 0.04), (S2 + 0.04, CX1 - 0.02)):
+        wc.box(ply, ax0, ax1, YW - WD, YW - 0.005, WZ0, WZ0 + 0.018, bevel=0.0015)
+        wc.box(ply, ax0, ax1, YW - WD, YW - 0.005, WZ1 - 0.018, WZ1, bevel=0.0015)
+        wc.box(ply, ax0, ax1, YW - 0.017, YW - 0.005, WZ0, WZ1)
+        for x in (ax0, (ax0 + ax1) / 2 - 0.009, ax1 - 0.018):
+            wc.box(ply, x, x + 0.018, YW - WD, YW - 0.005, WZ0, WZ1)
+        zm = (WZ0 + WZ1) / 2
+        wc.box(ply, ax0 + 0.018, ax1 - 0.018, YW - WD + 0.01, YW - 0.017, zm, zm + 0.018, bevel=0.0015)
+        ld["door_run"](wdr, "-y", YW - WD, ax0 + 0.003, ax1 - 0.003, WZ0 + 0.003, WZ1 - 0.003, leaves=2, lock_z=WZ0 + 0.12)
+        for zz in (WZ0 + 0.018, zm + 0.018):                                                 # boxes inside
+            x = ax0 + 0.04
+            while x < ax1 - 0.28:
+                wdt = rng.uniform(0.20, 0.32)
+                wc.box(rng.choice(bins), x, x + wdt, YW - WD + 0.04, YW - 0.04, zz, zz + rng.uniform(0.12, 0.28), bevel=0.004)
+                x += wdt + 0.03
+    wc.emit("Elec_WallCabinets", col, Vector((0, 0, 0)))
+    dob = wdr.emit("Elec_WallCabinets_Doors", col, Vector((0, 0, 0)))
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
+    # whiteboard: standard 2400 x 1200, aluminium frame, marker tray (bought)
+    alu = mat("Alu_Frame", "#C9CCCF", 0.35, metal=0.9)
+    w = Part()
+    WX0, WX1, BZ0, BZ1 = 23.11, 25.51, 1.00, 2.20
+    w.box(alu, WX0, WX1, YW - 0.022, YW - 0.004, BZ0, BZ1, bevel=0.004)
+    w.box(wb, WX0 + 0.02, WX1 - 0.02, YW - 0.0225, YW - 0.022, BZ0 + 0.02, BZ1 - 0.02)
+    w.box(alu, WX0 + 0.3, WX1 - 0.3, YW - 0.08, YW - 0.004, BZ0 - 0.02, BZ0)                # marker tray
+    for n, cc in enumerate(ink):
+        w.cyl(cc, (WX0 + 0.5 + n * 0.08, YW - 0.05, BZ0 + 0.008), (WX0 + 0.57 + n * 0.08, YW - 0.05, BZ0 + 0.008), 0.008, seg=10)
+    for n in range(12):                                                                       # sketch strokes
+        z = 2.05 - n * 0.075
+        x0 = WX0 + 0.15 + (n % 3) * 0.75
+        w.box(ink[n % 3], x0, x0 + rng.uniform(0.25, 0.6), YW - 0.0228, YW - 0.0225, z, z + 0.006)
+    w.emit("Elec_Whiteboard", col, Vector((0, 0, 0)))
 
     # teaching table with 6 chairs, moved towards the column (Magnús 2026-11-25); props cleared (lock-down)
     TL, TD, TH = 3.20, 1.20, 0.75

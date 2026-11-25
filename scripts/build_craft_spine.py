@@ -228,12 +228,13 @@ def build():
 
     # ---- spine: two back-to-back 0.30 m shelf units with a birch-ply spine between
     lv = [0.10, 0.48, 0.86, 1.24, 1.62, 2.00]
+    Y0 = 31.55 + 1.22                  # spine shrunk by one bay at the column end (Magnús 2026-11-25): way in ~2.2 m
     for side, facing, xc in (("Boxes", "-x", 27.62 + 0.15), ("Lounge", "+x", 28.22 - 0.15)):
         # workshop face: only the 2 bays that face the room (y 31.55-34.03); the other two sat 5 cm from the bank
         # wall and were unreachable (2026-11-25). Same posts/bays as before, so the kept bays don't move.
-        bays = [1.18] * (2 if side == "Boxes" else 4)
+        bays = [1.18] * (1 if side == "Boxes" else 3)       # one bay off the column end (Magnús 2026-11-25)
         part, slots, L = lib["shelf_unit"](bays, 0.30, 2.42, lv)
-        loc, rot = lib["placement"](xc, 31.55 + L / 2, L, 0.30, facing)
+        loc, rot = lib["placement"](xc, Y0 + L / 2, L, 0.30, facing)
         part.emit(f"Spine_{side}_Shelving", sp, loc, rot)
         fill = Part()
         if side == "Boxes":                                            # workshop side: tool library, filled by
@@ -245,7 +246,7 @@ def build():
         fill.emit(f"Spine_{side}_Contents", sp, loc, rot)
     PLANT_SPOTS.clear()                                                # no plants indoors (user)
     spine = Part()
-    spine.box(MAT["ply"], 27.913, 27.929, 31.57, 31.55 + 4 * 1.22 + 0.04 - 0.02, 0.05, 2.40)
+    spine.box(MAT["ply"], 27.913, 27.929, Y0 + 0.02, 31.55 + 4 * 1.22 + 0.04 - 0.02, 0.05, 2.40)
     # end cap where the 2-bay workshop face stops (y 34.03): closes the slot between the bank wall (x 27.58) and the
     # spine panel, so the spine reads as one solid birch wall from there to the bank (2026-11-25, my detail)
     spine.box(MAT["ply"], 27.585, 27.913, 34.03, 34.048, 0.0, 2.42)

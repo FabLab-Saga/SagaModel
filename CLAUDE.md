@@ -201,17 +201,17 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   the hallway wall (x 24.40–25.70, y 15.15–16.70), offcut boxes/foam on its deck at 2.60 m, rods/profile on cantilever
   arms at 2.95/3.30 m; low offcut cart in the window corner; step stool. Loading door -> loading zone -> ShopBot bed in
   a straight line.
-- **Microelectronics** (overhauled 2026-11-25, Magnús: de-crowd into flexible teaching space, modularity first, more
-  into storage; then "space seems empty and underutilized", SRM-20s elsewhere and NOT enclosed, the soldering table
-  "looks depressing"). Colleague tool walls + tall bench GONE. Window counter carries a full-length 3.76 m lockable
-  acrylic cabinet (6 leaves, 3 e-locks): scope/PSU, hot air, spare irons, meters, kits, component drawers, SMD reels,
-  6 class kit sets, FR1 stock. ELECTRONICS WALL on the bank wall (my design): birch ply lining floor to wall top with a
-  black power/USB rail and a gallery of framed student PCBs; 3.6 m soldering desk, 4 places, each with ESD mat + warm
-  task lamp, birch riser at the back; Weller (WE1010 stand-in) + fume extractor and the Chinese desoldering station
-  (ZD-915 stand-in) + magnifier out permanently, the other places get irons from the cabinet; 1.55 m PCB BENCH next to
-  it with the 2 SRM-20s OPEN on anchor cleats, monitor arm, mini PC under the top, lockable drawer pedestal (end
-  mills). Fixed whiteboard replaced by a double-sided MOBILE whiteboard parked at the teaching table's column end.
-  Teaching table (3.2 m, 6 seats) at centre y 31.15; ~0.86 m between its chairs and the desk chairs.
+- **Microelectronics** (overhauled 2026-11-25 with Magnús, iterated by Q&A): colleague tool walls + tall bench GONE.
+  Window counter: full-length 3.76 m lockable acrylic cabinet (his "perfect"): scope/PSU, hot air, spare irons, meters,
+  kits, component drawers, SMD reels, 6 class kit sets, FR1. BANK WALL (his spec): ONE continuous counter x 21.42–27.50
+  (0.75 high, 0.65 deep; 40x40 + birch) = ONE fully equipped soldering place at the window end (Weller reference
+  model, desoldering station (ZD-915 stand-in), fume extractor (bought; none on the equipment list), ESD mat, tip
+  cleaner, solder reel, helping hands, tool tray; NO magnifier - not on the list), open work surface in the middle (no
+  chairs, my call), the 2 SRM-20s OPEN on anchor cleats at the column end + milling PC; in-house under-counter units
+  (profile + ply, acrylic doors, e-locks; end-mill drawers under the SRM-20s), wall cabinets above the soldering place
+  and the SRM-20s, a 2400 x 1200 whiteboard between them (stretch lengths/heights mine). Teaching table 3.2 m, 6 seats.
+  LESSON (Magnús): no decor, no cloned lamps (the area is lit), no wall panelling; things this lab would really build
+  from its profile/ply stock or reasonably buy (IKEA OK). Ask before designing.
   **Felt dividers** (`build_felt_dividers.py`, collection FeltDividers): the three Flöff panels are separate mobile
   screens on black 40x40 castor frames (feet set in 0.20 m, locking castors); default spot (Magnús: the old row line
   moved 0.30 m towards the workshop) y 29.465, x 21.50–27.82 (starts past the cutter counter), 0.04 m between
@@ -319,7 +319,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which
   re-letters them with Magnús's names (GEISLASKERI, ÞRÍVÍDDARPRENTARI, FRÆSIVÉL, RAFEINDAVERKSTÆÐI, TEXTÍLSVÆÐI,
   VERKFÆRI; VÍNYLSKERI kept). Source PDFs unchanged.
-- Spine workshop face is 2 bays (y 31.55–34.03) + a birch end cap to the bank wall (2026-11-25); lounge face 4 bays.
+- Spine shrunk by one bay at the column end (Magnús 2026-11-25, to open the way into electronics, ~2.2 m): starts at
+  y 32.77; workshop face 1 bay (tool library bay 3) + birch end cap to the bank wall; lounge face 3 bays.
 - Upper hotel floors not modelled → keep exterior shots tight.
 - Presentation video: plan, script, brand rules, budget in RENDER.md. `build_walkthrough.py` (shot cameras on music
   bars, one straight constant-speed move per shot, level cameras + lens shift), `render_walk_test.py` (animatic,

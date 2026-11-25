@@ -19,7 +19,7 @@ items:
     label: Exhaust Central
     kind: fixture
     zone: laser-room
-    pos: [31.114, 22.859]
+    pos: [31.113, 22.858]
     z: 0.625
     rot: 0
     size: [2.883, 4.953, 3.305]
@@ -52,7 +52,7 @@ items:
     label: LaserSafety
     kind: fixture
     zone: laser-room
-    pos: [31.641, 23.53]
+    pos: [31.64, 23.53]
     z: 0
     rot: 0
     size: [1.699, 6.78, 1.92]
@@ -74,7 +74,7 @@ items:
     label: Glowforge Aura
     kind: machine
     zone: laser-room
-    pos: [32.146, 22.818]
+    pos: [32.147, 22.818]
     z: 0.78
     rot: -90
     size: [0.556, 0.559, 0.13]
@@ -86,7 +86,7 @@ items:
     label: Glowforge ProHD 1
     kind: machine
     zone: laser-room
-    pos: [32.143, 20.792]
+    pos: [32.144, 20.793]
     z: 0.78
     rot: -90
     size: [0.965, 0.565, 0.215]
@@ -98,7 +98,7 @@ items:
     label: Glowforge ProHD 2
     kind: machine
     zone: laser-room
-    pos: [32.143, 21.907]
+    pos: [32.144, 21.907]
     z: 0.78
     rot: -90
     size: [0.965, 0.565, 0.215]
@@ -276,7 +276,7 @@ items:
     label: Staff CoatHooks
     kind: fixture
     zone: staff-room
-    pos: [29.377, 20.847]
+    pos: [29.377, 20.848]
     z: 0.86
     rot: 0
     size: [0.28, 1.365, 1.04]
@@ -321,7 +321,7 @@ items:
     kind: furniture
     zone: staff-room
     pos: [31.79, 18.045]
-    z: -0.001
+    z: -0.002
     rot: 180
     size: [1.21, 0.78, 0.833]
     locked: false
@@ -659,49 +659,38 @@ items:
     locked: false
     objects: [Elec_Chair_-1_-10]
 
-  - id: lab.solderdesk
-    label: Soldering desk (4 places)
+  - id: lab.eleccounter
+    label: "Electronics counter (soldering, work surface, SRM-20s)"
     kind: furniture
     zone: main-lab
-    pos: [23.75, 33.993]
+    pos: [24.46, 33.985]
     z: 0
     rot: 0
-    size: [3.604, 0.64, 1.298]
+    size: [6.084, 0.67, 1.17]
     locked: false
-    objects: [SolderDesk, SolderDesk_Riser, Solder_Weller, Fume_0, Desolder_ZD915, Magnifier]
+    objects: [ElecCounter, ElecCounter_Units, ElecCounter_Doors, EndMill_Drawers, Solder_Kit, Solder_Weller, Desolder_ZD915, Fume_0, SRM_Station]
 
-  - id: lab.pcbbench
-    label: PCB bench (2x SRM-20)
-    kind: furniture
+  - id: lab.elec-wallcabinets
+    label: Electronics wall cabinets
+    kind: storage
     zone: main-lab
-    pos: [26.425, 33.993]
-    z: 0
+    pos: [24.46, 34.138]
+    z: 1.45
     rot: 0
-    size: [1.554, 0.64, 1.21]
+    size: [6.04, 0.345, 0.8]
     locked: false
-    objects: [PCBBench, PCBBench_Kit, PCBBench_Pedestal, PCBBench_PedestalLock]
+    objects: [Elec_WallCabinets, Elec_WallCabinets_Doors]
 
-  - id: lab.elecwall-lining
-    label: Electronics wall lining + power rail
+  - id: lab.elec-whiteboard
+    label: Whiteboard 2400 x 1200
     kind: fixture
     zone: main-lab
-    pos: [24.305, 34.295]
-    z: 0
+    pos: [24.31, 34.273]
+    z: 0.98
     rot: 0
-    size: [5.89, 0.04, 2.78]
-    locked: true
-    objects: [ElecWall_Lining]
-
-  - id: lab.whiteboard-mobile
-    label: Mobile whiteboard (double-sided)
-    kind: furniture
-    zone: main-lab
-    pos: [26.73, 31.45]
-    z: 0
-    rot: 0
-    size: [0.61, 1.88, 2.05]
+    size: [2.4, 0.076, 1.22]
     locked: false
-    objects: [Whiteboard_Mobile]
+    objects: [Elec_Whiteboard]
 
   - id: lab.electronics-table
     label: Electronics Table
@@ -795,10 +784,10 @@ items:
     label: Spine Boxes Shelving
     kind: storage
     zone: main-lab
-    pos: [27.757, 33.999]
+    pos: [27.757, 34.609]
     z: 0
     rot: -90
-    size: [4.902, 0.344, 2.42]
+    size: [3.682, 0.344, 2.42]
     locked: false
     objects: [Spine_Boxes_Shelving, Spine_Panel]
 
@@ -806,10 +795,10 @@ items:
     label: Spine Lounge Shelving
     kind: storage
     zone: main-lab
-    pos: [28.07, 34.01]
+    pos: [28.07, 34.62]
     z: 0
     rot: 90
-    size: [4.924, 0.304, 2.42]
+    size: [3.704, 0.304, 2.42]
     locked: false
     objects: [Spine_Lounge_Shelving, Spine_Lounge_Contents]
 
@@ -916,7 +905,7 @@ items:
     label: WorkChair 1 -1 1
     kind: furniture
     zone: main-lab
-    pos: [27.254, 24.165]
+    pos: [27.255, 24.165]
     z: 0
     rot: -178.5
     size: [0.464, 0.464, 0.86]
@@ -1071,7 +1060,7 @@ items:
     label: Handheld 3DScanner
     kind: machine
     zone: main-lab
-    pos: [22.467, 28.932]
+    pos: [22.468, 28.933]
     z: 1.026
     rot: 0
     size: [0.365, 0.375, 0.212]
@@ -1155,11 +1144,11 @@ items:
     label: Roland SRM20 1
     kind: machine
     zone: main-lab
-    pos: [25.936, 34.05]
+    pos: [25.905, 34.047]
     z: 0.75
     rot: 0
     size: [0.451, 0.427, 0.426]
-    "on": lab.pcbbench
+    "on": lab.eleccounter
     locked: false
     objects: [Roland_SRM20_1]
 
@@ -1167,11 +1156,11 @@ items:
     label: Roland SRM20 2
     kind: machine
     zone: main-lab
-    pos: [26.476, 34.05]
+    pos: [26.425, 34.047]
     z: 0.75
     rot: 0
     size: [0.451, 0.427, 0.426]
-    "on": lab.pcbbench
+    "on": lab.eleccounter
     locked: false
     objects: [Roland_SRM20_2]
 
@@ -1239,7 +1228,7 @@ items:
     label: Prusa MK3S 01
     kind: machine
     zone: main-lab
-    pos: [29.092, 24.958]
+    pos: [29.093, 24.958]
     z: 1.48
     rot: -90
     size: [0.46, 0.565, 0.57]
@@ -1251,7 +1240,7 @@ items:
     label: Prusa MK3S 02
     kind: machine
     zone: main-lab
-    pos: [29.092, 24.294]
+    pos: [29.093, 24.294]
     z: 1.48
     rot: -90
     size: [0.46, 0.565, 0.57]
@@ -1263,7 +1252,7 @@ items:
     label: Prusa MK3S 03
     kind: machine
     zone: main-lab
-    pos: [29.092, 23.63]
+    pos: [29.093, 23.63]
     z: 0.12
     rot: -90
     size: [0.46, 0.565, 0.57]
@@ -1275,7 +1264,7 @@ items:
     label: Prusa MK3S 04
     kind: machine
     zone: main-lab
-    pos: [29.092, 24.294]
+    pos: [29.093, 24.294]
     z: 0.8
     rot: -90
     size: [0.46, 0.565, 0.57]
@@ -1287,7 +1276,7 @@ items:
     label: Prusa MK3S 05
     kind: machine
     zone: main-lab
-    pos: [29.092, 23.63]
+    pos: [29.093, 23.63]
     z: 0.8
     rot: -90
     size: [0.46, 0.565, 0.57]
@@ -1299,7 +1288,7 @@ items:
     label: Prusa MK3S 06
     kind: machine
     zone: main-lab
-    pos: [29.092, 22.966]
+    pos: [29.093, 22.966]
     z: 0.8
     rot: -90
     size: [0.46, 0.565, 0.57]
@@ -1311,7 +1300,7 @@ items:
     label: Prusa MK3S 07
     kind: machine
     zone: main-lab
-    pos: [29.092, 22.302]
+    pos: [29.093, 22.302]
     z: 0.8
     rot: -90
     size: [0.46, 0.565, 0.57]
@@ -1323,7 +1312,7 @@ items:
     label: Brother Embroidery
     kind: machine
     zone: main-lab
-    pos: [30.717, 27.451]
+    pos: [30.718, 27.451]
     z: 0.76
     rot: 180
     size: [0.525, 0.241, 0.37]
@@ -1335,7 +1324,7 @@ items:
     label: Brother Sewing
     kind: machine
     zone: main-lab
-    pos: [30.037, 27.451]
+    pos: [30.038, 27.451]
     z: 0.76
     rot: 180
     size: [0.445, 0.201, 0.35]
@@ -1407,13 +1396,13 @@ items:
     label: ToolLibrary
     kind: storage
     zone: main-lab
-    pos: [27.771, 32.79]
+    pos: [27.771, 33.4]
     z: 0.1
     rot: -90
-    size: [2.32, 0.278, 2.12]
+    size: [1.1, 0.278, 2.12]
     "on": lab.spine-boxes-shelving
     locked: false
-    objects: [ToolLibrary, ToolLib_Drill_0, ToolLib_Drill_1, ToolLib_Cab_3_0, ToolLib_Cab_3_1, ToolLib_ScopePSU, ToolLib_Cab_2_0, ToolLib_Cab_2_1]
+    objects: [ToolLibrary, ToolLib_Drill_0, ToolLib_Drill_1, ToolLib_Cab_3_0, ToolLib_Cab_3_1]
 
   - id: lab.roland-vinylcutter-1
     label: Roland VinylCutter 1
@@ -1568,57 +1557,24 @@ items:
     locked: false
     objects: [FeltFrame_3]
 
-  - id: lab.solder-chair-1
-    label: Solder Chair 1
-    kind: furniture
-    zone: main-lab
-    pos: [22.4, 33.375]
-    z: 0
-    rot: 179
-    size: [0.464, 0.464, 0.86]
-    locked: false
-    objects: [Solder_Chair_1]
-
-  - id: lab.solder-chair-2
-    label: Solder Chair 2
-    kind: furniture
-    zone: main-lab
-    pos: [23.3, 33.375]
-    z: 0
-    rot: -178.9
-    size: [0.464, 0.464, 0.86]
-    locked: false
-    objects: [Solder_Chair_2]
-
   - id: lab.pcb-chair
     label: PCB Chair
     kind: furniture
     zone: main-lab
-    pos: [26.93, 33.383]
+    pos: [27.14, 33.36]
     z: 0
-    rot: 180
+    rot: 179.7
     size: [0.464, 0.464, 0.86]
     locked: false
     objects: [PCB_Chair]
 
-  - id: lab.solder-chair-3
-    label: Solder Chair 3
+  - id: lab.solder-chair-1
+    label: Solder Chair 1
     kind: furniture
     zone: main-lab
-    pos: [24.2, 33.383]
+    pos: [22.02, 33.36]
     z: 0
-    rot: -177.9
+    rot: -179
     size: [0.464, 0.464, 0.86]
     locked: false
-    objects: [Solder_Chair_3]
-
-  - id: lab.solder-chair-4
-    label: Solder Chair 4
-    kind: furniture
-    zone: main-lab
-    pos: [25.1, 33.383]
-    z: 0
-    rot: 179.5
-    size: [0.464, 0.464, 0.86]
-    locked: false
-    objects: [Solder_Chair_4]
+    objects: [Solder_Chair_1]
