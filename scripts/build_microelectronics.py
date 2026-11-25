@@ -661,6 +661,17 @@ def tool_library(m, col):
         for k in range(3):
             labelled_box(xa + 0.04 + k * 0.38, z5, 0.34, 0.22, (MAT["bins"][(bi + k) % 6] if k == 1 else m["grey"]))
     p.emit("ToolLibrary", col, loc, rot)
+    # E3 lock-down (2026-11-25): the bay behind clear acrylic doors in two zones (below / above 1.24 m), each a pair
+    # with one e-lock - the standard detail (scripts/lockdown.py). Door plane just proud of the front posts (x 27.62).
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    dr = Part()
+    fx = 27.62 - 0.004
+    ld["door_run"](dr, "-x", fx, SPINE_Y0 + 0.02, SPINE_Y0 + L - 0.02, 0.06, 1.22, leaves=2, lock_z=0.95)
+    ld["door_run"](dr, "-x", fx, SPINE_Y0 + 0.02, SPINE_Y0 + L - 0.02, 1.26, 2.40, leaves=2, lock_z=1.40)
+    dob = dr.emit("ToolLibrary_Doors", col, Vector((0, 0, 0)))
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
 
 
 def whiteboard_schematic(b, ink, yf, col):

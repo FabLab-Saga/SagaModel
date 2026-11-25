@@ -1171,7 +1171,7 @@ items:
     size: [1.1, 0.278, 2.12]
     "on": lab.spine-boxes-shelving
     locked: false
-    objects: [ToolLibrary, ToolLib_Cab_3_0, ToolLib_Cab_3_1]
+    objects: [ToolLibrary, ToolLib_Cab_3_0, ToolLib_Cab_3_1, ToolLibrary_Doors]
 
   - id: lab.roland-vinylcutter-1
     label: Roland VinylCutter 1
