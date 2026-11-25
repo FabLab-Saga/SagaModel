@@ -125,49 +125,6 @@ def books_and_plants(part, x0, x1, depth, z, clear, place):
             x += 0.05
 
 
-def place_plants(col):
-    """Scanned CC0 potted plants (Poly Haven) at the recorded spots, scaled to the shelf."""
-    from mathutils import Matrix
-    lib_col = bpy.data.collections.get("AssetLibrary") or bpy.data.collections.new("AssetLibrary")
-    if lib_col.name not in bpy.context.scene.collection.children:
-        bpy.context.scene.collection.children.link(lib_col)
-    bpy.context.view_layer.layer_collection.children[lib_col.name].exclude = True
-    srcs = []
-    for a in ("potted_plant_01", "potted_plant_02", "potted_plant_04"):
-        root = bpy.data.objects.get("PH_" + a)
-        if root is None:
-            before = set(bpy.data.objects)
-            bpy.ops.import_scene.gltf(filepath=bpy.path.abspath(f"//assets/polyhaven/models/{a}/{a}.gltf"))
-            new = [o for o in bpy.data.objects if o not in before]
-            root = bpy.data.objects.new("PH_" + a, None)
-            lib_col.objects.link(root)
-            for o in new:
-                for c in list(o.users_collection):
-                    c.objects.unlink(o)
-                lib_col.objects.link(o)
-                if o.parent is None:
-                    o.parent = root
-        meshes = [o for o in root.children_recursive if o.type == "MESH"]
-        pts = [o.matrix_world @ Vector(c) for o in meshes for c in o.bound_box]
-        srcs.append((meshes, min(p.z for p in pts), max(p.z for p in pts),
-                     (min(p.x for p in pts) + max(p.x for p in pts)) / 2, (min(p.y for p in pts) + max(p.y for p in pts)) / 2))
-    for i, ((loc, rot), lx, ly, z, maxh) in enumerate(PLANT_SPOTS):
-        meshes, z0, z1, cx, cy = srcs[i % len(srcs)]
-        k = min(1.0, maxh / (z1 - z0))
-        w = lib["to_world"](loc, rot, (lx, ly, 0))
-        holder = bpy.data.objects.new(f"Plant_{i + 1:02d}", None)
-        col.objects.link(holder)
-        holder.location = (w.x, w.y, z)
-        holder.rotation_euler = (0, 0, rng.uniform(0, 6.28))
-        holder.scale = (k, k, k)
-        for m in meshes:
-            inst = bpy.data.objects.new(f"Plant_{i + 1:02d}_{m.name}", m.data)
-            col.objects.link(inst)
-            inst.parent = holder
-            inst.matrix_basis = Matrix.Translation((-cx, -cy, -z0)) @ m.matrix_world
-    PLANT_SPOTS.clear()
-
-
 def build():
     col = bank["clear_collection"]("CraftZone")
     sp = bank["clear_collection"]("Spine")

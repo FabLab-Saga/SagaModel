@@ -1391,7 +1391,7 @@ items:
     size: [1.1, 0.278, 2.12]
     "on": lab.spine-boxes-shelving
     locked: false
-    objects: [ToolLibrary, ToolLib_Drill_0, ToolLib_Drill_1, ToolLib_Cab_3_0, ToolLib_Cab_3_1]
+    objects: [ToolLibrary, ToolLib_Cab_3_0, ToolLib_Cab_3_1]
 
   - id: lab.roland-vinylcutter-1
     label: Roland VinylCutter 1
@@ -1429,18 +1429,6 @@ items:
     locked: false
     objects: [BenchProps_0]
 
-  - id: lab.drill-0
-    label: Drill 0
-    kind: fixture
-    zone: main-lab
-    pos: [24.152, 24.49]
-    z: 0.75
-    rot: 173.9
-    size: [0.207, 0.059, 0.209]
-    "on": lab.worktable-0
-    locked: false
-    objects: [Drill_0]
-
   - id: lab.laptop-0
     label: Laptop 0
     kind: fixture
@@ -1464,18 +1452,6 @@ items:
     "on": lab.worktable-1
     locked: false
     objects: [BenchProps_1]
-
-  - id: lab.drill-1
-    label: Drill 1
-    kind: fixture
-    zone: main-lab
-    pos: [27.452, 24.49]
-    z: 0.75
-    rot: -58.8
-    size: [0.207, 0.059, 0.209]
-    "on": lab.worktable-1
-    locked: false
-    objects: [Drill_1]
 
   - id: lab.benchprops-2
     label: BenchProps 2
@@ -1567,14 +1543,3 @@ items:
     size: [0.464, 0.464, 0.86]
     locked: false
     objects: [Solder_Chair_1]
-
-  - id: cnc.cardboardbox-1-cardboard-box-01
-    label: CardboardBox 1 cardboard box 01
-    kind: storage
-    zone: cnc-room
-    pos: [0, 0]
-    z: 0
-    rot: 0
-    size: [0.387, 0.516, 0.342]
-    locked: false
-    objects: [CardboardBox_1_cardboard_box_01]

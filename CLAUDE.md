@@ -279,7 +279,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   clicking "Start TV" -> `assets/fablabtv/fablabtv_screen.png`. No big glowing signs (user).
 - **Demo display** (back-wall bays visible from the entrance, x ~27.4–32.4): imaginary Fab Lab projects,
   hex-tile art relief above. Spine's workshop side (faces electronics) = TOOL LIBRARY (`tool_library()` in
-  build_microelectronics.py): cases, drills (Poly Haven Drill_01), rework/measuring gear, drawer cabinets, hand-tool
+  build_microelectronics.py): cases, drill charger + batteries, rework/measuring gear, drawer cabinets, hand-tool
   blocks, kit boxes in the 2 visible bays; the bays behind the bank wall hold closed boxes. No demo pieces there.
 - **Búnaðarbankinn** (equipment bank): STAFF ONLY, boxes only (SAMLA-style), enclosed by walls 2.80 m
   high (NOT to the slab); south wall moved to y 34.32–34.40; only entry = SECRET BOOKCASE DOOR (was: hidden in the

@@ -1,9 +1,8 @@
 """Signs of use: work in progress on the work tables. Re-runnable ("Life" collection).
 
 Benches = the four WorkTable_* of build_worktables.py (run that first; it also builds the chairs). Props: green self-healing cutting mats
-(procedural grid), plywood/acrylic offcuts, laptops, small prints, steel rulers, pencils, a CC0
-cordless drill (Poly Haven Drill_01) and a cardboard box (cardboard_box_01) - credits in
-assets/polyhaven/CREDITS.md.
+(procedural grid), plywood/acrylic offcuts, laptops, small prints, steel rulers, pencils. All script-built
+(the Poly Haven drill + cardboard box were removed 2026-11-25, Magnús: only our own models).
 """
 import math
 import random
@@ -53,42 +52,6 @@ def cutting_mat():
     L(b.outputs["BSDF"], out.inputs["Surface"])
     m.diffuse_color = lin("#2F6B4F")
     return m
-
-
-def import_lib(asset):
-    root = bpy.data.objects.get("PH_" + asset)
-    lib_col = bpy.data.collections["AssetLibrary"]
-    if root is None:
-        before = set(bpy.data.objects)
-        bpy.ops.import_scene.gltf(filepath=bpy.path.abspath(f"//assets/polyhaven/models/{asset}/{asset}.gltf"))
-        new = [o for o in bpy.data.objects if o not in before]
-        root = bpy.data.objects.new("PH_" + asset, None)
-        lib_col.objects.link(root)
-        for o in new:
-            for c in list(o.users_collection):
-                c.objects.unlink(o)
-            lib_col.objects.link(o)
-            if o.parent is None:
-                o.parent = root
-    meshes = [o for o in root.children_recursive if o.type == "MESH"]
-    pts = [o.matrix_world @ Vector(c) for o in meshes for c in o.bound_box]
-    lo = Vector([min(p[i] for p in pts) for i in range(3)])
-    hi = Vector([max(p[i] for p in pts) for i in range(3)])
-    return meshes, lo, hi
-
-
-def instance(asset, col, name, x, y, z, rz, target=None):
-    meshes, lo, hi = import_lib(asset)
-    k = (target / (hi - lo).length) if target else 1.0
-    holder = bpy.data.objects.new(name, None)
-    col.objects.link(holder)
-    holder.location, holder.rotation_euler, holder.scale = (x, y, z), (0, 0, rz), (k, k, k)
-    c = (lo + hi) / 2
-    for m in meshes:
-        inst = bpy.data.objects.new(f"{name}_{m.name}", m.data)
-        col.objects.link(inst)
-        inst.parent = holder
-        inst.matrix_basis = Matrix.Translation((-c.x, -c.y, -lo.z)) @ m.matrix_world
 
 
 def bench_top(name):
@@ -157,11 +120,6 @@ def build():
         su, sv = at(rng.uniform(-0.3, 0.3), rng.uniform(-0.15, 0.15))
         p.box(paper, su - 0.105, su + 0.105, sv - 0.148, sv + 0.148, zt, zt + 0.0006)
         p.emit(f"BenchProps_{bi}", col, Vector((0, 0, 0)))
-    # tools: drill on two benches, a cardboard box on the floor by the craft zone
-    for k, bn in enumerate(benches[:2]):
-        x0, x1, y0, y1, zt = bench_top(bn)
-        instance("Drill_01", col, f"Drill_{k}", x1 - 0.25, y0 + 0.2, zt, rng.uniform(0, 6.28), target=0.30)
-    # (cardboard box by the column removed 2026-11-25, Magnús)
     print("life built:", len(benches), "benches")
 
 

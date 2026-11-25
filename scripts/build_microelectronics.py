@@ -561,9 +561,6 @@ def tool_library(m, col):
     slots = {(3, li): slots1[(0, li)] for (bi, li) in slots4 if bi == 3}  # spine shrink (Magnús 2026-11-25) only bay 3
     loc, rot = lib["placement"](27.62 + 0.15, SPINE_Y0 + L / 2, L, 0.30, "-x")
     W = lambda x, y, z: lib["to_world"](loc, rot, (x, y, z))
-    life = {}
-    _l = open(HERE + "build_life.py").read()
-    exec(_l[:_l.index("\ndef build():")], life)
     p = Part()
     case_red = mat("Case_Red", "#B3201C", 0.45)
     case_blk = mat("Case_Black", "#1C1D1F", 0.5)
@@ -593,9 +590,6 @@ def tool_library(m, col):
             case(case_blk, xa + 0.62, z)
         xa, xb, _, _, z1 = slots[(bi, 1)]                               # power tools
         if bi == 3:
-            for k, lx in enumerate((xa + 0.20, xa + 0.48)):
-                w = W(lx, 0.15, z1)
-                life["instance"]("Drill_01", col, f"ToolLib_Drill_{k}", w.x, w.y, w.z, rot + 1.2 + 0.5 * k, target=0.30)
             p.box(m["black"], xa + 0.70, xa + 0.90, 0.06, 0.20, z1, z1 + 0.07, bevel=0.008)    # charger
             p.box(m["yellow"], xa + 0.72, xa + 0.88, 0.09, 0.17, z1 + 0.07, z1 + 0.13, bevel=0.006)
             for k in range(2):                                                                 # spare batteries

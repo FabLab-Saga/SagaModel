@@ -44,20 +44,3 @@ if __name__ == "__main__":
     res = args.pop(0) if args and args[0].endswith("k") else "2k"
     for a in args:
         print(a, fetch(a, res), flush=True)
-
-
-def fetch_model(asset, res="1k"):
-    """glTF model + its textures into assets/polyhaven/models/<id>/ (CC0)."""
-    out = ROOT / "models" / asset
-    out.mkdir(parents=True, exist_ok=True)
-    info = json.loads(get(f"https://api.polyhaven.com/info/{asset}"))
-    g = json.loads(get(f"https://api.polyhaven.com/files/{asset}"))["gltf"][res]["gltf"]
-    (out / f"{asset}.gltf").write_bytes(get(g["url"]))
-    for rel, e in g.get("include", {}).items():
-        dst = out / rel
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        if not dst.exists():
-            dst.write_bytes(get(e["url"]))
-    (out / "info.json").write_text(json.dumps({"id": asset, "name": info.get("name"), "authors": info.get("authors"),
-                                                "license": "CC0", "source": f"https://polyhaven.com/a/{asset}"}, indent=1))
-    return out / f"{asset}.gltf"
