@@ -1,14 +1,16 @@
 # Fab Lab SAGA — Blender model (project brief for the agent)
 
-Authoritative project state as of 2026-10-08 late evening (modelling workstation; PLAN.md G1–G11 done; since then: hidden
-leftovers deleted, work tables, print-farm cabins, every listed machine modelled (MACHINES.md), on-call desk + Fab Lab
-TV, GULLVALLA lounge, back staff area (WC, Kaffistofa, store-room door, hallway glass door), CNC room rebuilt (glass
-front with dot manifestation, real-size ShopBot, upright board rack, loading door + windows); entrance moved to the
-corner bay per the city drawings + hall set; signs re-lettered; walkthrough v1 animatic). Now: the presentation video
-(see RENDER.md). This is a Hermes project; this file is the agent's own brief (Magnús): keep it current in every commit, no permission needed (renamed from CLAUDE.md 2026-11-25). Read this first; then
-`git log --oneline` for history, `LICENSES.md` for asset rules, `SETUP.md` for machine setup (partly written for the
-old laptop). Hermes session "Fab lab Blender" (`hermes --continue "Fab lab Blender"`) holds the 2026-10-08 work —
-this file is the summary of record.
+Authoritative project state as of 2026-11-25 late evening (modelling workstation). Built up since 2026-10-08: hidden
+leftovers deleted, every listed machine modelled (MACHINES.md), on-call desk + Fab Lab TV, GULLVALLA lounge, back staff
+area, CNC room, corner-bay entrance + hall set, layout system (layout/), theft lock-down (private plan in Vinnuskjol;
+done E1 print farm, E2 hand-tool wall, E3 tool library, E4 electronics, E8 work tables), electronics re-layout + bank-wall
+counter, spine shrunk one bay, work tables option 7b, one project in progress per table, third-party models removed.
+NEXT (paused 2026-11-25): E5 cutter corner - Magnús skipped the four questions (carts -> one rolling cabinet 1220x610?
+cutter-counter cupboard? vinyl-cutter cable locks? move the SRM-20 PC chair out of the tool-library doors' swing?);
+then E6 craft corner, E7 laser room, E9 CNC room. Renders/film only on his request (RENDER.md).
+This is a Hermes project; this file is the agent's own brief (Magnús): keep it current in every commit, no permission
+needed (renamed from CLAUDE.md 2026-11-25). Read this first; then `git log --oneline` for history, `LICENSES.md` for
+asset rules, `layout/TRUTH.md` for his answers, `SETUP.md` for machine setup (partly written for the old laptop).
 
 ## What this is
 Photoreal architectural model of **Fab Lab SAGA**, a new university Fab Lab (HÍ + Reykjavík/Mixtúra)
