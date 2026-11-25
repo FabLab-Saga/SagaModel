@@ -55,7 +55,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `build_services` → `build_lighting` → `build_machines` → `build_print_farm` → `build_laser_room` → `build_bank_lounge` →
   `build_sofas` (ALWAYS after bank_lounge) → `build_craft_spine` → `build_worktables` → `build_life` (needs WorkTables) →
   `build_microelectronics` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
-  `build_material_storage` → `build_entrance_bay` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_cnc_room` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
+  `build_material_storage` → `build_entrance_bay` → `build_escape_doors` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_cnc_room` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
   `add_cameras` → `purge_hidden`.
   Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
   exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
@@ -128,8 +128,12 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   y 38.67–42.6 whose two doors face the door wall off a WC lobby (end wall y 42.45), check-in desk beyond it, cleaners'
   cupboard on the door-wall side, round columns at x 44.8, stone floor, 600 acoustic ceiling at 3.10 (finishes are my
   inference from lobby photos). Hall-side signage in `build_hall_entrance.py` (fascia sign, plaque, fire-glass vinyl).
-  The drawing also shows a lab escape door (pair, "ÚT") in the SSW glazing at y ~32.4–34.3 (behind the lounge pit; not
-  modelled) and labels the lounge/desk area "fjölnota kennslurými 110.8 m²" (Magnús: close enough to the lounge +
+  The drawing also shows a lab escape door pair ("ÚT") in the SSW glazing at y ~32.4–34.3 (Magnús: real). Modelled
+  2026-11-25 (`build_escape_doors.py`, collection EscapeDoors): two 0.72 m glass leaves in the façade bay between the
+  existing mullions (y 32.74–34.18; fitting it to the bay is my call), outward opening, dark façade frames, head 2.40
+  with a transom, stainless panic bars inside, flat threshold, small green exit pictogram hung inside above it (my own
+  drawing, `scripts/make_exit_sign.py`; his pick of the look). `Cut_Escape_Glass`/`Cut_Escape_Sill` booleans on
+  Facade_SSW_Glass/_Frames. The drawing labels the lounge/desk area "fjölnota kennslurými 110.8 m²" (Magnús: close enough to the lounge +
   on-call area as modelled). Sun: 22 Sep 15:30 UTC (az 215°, el 22°) so light
   reaches under the ~1.9 m upper-floor overhang. HDRI rotation aligned to the sun lamp.
 
@@ -210,7 +214,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   glass closes one end, two felt poufs the open lab end -> a ring of 6 (idea = force interaction). Footprint
   x 30.39–32.40, y 30.11–33.29, pushed to the glass. No literal round sofa (user), no TV, no machines. RULE: the
   route from the entrance into the lab passes between the on-call desk corner (29.92, 33.87) and the pit: keep
-  >= 1.2 m there (now 1.21). The pit stands in the clear zone of the SSW escape doors (y 32.4–34.3); Magnús keeps it
+  >= 1.2 m there (now 1.21). The pit stands in the clear zone of the SSW escape doors (y 32.74–34.18); Magnús keeps it
   there (2026-11-25: one of several exits, sofas are easily moved; the re-layouts A/B/C were all worse). Real furniture uses real catalogue dimensions. `Cam_LoungeLow` looks down the pit axis.
   `build_sofas.py` is a no-op; the old `nook()` is unused.
 - **Entrance / on-call desk** (`build_welcome.py`, collection Welcome): the on-call desk is NOT a reception desk -
@@ -284,7 +288,6 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which
   re-letters them with Magnús's names (GEISLASKERI, ÞRÍVÍDDARPRENTARI, FRÆSIVÉL, RAFEINDAVERKSTÆÐI, TEXTÍLSVÆÐI,
   VERKFÆRI; VÍNYLSKERI kept). Source PDFs unchanged.
-- Open from the drawings: the lab escape door in the SSW glazing (y ~32.4–34.3) where the lounge pit stands.
 - Spine workshop face is 2 bays (y 31.55–34.03) + a birch end cap to the bank wall (2026-11-25); lounge face 4 bays.
 - Upper hotel floors not modelled → keep exterior shots tight.
 - Presentation video: plan, script, brand rules, budget in RENDER.md. `build_walkthrough.py` (shot cameras on music
