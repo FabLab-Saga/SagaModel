@@ -161,7 +161,7 @@ def build():
     for k, bn in enumerate(benches[:2]):
         x0, x1, y0, y1, zt = bench_top(bn)
         instance("Drill_01", col, f"Drill_{k}", x1 - 0.25, y0 + 0.2, zt, rng.uniform(0, 6.28), target=0.30)
-    instance("cardboard_box_01", col, "CardboardBox_1", 27.30, 31.75, 0.0, 0.3, target=0.75)
+    # (cardboard box by the column removed 2026-11-25, Magnús)
     print("life built:", len(benches), "benches")
 
 

@@ -527,17 +527,6 @@ items:
     locked: false
     objects: [Bekant_Cart_2, Bekant_Cart_2_Boxes]
 
-  - id: lab.cardboardbox-1
-    label: CardboardBox 1
-    kind: storage
-    zone: main-lab
-    pos: [27.3, 31.75]
-    z: 0
-    rot: 17.2
-    size: [0.398, 0.53, 0.351]
-    locked: false
-    objects: [CardboardBox_1]
-
   - id: lab.chair-0
     label: Chair 0
     kind: furniture
@@ -1578,3 +1567,14 @@ items:
     size: [0.464, 0.464, 0.86]
     locked: false
     objects: [Solder_Chair_1]
+
+  - id: cnc.cardboardbox-1-cardboard-box-01
+    label: CardboardBox 1 cardboard box 01
+    kind: storage
+    zone: cnc-room
+    pos: [0, 0]
+    z: 0
+    rot: 0
+    size: [0.387, 0.516, 0.342]
+    locked: false
+    objects: [CardboardBox_1_cardboard_box_01]
