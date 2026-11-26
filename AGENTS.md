@@ -218,7 +218,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   screens on black 40x40 castor frames (feet set in 0.20 m, locking castors); default spot (Magnús: the old row line
   moved 0.30 m towards the workshop) y 29.465, x 21.50–27.82 (starts past the cutter counter), 0.04 m between
   frames; panel 3's column-end foot is set in 0.30 m and clears the column by ~6 cm. Each is a layout item, movable
-  to block noise or divide the area. No electronics sign (removed 2026-11-25, Magnús).
+  to block noise or divide the area. No zone signs (all removed 2026-11-26, Magnús: better signs later).
 - **Lock-down detail** (`scripts/lockdown.py`, exec'd by builders): clear acrylic leaves hung in pairs, one surface
   RFID electronic cabinet lock per pair (Magnús: acrylic doors, electronic locks where reasonable; the detail is my
   design). Enclosure door objects carry `layout_skip` and belong to their item's `objects`. Portable tools live behind
@@ -304,7 +304,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Accent wall: generated brand mural (`scripts/mural.py`) on the partition by the small rooms; red arch
   portal around its door; logo "FAB LAB SAGA".
 - **Art piece** above the demo bays (`hex_relief` in build_demo.py): ~700 3D-printed hex tiles, brand gradient,
-  wave depths, lit by `Art_Spot`. Replaced the "make anything" neon (user: ugly, cliché - no neon signs). Signs from the manual placed per zone (`build_signs.py`).
+  wave depths, lit by `Art_Spot`. Replaced the "make anything" neon (user: ugly, cliché - no neon signs). Zone signs removed 2026-11-26 (`build_signs.py` now has an empty list; Magnús: better signs later).
 
 ## Look rules
 - Photorealism (user's choice). It's a LAB, not a house: no rugs, no indoor plants, no homey décor.

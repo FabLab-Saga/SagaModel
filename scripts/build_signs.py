@@ -17,15 +17,9 @@ IMG = "//assets/signs/{}.png"
 FACE = {"-x": -math.pi / 2, "+x": math.pi / 2, "-y": 0.0, "+y": math.pi}
 
 # name, image, centre (x, y, z), facing, hung?
-SIGNS = [
-    ("Sign_3DPrentari", "3d_prentari", (28.76, 23.63, 2.42 + 0.20), "-x", False),     # on the print-farm top frame
-    ("Sign_Laserskeri", "laser", (29.30, 26.34, 2.60), "-x", True),                   # hung at the laser-room door
-    ("Sign_Fraesivel", "fraesi_vel", (22.55, 21.7445, 2.20), "+y", False),               # on the CNC glass wall, beside the door
-    # (electronics sign removed 2026-11-25, Magnús)
-    ("Sign_Verkfaeri", "verkfaeri", (20.95, 24.25, 1.93), "+x", True),                # hand-tool wall on the NNE glass
-    ("Sign_Vinylskeri", "vinylskeri", (21.30, 27.75, 2.45), "+x", True),              # over the vinyl stands + cutter counter
-    ("Sign_Saumavel", "saumavel", (31.05, 27.30, 2.45), "+y", True),                  # over the sewing bench (textile)
-]
+# All zone signs removed 2026-11-26 (Magnús: "just delete all of the signs ... We'll add better signs later").
+# The builder stays so new signs can be listed here; with an empty list it just empties the Signs collection.
+SIGNS = []
 
 
 def sign_material(key):
