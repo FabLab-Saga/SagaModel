@@ -73,18 +73,37 @@ def laser_bench(col, mm):
     loc, rot = lib["placement"](XG - T_D / 2, (BY0 + BY1) / 2, L, T_D, "-x")
     part.emit("LaserBench", col, loc, rot)
     p = Part()
-    for i in range(3):                                                  # flat-file drawers for laser stock
+    for i in (1, 2, 3):                                                 # flat-file drawers for laser stock
         xa, xb = legs[i] + 0.04, legs[i + 1]
         drawers(p, xa, xb, T_D, 0.06, T_H - 0.09, 6, MAT["ply"], mm["handle"], mm["gap"], mm["label"])
-    xa, xb = legs[3] + 0.04, legs[4]                                    # open bay: spare beds + stock boxes
+    xa, xb = legs[0] + 0.04, legs[1]                                    # E7 bay under the staging end (2026-11-26)
+    # E7 (my design on Magnus's go-ahead to iterate): the bay under the staging surface (next to the xTool) is a lockable cupboard; the
+    # flat files moved one bay towards the Epilog -
+    # ply back/ends, acrylic pair + one e-lock (scripts/lockdown.py). The xTool F1 Ultra (portable, 0.49 m tall) and its
+    # controller live in the foam-lined spot inside when the lab is closed; spare honeycomb/knife beds and stock boxes
+    # beside it. The model shows the xTool out on the bench in use.
     p.box(MAT["ply"], xa, xb, 0.002, T_D - 0.002, 0.10, 0.118, bevel=0.001)
+    p.box(MAT["ply"], xa, xb, T_D - 0.022, T_D - 0.004, 0.118, T_H - 0.065)                 # back
+    for x in (xa, xb - 0.018):
+        p.box(MAT["ply"], x, x + 0.018, 0.04, T_D - 0.022, 0.118, T_H - 0.065)             # ends
     for k in range(3):                                                  # honeycomb / knife beds on edge
-        x = xa + 0.06 + k * 0.035
+        x = xa + 0.04 + k * 0.035
         p.box(mm["alu"], x, x + 0.022, 0.06, 0.62, 0.118, 0.118 + 0.50)
-    for k in range(3):
-        x = xa + 0.30 + k * 0.27
-        p.box(mm["card"], x, x + 0.25, 0.05, 0.60, 0.118, 0.118 + 0.12 + 0.04 * k, bevel=0.003)
+    foam = mat("Foam_Grey", "#3B3E42", 0.95)
+    p.box(foam, xa + 0.17, xa + 0.62, 0.08, 0.58, 0.118, 0.148, bevel=0.004)               # xTool parking foam
+    p.box(MAT["ply"], xa + 0.17 + 0.07, xa + 0.17 + 0.07 + 0.30, 0.13, 0.52, 0.1475, 0.1485)   # tower footprint mark
+    p.box(foam, xa + 0.64, xa + 0.80, 0.08, 0.40, 0.118, 0.17, bevel=0.004)                # controller slot
+    for k in range(2):
+        x = xa + 0.84 + k * 0.14
+        p.box(mm["card"], x, x + 0.13, 0.05, 0.60, 0.118, 0.118 + 0.14 + 0.05 * k, bevel=0.003)
     p.emit("LaserBench_Drawers", col, loc, rot)
+    ld = {}
+    exec(open(bpy.path.abspath("//scripts/lockdown.py")).read(), ld)
+    dr = Part()
+    ld["door_run"](dr, "-y", -0.004, xa + 0.003, xb - 0.003, 0.08, T_H - 0.07, leaves=2, lock_z=T_H - 0.15)
+    dob = dr.emit("LaserBench_Doors", col, loc, rot)
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
     return loc, rot
 
 

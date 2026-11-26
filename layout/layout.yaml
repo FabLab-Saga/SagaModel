@@ -35,7 +35,7 @@ items:
     rot: -90
     size: [4.864, 0.728, 0.798]
     locked: false
-    objects: [LaserBench, LaserBench_Drawers, LaserBench_Staging]
+    objects: [LaserBench, LaserBench_Drawers, LaserBench_Doors, LaserBench_Staging]
 
   - id: laser.laserprepcounter
     label: LaserPrepCounter
@@ -679,7 +679,7 @@ items:
     rot: -90
     size: [1.904, 0.82, 0.75]
     locked: false
-    objects: [GlassBench, Clay_Bucket_0, Clay_Bucket_1, GlassBench_Spools]
+    objects: [GlassBench, Clay_Bucket_0, Clay_Bucket_1, GlassBench_Spools, GlassBench_Cupboard, GlassBench_Doors]
 
   - id: lab.glasstoolwall-frame
     label: GlassToolWall Frame
@@ -745,7 +745,7 @@ items:
     rot: 180
     size: [2.604, 0.77, 0.883]
     locked: false
-    objects: [SewingBench, SewingBench_Props]
+    objects: [SewingBench, SewingBench_Props, SewingBench_Cupboard, SewingBench_Doors, LOKLiK_Anchors]
 
   - id: lab.spine-boxes-shelving
     label: Spine Boxes Shelving
@@ -814,18 +814,6 @@ items:
     "on": lab.cuttercounter
     locked: false
     objects: [Mayku_FormBox]
-
-  - id: lab.clay-microwave
-    label: Clay Microwave
-    kind: machine
-    zone: main-lab
-    pos: [31.948, 29.1]
-    z: 0.16
-    rot: -90
-    size: [0.45, 0.354, 0.26]
-    "on": lab.glassbench
-    locked: false
-    objects: [Clay_Microwave]
 
   - id: lab.creality-cr10-max
     label: Creality CR10 Max
@@ -1054,30 +1042,6 @@ items:
     "on": lab.sewingbench
     locked: false
     objects: [Brother_Sewing]
-
-  - id: lab.cricut-easypress3-1
-    label: Cricut EasyPress3 1
-    kind: machine
-    zone: main-lab
-    pos: [32.05, 27.37]
-    z: 0.16
-    rot: 180
-    size: [0.345, 0.294, 0.119]
-    "on": lab.sewingbench
-    locked: false
-    objects: [Cricut_EasyPress3_1]
-
-  - id: lab.cricut-easypress3-2
-    label: Cricut EasyPress3 2
-    kind: machine
-    zone: main-lab
-    pos: [31.63, 27.37]
-    z: 0.16
-    rot: 180
-    size: [0.345, 0.294, 0.119]
-    "on": lab.sewingbench
-    locked: false
-    objects: [Cricut_EasyPress3_2]
 
   - id: lab.cricut-mugpress
     label: Cricut MugPress
@@ -1536,3 +1500,40 @@ items:
     "on": lab.cuttercart
     locked: false
     objects: [Handheld_3DScanner]
+
+  - id: lab.clay-microwave
+    label: Clay Microwave
+    kind: machine
+    zone: main-lab
+    pos: [31.898, 28.88]
+    z: 0.16
+    rot: -90
+    size: [0.45, 0.354, 0.26]
+    "on": lab.glassbench
+    locked: false
+    objects: [Clay_Microwave]
+
+  - id: lab.cricut-easypress3-1
+    label: Cricut EasyPress3 1
+    kind: machine
+    zone: main-lab
+    pos: [32.15, 27.35]
+    z: 0.16
+    rot: 180
+    size: [0.345, 0.294, 0.119]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Cricut_EasyPress3_1]
+
+  - id: lab.cricut-easypress3-2
+    label: Cricut EasyPress3 2
+    kind: machine
+    zone: main-lab
+    pos: [31.83, 27.35]
+    z: 0.16
+    rot: 180
+    size: [0.345, 0.294, 0.119]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Cricut_EasyPress3_2]
+

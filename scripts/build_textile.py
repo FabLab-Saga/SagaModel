@@ -45,6 +45,24 @@ def chair(seat_h=0.46):
     return p
 
 
+def under_cupboard(cb, cd, bays, depth, z0, z1, ld, trays=()):
+    """Lockable cupboard under a table_unit top (E6/E5 detail, my design): ply back + end panels, clear acrylic door
+    pair with one e-lock per bay (scripts/lockdown.py), in the table's local frame (front = local -y). bays: list of
+    (x0, x1) between legs; trays: (x0, x1, z) pull-out trays on grey runners."""
+    ply = MAT["ply"]
+    run = mat("Drawer_Runner", "#8E9296", 0.35, metal=0.8)
+    for x0, x1 in bays:
+        cb.box(ply, x0, x1, depth - 0.022, depth - 0.004, z0, z1)                     # back
+        for x in (x0, x1 - 0.018):
+            cb.box(ply, x, x + 0.018, 0.04, depth - 0.022, z0, z1)                     # ends
+        ld["door_run"](cd, "-y", -0.004, x0 + 0.003, x1 - 0.003, z0 - 0.01, z1 - 0.005, leaves=2, lock_z=z1 - 0.08)
+    for x0, x1, z in trays:
+        cb.box(ply, x0 + 0.03, x1 - 0.03, 0.05, depth - 0.03, z, z + 0.012, bevel=0.001)     # tray
+        cb.box(ply, x0 + 0.03, x1 - 0.03, 0.05, 0.062, z, z + 0.05, bevel=0.002)            # front lip
+        for x in (x0 + 0.018, x1 - 0.03):
+            cb.box(run, x, x + 0.012, 0.05, depth - 0.03, z, z + 0.035)                      # runners
+
+
 def build():
     scene = bpy.context.scene
     col = bpy.data.collections.get("Textile") or bpy.data.collections.new("Textile")
@@ -67,8 +85,32 @@ def build():
     put(mach["loklik_auto_press"](), "LOKLiK_AutoPress", loc, rot, 0.29, 0.30, BH, 0.50, 0.40)
     put(mach["cricut_mug_press"](), "Cricut_MugPress", loc, rot, 0.70, 0.22, BH, 0.275, 0.157)
     put(mach["overlock"](), "Overlock", loc, rot, 1.14, 0.30, BH, 0.335, 0.282)
-    put(mach["cricut_easypress3"](), "Cricut_EasyPress3_1", loc, rot, 0.30, 0.34, 0.16, 0.305, 0.254)   # shelf
-    put(mach["cricut_easypress3"](), "Cricut_EasyPress3_2", loc, rot, 0.72, 0.34, 0.16, 0.305, 0.254)
+    put(mach["cricut_easypress3"](), "Cricut_EasyPress3_1", loc, rot, 0.20, 0.36, 0.16, 0.305, 0.254)   # in the cupboard
+    put(mach["cricut_easypress3"](), "Cricut_EasyPress3_2", loc, rot, 0.52, 0.36, 0.16, 0.305, 0.254)
+    # E6 (2026-11-26, my design on Magnús's go-ahead to iterate): lockable cupboard under the glass end of the sewing
+    # bench (lx 0.04-0.70, clear of the three knee spaces): both EasyPresses on the floor, a pull-out tray above for
+    # the mug-press blanks; acrylic pair + one e-lock. LOKLiK held between steel angle cleats on the top.
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    zt = BH - 0.025 - 0.04
+    cb, cd = Part(), Part()
+    under_cupboard(cb, cd, [(0.04, 0.70)], BD, 0.16, zt, ld, trays=[(0.04, 0.70, 0.45)])
+    white = mat("Mug_Blank", "#F4F4F2", 0.25, coat=0.4)
+    for k in range(4):                                                                  # boxed mug blanks on the tray
+        cb.box(mat("Kraft_Box", "#B98F5E", 0.8), 0.10 + k * 0.13, 0.22 + k * 0.13, 0.12, 0.24, 0.462, 0.572, bevel=0.003)
+    cb.cyl(white, (0.16, 0.40, 0.462), (0.16, 0.40, 0.557), 0.041, seg=24)
+    cb.cyl(white, (0.27, 0.42, 0.462), (0.27, 0.42, 0.557), 0.041, seg=24)
+    cb.emit("SewingBench_Cupboard", col, loc, rot)
+    dob = cd.emit("SewingBench_Doors", col, loc, rot)
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
+    cl = Part()                                                                         # LOKLiK anchor cleats
+    for ax in (0.04, 0.54):
+        for ay in (0.13, 0.43):
+            x0, x1 = (ax - 0.04, ax) if ax < 0.3 else (ax, ax + 0.04)
+            cl.box(MAT["zinc"], x0, x1, ay, ay + 0.04, BH, BH + 0.003)
+            cl.box(MAT["zinc"], (x1 - 0.003) if ax < 0.3 else x0, x1 if ax < 0.3 else x0 + 0.003, ay, ay + 0.04, BH, BH + 0.035)
+    cl.emit("LOKLiK_Anchors", col, loc, rot)
     put(mach["sewing"](0.50, 0.24, 0.32), "Brother_Embroidery", loc, rot, 1.62, 0.26, BH, 0.50, 0.24)
     put(mach["sewing"](), "Brother_Sewing", loc, rot, 2.30, 0.26, BH, 0.42, 0.20)
     props = Part()
@@ -109,13 +151,25 @@ def build():
     put(mach["secabo_tc7"](), "HeatPress_RedClam", gloc, grot, 0.30, 0.37, GH, 0.43, 0.57)
     put(mach["eazao_zero"](), "Eazao_Zero", gloc, grot, 0.98, 0.30, GH, 0.35, 0.30)
     put(mach["creality_cr10_max"](), "Creality_CR10_Max", gloc, grot, 1.52, 0.4125, GH, 0.65, 0.785)
-    put(mach["microwave"](), "Clay_Microwave", gloc, grot, 0.98, 0.30, 0.16, 0.45, 0.35)
-    for i, lx in enumerate((0.20, 0.47)):
-        put(mach["clay_bucket"](0.12, 0.22), f"Clay_Bucket_{i}", gloc, grot, lx, 0.40, 0.16, 0.0, 0.0)
+    put(mach["microwave"](), "Clay_Microwave", gloc, grot, 1.20, 0.25, 0.16, 0.45, 0.35)
+    for i, lx in enumerate((1.10, 1.33)):                                            # clay behind the microwave
+        put(mach["clay_bucket"](0.11, 0.20), f"Clay_Bucket_{i}", gloc, grot, lx, 0.62, 0.16, 0.0, 0.0)
+    # E6: lockable cupboard under the whole large-format bench (2 bays between the legs, acrylic pairs, one e-lock per
+    # bay; my design): microwave, clay buckets and spools in bay 2; bay 1 = pull-out tray for the sewing machines and the
+    # overlocker overnight (they stand rotated: 0.20 + 0.24 + 0.335 m < 0.85) with a fabric box behind.
+    gb, gd = Part(), Part()
+    gz = GH - 0.025 - 0.04
+    under_cupboard(gb, gd, [(0.04, 0.93), (0.97, 1.86)], GD, 0.16, gz, ld, trays=[(0.04, 0.93, 0.172)])
+    for k, c in enumerate((mat("Fabric_Navy", "#2B3550", 0.9), mat("Fabric_Mustard", "#C99A2E", 0.9))):
+        gb.box(c, 0.62, 0.88, 0.46 + k * 0.0, 0.74, 0.184 + k * 0.05, 0.234 + k * 0.05, bevel=0.012)
+    gb.emit("GlassBench_Cupboard", col, gloc, grot)
+    dob = gd.emit("GlassBench_Doors", col, gloc, grot)
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
     sp = mach["Part"]()
     for j in range(4):
         mach["spool_part"](sp, M["spools"][(j * 3 + 1) % len(M["spools"])], 0.06 + j * 0.10, 0.12, 0.10, axis="x", width=0.07)
-    put(sp, "GlassBench_Spools", gloc, grot, 1.52, 0.40, 0.16, 0.40, 0.24)
+    put(sp, "GlassBench_Spools", gloc, grot, 1.645, 0.40, 0.16, 0.40, 0.24)
 
     # ---- E5 (Magnús 2026-11-26): ONE lockable rolling cabinet replaces the two BEKANT carts - 813 x 610 (a third of a
     # 2440 strip), worktop 0.90 m for standing work (his picks), along felt panel 1 at x 22.20-23.01 so 0.75 m stays

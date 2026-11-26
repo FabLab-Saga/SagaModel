@@ -1,11 +1,13 @@
 # Fab Lab SAGA — Blender model (project brief for the agent)
 
-Authoritative project state as of 2026-11-26 (modelling workstation). Built up since 2026-10-08: hidden
+Authoritative project state as of 2026-11-26 (modelling workstation). BRANCH `alternate-ideas` (Magnús 2026-11-26:
+"continue iterating without me; where a choice is unsure pick the best and do everything on a branch; anything but
+the walls"): everything after main 4a2833f is my own design on this branch, for him to review and merge or drop. Built up since 2026-10-08: hidden
 leftovers deleted, every listed machine modelled (MACHINES.md), on-call desk + Fab Lab TV, GULLVALLA lounge, back staff
 area, CNC room, corner-bay entrance + hall set, layout system (layout/), theft lock-down (private plan in Vinnuskjol;
-done E1 print farm, E2 hand-tool wall, E3 tool library, E4 electronics, E5 cutter corner, E8 work tables), electronics
-re-layout + bank-wall counter, spine shrunk one bay, work tables option 7b, one project in progress per table, third-party
-models removed. NEXT: E6 craft corner, then E7 laser room, E9 CNC room (ask before designing each).
+done E1 print farm, E2 hand-tool wall, E3 tool library, E4 electronics, E5 cutter corner, E8 work tables; on the branch
+also E6 craft corner and E7 laser room, my designs), electronics re-layout + bank-wall counter, spine shrunk one bay,
+work tables option 7b, one project in progress per table, third-party models removed. NEXT on the branch: E9 CNC room.
 Renders/film only on his request (RENDER.md).
 This is a Hermes project; this file is the agent's own brief (Magnús): keep it current in every commit, no permission
 needed (renamed from CLAUDE.md 2026-11-25). Read this first; then `git log --oneline` for history, `LICENSES.md` for
@@ -164,6 +166,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   under the interior window; safety station + 3 offcut bins on the WNW wall. ONE central exhaust (`Exhaust_Central`):
   rear ports → manifold behind the bench → riser (y 25.17) → ceiling collector (Epilog branch joins) → inline fan →
   up through the slab to the building's vent. Keep both doors and a ≥1.0 m aisle clear.
+  E7 (branch, my design): the bench bay under the staging end (next to the xTool) is a lockable cupboard (acrylic pair,
+  e-lock) with a foam parking spot for the xTool F1 Ultra + controller, spare beds and boxes; the flat files moved one
+  bay towards the Epilog (bench local x runs from the ESE end).
 - **Print farm** (`build_print_farm.py`, collection PrintFarm) against the laser room's NNE partition, x 28.78–29.50,
   y 21.95–25.31: one 3.36 m profile wall, 5 bays x 3 rows of birch cells (decks 0.12/0.80/1.48/2.16) + open spool top.
   7 Prusa MK3S+ (user decision), EACH IN ITS OWN CABIN: birch sides/back, clear acrylic door hinged on the left post
@@ -260,6 +265,11 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   bench on the SSW glass (x 31.65–32.45, y 28.18–30.08) with the red industrial clam press (Secabo TC7-based),
   Eazao Zero clay printer (stand-in, lab unsure; microwave + clay below) and
   Creality CR-10 Max. Main circulation x 28.0–29.5 stays clear.
+  E6 (branch, my design): lockable cupboard under the sewing bench's glass end (lx 0.04–0.70, clear of the three knee
+  spaces) with both EasyPresses + a pull-out tray of mug blanks; steel angle cleats hold the LOKLiK; lockable cupboard
+  under the whole large-format bench (2 bays, acrylic pairs, e-lock each): microwave + clay + spools, and a pull-out
+  tray where the sewing/embroidery machines and overlocker go overnight (shown out in use). `under_cupboard()` in
+  build_textile.py is the reusable detail.
 - **Lounge** (by the SSW glass; `conversation_pit()` + `gullvalla()` in build_bank_lounge.py): CONVERSATION PIT - two
   IKEA GULLVALLA 2-seat sofas, one Silkeryd grey-green, one Silkeryd dark grey-beige (user's choice; real size 142 x 83 x 78, seat 42; rolled arms, two
   seat + two loose back cushions, black turned legs; modelled from IKEA photos) FACING EACH OTHER across a low birch
