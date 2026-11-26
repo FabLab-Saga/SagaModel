@@ -15,10 +15,7 @@ import bpy
 
 
 def _ld_mat(name, hexcol, rough=0.4, emit=0.0, alpha=1.0, coat=0.0):
-    m = bpy.data.materials.get(name)
-    if m:
-        return m
-    m = bpy.data.materials.new(name)
+    m = bpy.data.materials.get(name) or bpy.data.materials.new(name)        # values re-applied on every rebuild
     m.use_nodes = True
     b = next(n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
     h = hexcol.lstrip("#")
@@ -44,7 +41,7 @@ def _ld_mats():
     pad = _ld_mat("ELock_Pad", "#141517", 0.35)
     led = _ld_mat("ELock_LED", "#2BD46A", 0.3, emit=4.0)
     body = _ld_mat("ELock_Body", "#2A2C2F", 0.45)
-    edge = _ld_mat("Acrylic_Edge", "#9FB4BC", 0.15)
+    edge = _ld_mat("Acrylic_Edge", "#B4CDD2", 0.08, coat=0.6)                    # polished edge: the glint that reads
     return acr, pad, led, body, edge
 
 
@@ -68,24 +65,28 @@ def elock(p, face, plane, a, z, t=0.005):
 
 def acrylic_door(p, face, plane, a0, a1, z0, z1, hinge="a", lock=True, lock_z=None, handle=True, t=0.005):
     """One clear acrylic leaf (5 mm, polished edges) between a0..a1 and z0..z1, hinge edge at a0 ("a") or a1 ("b");
-    two black hinges on the hinge edge, a black bar pull and the electronic lock near the free edge."""
+    two black hinges on the hinge edge, a black edge pull on the free edge and the electronic lock beside it."""
     acr, pad, _, body, edge = _ld_mats()
     blk = bpy.data.materials.get("Alu_Black_Anodized") or pad
     _box(p, acr, face, plane, a0 + 0.002, a1 - 0.002, z0, z1, 0.0, t)
-    for zz in (z0, z1 - 0.003):                                                       # visible top/bottom edges
-        _box(p, edge, face, plane, a0 + 0.002, a1 - 0.002, zz, zz + 0.003, 0.0, t)
+    for zz in (z0, z1 - 0.004):                                                       # polished edges all round,
+        _box(p, edge, face, plane, a0 + 0.002, a1 - 0.002, zz, zz + 0.004, 0.0, t)    # so the leaf reads as a door
+    for aa in (a0 + 0.002, a1 - 0.006):                                               # (not a pull on what is behind)
+        _box(p, edge, face, plane, aa, aa + 0.004, z0, z1, 0.0, t)
     ha = a0 + 0.012 if hinge == "a" else a1 - 0.012
     fa = a1 - 0.045 if hinge == "a" else a0 + 0.045
     for zz in (z0 + 0.06, z1 - 0.10):
         _box(p, blk, face, plane, ha - 0.012, ha + 0.012, zz, zz + 0.045, -0.004, t + 0.006)
-    zm = (z0 + z1) / 2
-    if handle:
-        _box(p, blk, face, plane, fa - 0.006, fa + 0.006, zm - 0.08, zm + 0.08, t + 0.022, t + 0.034)
-        for dz in (-0.07, 0.07):
-            _box(p, blk, face, plane, fa - 0.005, fa + 0.005, zm + dz - 0.005, zm + dz + 0.005, t, t + 0.022)
+    zm = lock_z if lock_z is not None else (z0 + z1) / 2
+    if handle:                       # edge pull: black alu profile clamped on the free edge (140 mm), level with the
+        ea = a1 - 0.002 if hinge == "a" else a0 + 0.002      # lock. A bar pull on the face sat on the centre line of
+        e0, e1 = (ea - 0.012, ea) if hinge == "a" else (ea, ea + 0.012)   # a drawer behind and read as its handle.
+        _box(p, blk, face, plane, e0, e1, zm - 0.07, zm + 0.07, -0.002, t + 0.016)
+        lip = (e0 - 0.010, e0) if hinge == "a" else (e1, e1 + 0.010)
+        _box(p, blk, face, plane, lip[0], lip[1], zm - 0.07, zm + 0.07, t + 0.012, t + 0.016)   # finger lip
     if lock:
         la = fa - 0.045 if hinge == "a" else fa + 0.045
-        elock(p, face, plane, la, lock_z if lock_z is not None else zm, t)
+        elock(p, face, plane, la, lock_z if lock_z is not None else (z0 + z1) / 2, t)
 
 
 def door_run(p, face, plane, a0, a1, z0, z1, leaves=2, lock_z=None):
