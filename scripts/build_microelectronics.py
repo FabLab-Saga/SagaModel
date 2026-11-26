@@ -515,6 +515,20 @@ def component_storage(m, col):
 
 
 # ---------------------------------------------------------------- build
+
+
+def srm20_wiki(milling=False):
+    """Roland monoFab SRM-20 from the lab's teaching wiki (saga-wiki-srm20, machine.gl.mjs: outside size, table and
+    travel from the Roland manual; branch 2026-11-26). Home pose: cover closed, table forward, head up. milling=True
+    (SRM-20 1, my pose for build_jobs' board): carriage at X 60, table at Y 45, end mill down on the copper (Z 3.3)."""
+    _w = {}
+    exec(open(HERE + "wiki_machine.py").read(), _w)
+    f = _w["gl_material_factory"](bpy, "SRM", glass_alpha={"smoke": 0.32})
+    off = {"table": (0, -45, 0), "stock": (0, -45, 0), "xcar": (60, 0, 0), "head": (60, 0, 3.3)} if milling else None
+    p, _ = _w["wiki_tri_part"](Part, HERE + "../assets/wiki/srm20.json", f, offsets=off)
+    return p
+
+
 def build():
     m = mats()
     scene = bpy.context.scene
@@ -824,7 +838,7 @@ def electronics_commons(m, col):
     # SRM-20s (column end), open on the counter between anchor cleats; milling PC at the end with knee space
     pk = Part()
     for n, sx in enumerate((S2 + 0.08, S2 + 0.60)):
-        mach["srm20"](tip=0.1172 if n == 0 else 0.13).emit(f"Roland_SRM20_{n + 1}", col, Vector((sx, cy1 - 0.05 - 0.426, CH)), 0.0)
+        srm20_wiki(milling=(n == 0)).emit(f"Roland_SRM20_{n + 1}", col, Vector((sx, cy1 - 0.05 - 0.426, CH)), 0.0)
         for ux, sg in ((sx, -1), (sx + 0.451, 1)):
             for yy in (cy1 - 0.42, cy1 - 0.14):
                 pk.box(MAT["profile"], min(ux, ux + sg * 0.04), max(ux, ux + sg * 0.04), yy, yy + 0.04, CH, CH + 0.003)

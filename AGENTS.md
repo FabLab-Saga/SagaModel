@@ -233,9 +233,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `scripts/wiki_machine.py`. ShopBot PRSalpha 144-60 (see CNC room) and the Epilog Fusion Edge 24 (laser room;
   envelope 1055 x 834 x 967 from the wiki, lid closed with a smoked clear window so bridge/head/sheet read, table
   focused, head mid-sheet; logos re-drawn as the wiki does: white emblem + bold/thin wordmarks on fascia, lid band,
-  both side covers, in Roboto). The exhaust branch meets the wiki model's rear port (centre, z 0.637). Wikis for the
-  xTool F1 Ultra and SRM-20 live on the coordinator host (AgentWork, no git) - next to import; the Prusa wiki is
-  excluded (GPL Prusa STLs).
+  both side covers, in Roboto). The exhaust branch meets the wiki model's rear port (centre, z 0.637).
+  xTool F1 Ultra (`xtool_wiki()` in build_laser_room.py): home pose, translucent green shield (alpha 0.30), the wiki's
+  engraved anodised tag as its job (my slate-coaster job is gone), controller moved to its staging side; the manifold
+  flex meets its low rear outlet. Roland SRM-20 x2 (`srm20_wiki()` in build_microelectronics.py): 1 posed milling
+  (table Y 45, carriage X 60, end mill on the copper; build_jobs' board on the wiki's blank), 2 at home. The Prusa
+  wiki is excluded (GPL Prusa STLs). Unused old builders (shopbot/epilog/xtool/srm20 in build_machines.py) are gone
+  or unused - the wiki JSON is the source.
 - **Remodels on the branch** (2026-11-26, from product photos): Brother sewing + embroidery machines (`_sew_body`:
   moulded C-arm prism, buttons, screen, needle area; embroidery unit + hoop with a part-stitched hex badge), Brother
   M343D overlocker (tension dials, thread stand, cones), Prusa MK3S+ LCD unit (tilted face, 20x4 text, knurled knob).
@@ -247,7 +251,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Machines at work** (branch, my design; `build_jobs.py`, collection Jobs): jobs built in each machine's frame and
   registered as `on:` items of the machine: ShopBot mid-way through the CNC-stool nest (seats cut, leg row under the
   spindle), Glowforge Pro HD 1 cutting the finger-joint box (inner bed lights on), SRM-20 1 isolation-milling an ATtiny board
-  (end mill lowered: srm20(tip=)), the xTool engraving a slate coaster, Prusa 01/03/04/06 printing with each nozzle on
+  (wiki model posed milling), the xTool with the wiki's engraved tag, Prusa 01/03/04/06 printing with each nozzle on
   its job (`PRUSA_ZX` in build_print_farm.py; prusa(zx=)). 04 prints SAGA keyring tags: `scripts/saga_tag.py` ports the
   teaching wiki's original tag generator (Hermes on the coordinator host: original geometry; port uses Roboto Bold).
   The wiki machine models themselves are NOT used (procedural WebGL, rights reserved; the Prusa one contains GPL

@@ -87,7 +87,7 @@ LOCKED = {"Exhaust_Central", "Staff_Kitchen", "Electronics_BoardRun", "LaserSafe
 COMPANION_RE = [(re.compile(r"^WB_Text"), "Electronics_BoardRun"), (re.compile(r"^Staff_Coat_"), "Staff_CoatHooks"),
                 (re.compile(r"^(DrawerCab_|ToolRail_)"), "MicroBench")]
 FLOOR_Z = 0.05
-COMPANION = {"Spine_Panel": "Spine_Boxes_Shelving", "xTool_Wordmark": "xTool_F1_Ultra",
+COMPANION = {"Spine_Panel": "Spine_Boxes_Shelving",
              "LaserBench_Staging": "LaserBench", "Staff_Appliances": "Staff_Kitchen", "Staff_Mugs": "Staff_Kitchen",
              "Staff_Tote": "Staff_CoatHooks", "SMD_Reels": "ComponentStorage", "GlassBench_Spools": "GlassBench",
              "Clay_Bucket_0": "GlassBench", "Clay_Bucket_1": "GlassBench", "Lounge_Table": None}

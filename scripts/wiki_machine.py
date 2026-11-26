@@ -168,9 +168,11 @@ def wiki_part(Part, path, material_for, skip=None, retarget=None):
     return p, n, d
 
 
-def wiki_tri_part(Part, path, material_for, offsets=None, skip=None, scale=0.001):
+def wiki_tri_part(Part, path, material_for, offsets=None, skip=None, scale=0.001, part_offsets=()):
     """Part from a triangle-soup wiki model (groups -> base64 float32 pos/attr; attr = part id, mat, smooth, 0).
-    offsets: rest-pose translation per moving group, in the model's units. Vertices are welded per material."""
+    offsets: rest-pose translation per moving group, in the model's units (default: the export's `home`, if any).
+    part_offsets: [(regex, (dx, dy, dz))] extra shift for matching parts (e.g. a controller moved to the other side).
+    Vertices are welded per material."""
     import base64
     import struct
     d = json.load(open(path))
@@ -178,8 +180,9 @@ def wiki_tri_part(Part, path, material_for, offsets=None, skip=None, scale=0.001
     mats = d["mats"]
     names = [q["name"] for q in d["parts"]]
     used = set()
+    home = {g: v["t"] for g, v in d.get("home", {}).items()}
     for g, G in d["groups"].items():
-        off = Vector((offsets or {}).get(g, (0, 0, 0)))
+        off = Vector((offsets or {}).get(g, home.get(g, (0, 0, 0))))
         for block in (G, G["glass"]):
             n = block["n"]
             if not n:
@@ -190,11 +193,13 @@ def wiki_tri_part(Part, path, material_for, offsets=None, skip=None, scale=0.001
                 pid = int(att[t * 12] + 0.5)
                 if skip and skip.search(names[pid]):
                     continue
+                po = next((Vector(o_) for rx, o_ in part_offsets if rx.search(names[pid])), Vector((0, 0, 0)))
+                o2 = off + po
                 mi = int(att[t * 12 + 1] + 0.5)
                 m = material_for(mats[mi]["n"], mats[mi], names[pid])
                 bm = p.bm(m)
-                vs = [bm.verts.new(((pos[(t * 3 + k) * 3] + off.x) * scale, (pos[(t * 3 + k) * 3 + 1] + off.y) * scale,
-                                    (pos[(t * 3 + k) * 3 + 2] + off.z) * scale)) for k in range(3)]
+                vs = [bm.verts.new(((pos[(t * 3 + k) * 3] + o2.x) * scale, (pos[(t * 3 + k) * 3 + 1] + o2.y) * scale,
+                                    (pos[(t * 3 + k) * 3 + 2] + o2.z) * scale)) for k in range(3)]
                 try:
                     bm.faces.new(vs)
                 except ValueError:
@@ -203,3 +208,38 @@ def wiki_tri_part(Part, path, material_for, offsets=None, skip=None, scale=0.001
     for mname, (m, bm) in p.bms.items():
         bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=scale * 0.02)
     return p, d
+
+
+GL_METAL = {"alu": 1.0, "steel": 1.0, "silver": 0.7, "tool": 1.0, "copper": 1.0, "plate": 0.6, "brass": 1.0}
+
+
+def gl_material_factory(bpy, prefix, overrides=None, metal=None, glass_alpha=None):
+    """material_for() for wiki_tri_part: Principled per wiki material (colour, spec -> roughness, alpha -> blended).
+    overrides: {wiki mat name: bpy Material}; glass_alpha: {wiki mat name: alpha} to replace the wiki's."""
+    metal = metal or GL_METAL
+
+    def f(name, mt, part):
+        if overrides and name in overrides:
+            return overrides[name]
+        key = f"{prefix}_{name}"
+        if key in bpy.data.materials:
+            return bpy.data.materials[key]
+        m_ = bpy.data.materials.new(key)
+        m_.use_nodes = True
+        bs = next(n_ for n_ in m_.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
+        c = [min(1.0, v) for v in mt["c"]]
+        bs.inputs["Base Color"].default_value = (*c, 1)
+        bs.inputs["Metallic"].default_value = metal.get(name, 0.0)
+        bs.inputs["Roughness"].default_value = max(0.08, 0.7 - 0.45 * min(1.0, mt["s"]))
+        a = (glass_alpha or {}).get(name, mt["a"])
+        if a < 1:
+            bs.inputs["Alpha"].default_value = a
+            bs.inputs["Coat Weight"].default_value = 0.2
+            if hasattr(m_, "surface_render_method"):
+                m_.surface_render_method = "BLENDED"
+        if name in ("led", "screen"):
+            bs.inputs["Emission Color"].default_value = (*c, 1)
+            bs.inputs["Emission Strength"].default_value = 1.2 if name == "led" else 0.6
+        m_.diffuse_color = (*c, 1)
+        return m_
+    return f

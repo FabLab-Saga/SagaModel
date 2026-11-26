@@ -84,18 +84,6 @@ items:
     locked: false
     objects: [Glowforge_ProHD_2]
 
-  - id: laser.xtool-f1-ultra
-    label: xTool F1 Ultra
-    kind: machine
-    zone: laser-room
-    pos: [32.214, 23.452]
-    z: 0.78
-    rot: -90
-    size: [0.464, 0.425, 0.492]
-    "on": laser.laserbench
-    locked: false
-    objects: [xTool_F1_Ultra, xTool_Wordmark, xTool_F1_Ultra_Controller]
-
   - id: cnc.acword-ft100
     label: ACword FT100
     kind: machine
@@ -807,30 +795,6 @@ items:
     locked: false
     objects: [HeatPress_RedClam]
 
-  - id: lab.roland-srm20-1
-    label: Roland SRM20 1
-    kind: machine
-    zone: main-lab
-    pos: [25.905, 34.047]
-    z: 0.75
-    rot: 0
-    size: [0.451, 0.427, 0.426]
-    "on": lab.eleccounter
-    locked: false
-    objects: [Roland_SRM20_1]
-
-  - id: lab.roland-srm20-2
-    label: Roland SRM20 2
-    kind: machine
-    zone: main-lab
-    pos: [26.425, 34.047]
-    z: 0.75
-    rot: 0
-    size: [0.451, 0.427, 0.426]
-    "on": lab.eleccounter
-    locked: false
-    objects: [Roland_SRM20_2]
-
   - id: lab.bambu-p2s
     label: Bambu P2S
     kind: machine
@@ -1505,6 +1469,39 @@ items:
     locked: false
     objects: [BenchProps_2]
 
+  - id: cnc.shopbot-prsalpha-144-60
+    label: ShopBot PRSalpha 144 60
+    kind: machine
+    zone: cnc-room
+    pos: [22.775, 19.082]
+    z: 0
+    rot: 90
+    size: [4.725, 2.653, 2.94]
+    locked: false
+    objects: [ShopBot_PRSalpha_144_60]
+
+  - id: laser.epilog-fusionedge24
+    label: Epilog FusionEdge24
+    kind: machine
+    zone: laser-room
+    pos: [30.254, 20.886]
+    z: 0
+    rot: 90
+    size: [1.076, 0.907, 0.977]
+    locked: false
+    objects: [Epilog_FusionEdge24]
+
+  - id: laser.exhaust-central
+    label: Exhaust Central
+    kind: fixture
+    zone: laser-room
+    pos: [31.11, 22.859]
+    z: 0.559
+    rot: 0
+    size: [2.89, 4.953, 3.371]
+    locked: true
+    objects: [Exhaust_Central]
+
   - id: laser.job-glowforge-1
     label: Job Glowforge 1
     kind: fixture
@@ -1517,17 +1514,17 @@ items:
     locked: false
     objects: [Job_Glowforge_1]
 
-  - id: laser.job-xtool
-    label: Job xTool
-    kind: fixture
+  - id: laser.xtool-f1-ultra
+    label: xTool F1 Ultra
+    kind: machine
     zone: laser-room
-    pos: [32.185, 23.396]
-    z: 0.804
+    pos: [32.207, 23.48]
+    z: 0.78
     rot: -90
-    size: [0.1, 0.1, 0.005]
-    "on": laser.xtool-f1-ultra
+    size: [0.505, 0.393, 0.493]
+    "on": laser.laserbench
     locked: false
-    objects: [Job_xTool]
+    objects: [xTool_F1_Ultra]
 
   - id: cnc.job-shopbot
     label: Job ShopBot
@@ -1541,28 +1538,41 @@ items:
     locked: false
     objects: [Job_ShopBot]
 
-  - id: cnc.shopbot-prsalpha-144-60
-    label: ShopBot PRSalpha 144 60
-    kind: machine
-    zone: cnc-room
-    pos: [22.775, 19.082]
-    z: 0
-    rot: 90
-    size: [4.725, 2.653, 2.94]
-    locked: false
-    objects: [ShopBot_PRSalpha_144_60]
-
   - id: lab.job-srm20-1
     label: Job SRM20 1
     kind: fixture
     zone: main-lab
-    pos: [25.881, 34.067]
-    z: 0.867
+    pos: [25.863, 34.064]
+    z: 0.899
     rot: 0
-    size: [0.072, 0.057, 0]
+    size: [0.071, 0.051, 0]
     "on": lab.roland-srm20-1
     locked: false
     objects: [Job_SRM20_1]
+
+  - id: lab.roland-srm20-1
+    label: Roland SRM20 1
+    kind: machine
+    zone: main-lab
+    pos: [25.906, 34.047]
+    z: 0.75
+    rot: 0
+    size: [0.451, 0.427, 0.426]
+    "on": lab.eleccounter
+    locked: false
+    objects: [Roland_SRM20_1]
+
+  - id: lab.roland-srm20-2
+    label: Roland SRM20 2
+    kind: machine
+    zone: main-lab
+    pos: [26.426, 34.047]
+    z: 0.75
+    rot: 0
+    size: [0.451, 0.427, 0.426]
+    "on": lab.eleccounter
+    locked: false
+    objects: [Roland_SRM20_2]
 
   - id: lab.job-prusa-01
     label: Job Prusa 01
@@ -1611,25 +1621,3 @@ items:
     "on": lab.prusa-mk3s-06
     locked: false
     objects: [Job_Prusa_06]
-
-  - id: laser.epilog-fusionedge24
-    label: Epilog FusionEdge24
-    kind: machine
-    zone: laser-room
-    pos: [30.254, 20.886]
-    z: 0
-    rot: 90
-    size: [1.076, 0.907, 0.977]
-    locked: false
-    objects: [Epilog_FusionEdge24]
-
-  - id: laser.exhaust-central
-    label: Exhaust Central
-    kind: fixture
-    zone: laser-room
-    pos: [31.11, 22.859]
-    z: 0.559
-    rot: 0
-    size: [2.89, 4.953, 3.371]
-    locked: true
-    objects: [Exhaust_Central]

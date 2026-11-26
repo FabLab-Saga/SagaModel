@@ -121,30 +121,32 @@ def staging(col, mm):
     p.emit("LaserBench_Staging", col, Vector((0, 0, 0)))
 
 
+def xtool_wiki():
+    """xTool F1 Ultra from the lab's teaching wiki (saga-wiki-xtool, machine.gl.mjs: 253 x 373 x 493 from xTool's spec
+    table, bodywork from the Quick Start Guide drawings; branch 2026-11-26) in its home pose: shield down, module at
+    145, the wiki's anodised tag with its engraving on the plate. Left out: beam/pointer/flame parts, the lens cap (home
+    = taken off, on the bench in front), the cutting-setup tray + coupon, the exhaust hose (our manifold flex takes the
+    outlet) and the controller cable; the controller moves to the machine's left (the Aura stands on its right)."""
+    _w = {}
+    exec(open(bpy.path.abspath("//scripts/wiki_machine.py")).read(), _w)
+    f = _w["gl_material_factory"](bpy, "XT", glass_alpha={"green": 0.30})
+    p, _ = _w["wiki_tri_part"](Part, bpy.path.abspath("//assets/wiki/xtool.json"), f,
+                               skip=_w["re"].compile(r"^(beam\.|lens\.protector|slats\.|stock\.wood|exhaust\.hose|controller\.cable)"),
+                               part_offsets=[(_w["re"].compile(r"^controller\."), (-538, 0, 0))])
+    return p
+
+
 def machines(col):
     gp = mach["glowforge_pro"]
     pos = {}
     y = BY0 + 0.07
     for name, model, w, d in (("Glowforge_ProHD_1", gp(), 0.965, 0.527), ("Glowforge_ProHD_2", gp(), 0.965, 0.527),
                               ("Glowforge_Aura", mach["glowforge_aura"](), 0.556, 0.521),
-                              ("xTool_F1_Ultra", mach["xtool_f1_ultra"](), 0.273, 0.373)):
+                              ("xTool_F1_Ultra", xtool_wiki(), 0.253, 0.373)):
         cy = y + w / 2
         mach["place"](model, name, col, GX - d / 2, cy, T_H, w, d, "-x")
         pos[name] = (cy, w)
         y += w + 0.15
-    cy, w = pos["xTool_F1_Ultra"]                                         # XTOOL wordmark on the upper band
-    f = bpy.data.fonts.get("Roboto-Bold") or bpy.data.fonts.load(bpy.path.abspath("//refs/branding/fonts/Roboto-Bold.ttf"))
-    cu = bpy.data.curves.new("xTool_Wordmark", "FONT")
-    cu.body, cu.size, cu.font, cu.align_x, cu.extrude = "XTOOL", 0.030, f, "CENTER", 0.0
-    cu.space_character = 1.25
-    cu.materials.append(mat("Mach_White", "#EEEEEC", 0.35))
-    wm = bpy.data.objects.new("xTool_Wordmark", cu)
-    col.objects.link(wm)
-    wm.matrix_world = Matrix.Translation((GX - 0.373 - 0.0015, cy + 0.011, T_H + 0.42)) @ Matrix.Rotation(-math.pi / 2, 4, "Z") \
-        @ Matrix.Rotation(math.pi / 2, 4, "X")
-    # its touchscreen controller beside it
-
-    mach["place"](mach["xtool_controller"](), "xTool_F1_Ultra_Controller", col, GX - 0.30, cy + w / 2 + 0.10, T_H, 0.13, 0.032, "-x")
     ex, ey = 29.87 + 0.834 / 2, 20.35 + 1.055 / 2
     # Epilog Fusion Edge 24 from the lab's teaching wiki (MagnusPetursson/epilog-fusion-edge-24-wiki, model.mjs:
     # published envelope 1055 x 834 x 967, exterior from the official photos, schematic interior; branch 2026-11-26).
@@ -266,20 +268,21 @@ def exhaust(col, pos, ey, mm):
     for y in (20.95, 22.35, 23.70, 24.75):                               # saddle brackets on the bench
         p.box(galv, XM - 0.07, XG, y - 0.015, y + 0.015, T_H + 0.0, T_H + 0.005)
     ports = {"Glowforge_ProHD_1": (0.12, 0.080), "Glowforge_ProHD_2": (0.12, 0.080), "Glowforge_Aura": (0.11, 0.060),
-             "xTool_F1_Ultra": (None, 0.22)}
+             "xTool_F1_Ultra": (0.118, 0.083, 0.014)}                     # wiki model: low outlet, 14 mm proud
     for name, (cy, w) in pos.items():
-        off, zp = ports[name]
+        off, zp, *xs = ports[name]
+        x0 = GX + (xs[0] if xs else 0.035)
         yy = cy if off is None else cy - (w / 2 - off)                  # local right (rear right) -> world -y
         z = T_H + zp
         if z > ZM + 0.06:                                               # high outlet: out, then down into the manifold
-            p.cyl(flex, (GX + 0.035, yy, z), (XM, yy, z), 0.045, seg=20)
+            p.cyl(flex, (x0, yy, z), (XM, yy, z), 0.045, seg=20)
             bmesh.ops.create_uvsphere(p.bm(flex), u_segments=20, v_segments=10, radius=0.045, matrix=Matrix.Translation((XM, yy, z)))
             p.cyl(flex, (XM, yy, z), (XM, yy, ZM + RM - 0.01), 0.045, seg=20)
             p.cyl(galv, (XM, yy, ZM + RM - 0.004), (XM, yy, ZM + RM + 0.004), 0.048, seg=20)
         else:
-            p.cyl(flex, (GX + 0.035, yy, z), (XM - RM + 0.01, yy, z), 0.045, seg=20)
+            p.cyl(flex, (x0, yy, z), (XM - RM + 0.01, yy, z), 0.045, seg=20)
             p.cyl(galv, (XM - RM - 0.006, yy, z), (XM - RM + 0.002, yy, z), 0.048, seg=20)
-        p.cyl(galv, (GX + 0.036, yy, z), (GX + 0.044, yy, z), 0.048, seg=20)
+        p.cyl(galv, (x0 + 0.001, yy, z), (x0 + 0.009, yy, z), 0.048, seg=20)
     sph((XM, YR, ZM), RC)
     p.cyl(galv, (XM, YR, ZM), (XM, YR, ZC), RC, seg=24)                  # riser
     sph((XM, YR, ZC), RC)

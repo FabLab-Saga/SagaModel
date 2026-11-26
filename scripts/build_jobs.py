@@ -8,7 +8,7 @@ must run AFTER the machine builders (machines, print farm, laser room); layout.y
 - Glowforge Pro HD 1: 3 mm ply on the crumb tray with the finger-joint box (work table 0's laser-cut box) cut out and
   its lid engraving in progress; the head carriage over it.
 - SRM-20 1: isolation-milling a small ATtiny board in the copper blank (end mill down on the board).
-- xTool F1 Ultra: engraving a slate coaster (hex motif half done, pointer spot on).
+- xTool F1 Ultra: the teaching wiki model carries its own job (an anodised tag with its engraving).
 - Prusa MK3S+ 01/03/04/06: one print each in its own filament, each printer's nozzle at the job's current height
   (PRUSA_ZX in build_print_farm.py): a project enclosure for the electronics table (half printed), a spiral vase (half),
   six SAGA keyring tags (the teaching wiki's print-cycle tag, scripts/saga_tag.py) with the lettering half printed,
@@ -194,16 +194,17 @@ def prusa_jobs(col):
 
 
 def srm20_job(col):
-    """SRM-20 1 isolation-milling a small ATtiny board on the copper blank (blank x 0.13-0.27, y 0.15-0.27 in srm20()):
-    milled isolation paths show the FR1 substrate; the back strip under the end mill is still to come."""
+    """SRM-20 1 (the teaching wiki model, posed milling: table at Y 45, carriage at X 60, end mill on the copper):
+    an ATtiny board being isolation-milled in the wiki's copper blank (local x 0.135-0.235, y 0.193-0.268, top z
+    0.1486); milled paths show the FR1 substrate, copper dust round the end mill at (0.1839, 0.230)."""
     f = frame("Roland_SRM20_1")
     if not f:
         return
     p = Part()
     fr1 = mat("FR1_Substrate", "#B07A3E", 0.75)
-    z = 0.117
+    z = 0.1487
     cut = lambda x0, y0, x1, y1: rect_lines(p, fr1, x0, y0, x1, y1, z, w=0.0009)
-    X0, Y0 = 0.165, 0.205                                          # board origin; the end mill is on its back-right outline
+    X0, Y0 = 0.148, 0.205                                          # board origin; the end mill is on a trace
     cut(X0, Y0, X0 + 0.07, Y0 + 0.05)                              # board outline (isolation round the edge)
     for i in range(4):                                             # SOIC-8: 2 rows of 4 pads
         for r in (0, 1):
@@ -221,34 +222,10 @@ def srm20_job(col):
         for o in (-0.0011, 0.0011):                                # trace isolation both sides (L-shaped traces)
             line(p, fr1, x0, y0 + o, x1, y0 + o, z, 0.0009)
             line(p, fr1, x1 + o, y0, x1 + o, y1, z, 0.0009)
-    for k in range(5):                                             # copper dust round the cutter
-        p.cyl(mat("Copper_Dust", "#C98B5A", 0.6, metal=0.6), (0.225 + 0.008 * math.cos(k), 0.252 + 0.006 * math.sin(k * 2), z),
-              (0.225 + 0.008 * math.cos(k), 0.252 + 0.006 * math.sin(k * 2), z + 0.0004), 0.004, seg=10)
+    for k in range(5):                                             # copper dust round the end mill
+        p.cyl(mat("Copper_Dust", "#C98B5A", 0.6, metal=0.6), (0.1839 + 0.008 * math.cos(k), 0.230 + 0.006 * math.sin(k * 2), z),
+              (0.1839 + 0.008 * math.cos(k), 0.230 + 0.006 * math.sin(k * 2), z + 0.0004), 0.004, seg=10)
     p.emit("Job_SRM20_1", col, *f)
-
-
-def xtool_job(col):
-    """xTool F1 Ultra engraving a slate coaster under the galvo (lens at w*0.45, d*0.45; slatted panel top 0.024)."""
-    f = frame("xTool_F1_Ultra")
-    if not f:
-        return
-    p = Part()
-    slate = mat("Slate_Coaster", "#2E3135", 0.7)
-    etch = mat("Slate_Etch", "#B9BCBF", 0.85)
-    cx, cy, z = 0.273 * 0.45, 0.373 * 0.45, 0.024
-    p.box(slate, cx - 0.05, cx + 0.05, cy - 0.05, cy + 0.05, z, z + 0.005, bevel=0.002)
-    zt = z + 0.005
-    for r in (0.042, 0.038):                                       # engraved double ring
-        ring(p, etch, cx, cy, zt, r, w=0.0012, seg=48)
-    for k in range(7):                                             # hex-tile motif, half engraved (raster in progress)
-        a = 2 * math.pi * k / 6
-        hx, hy = (cx, cy) if k == 6 else (cx + 0.016 * math.cos(a), cy + 0.016 * math.sin(a))
-        if hy > cy + 0.012:
-            continue
-        p.cyl(etch, (hx, hy, zt), (hx, hy, zt + 0.0002), 0.0075, seg=6)
-    red = mat("Laser_Pointer", "#FF2A2A", 0.3, emit=8.0)          # blue/red pointer spot on the work
-    p.cyl(red, (cx, cy + 0.012, zt), (cx, cy + 0.012, zt + 0.0003), 0.0012, seg=10)
-    p.emit("Job_xTool", col, *f)
 
 
 def build():
@@ -266,7 +243,6 @@ def build():
     glowforge_job(col)
     prusa_jobs(col)
     srm20_job(col)
-    xtool_job(col)
     print("jobs built:", ", ".join(o.name for o in col.objects if o.parent is None))
 
 
