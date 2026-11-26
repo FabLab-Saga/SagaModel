@@ -197,8 +197,21 @@ def glowforge_aura(w=0.556, d=0.521, h=0.127):
     for x in (0.05, w - 0.05):
         for y in (0.05, d - 0.05):
             p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.008), 0.018, seg=16)
-    p.box(M["white"], 0.025, w - 0.025, 0.025, d - 0.080, h - 0.010, h - 0.004, bevel=0.003)
-    p.box(M["amber"], 0.045, w - 0.045, 0.040, d - 0.095, h - 0.0045, h - 0.0015)         # orange lid
+    for x0, x1, y0, y1 in ((0.025, w - 0.025, 0.025, 0.040), (0.025, w - 0.025, d - 0.095, d - 0.080),
+                           (0.025, 0.045, 0.025, d - 0.080), (w - 0.045, w - 0.025, 0.025, d - 0.080)):
+        p.box(M["white"], x0, x1, y0, y1, h - 0.010, h - 0.004, bevel=0.002)              # lid frame (ring)
+    p.box(mat("Aura_Bed", "#232426", 0.6), 0.045, w - 0.045, 0.040, d - 0.095, h - 0.0100, h - 0.0094)   # dark bed
+    # lab photo i-002: deep orange see-through window (was an opaque salmon sheet)
+    # tinted acrylic filters light (transmission), so the dark bed reads deep orange-brown through it; an alpha
+    # blend lit by the windows looked like an opaque salmon sheet
+    lid = mat("Aura_OrangeWindow", "#FF7A1C", 0.03)
+    _b = next(n_ for n_ in lid.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
+    _b.inputs["Alpha"].default_value = 1.0
+    _b.inputs["Transmission Weight"].default_value = 1.0
+    _b.inputs["IOR"].default_value = 1.49
+    if hasattr(lid, "surface_render_method"):
+        lid.surface_render_method = "DITHERED"
+    p.box(lid, 0.045, w - 0.045, 0.040, d - 0.095, h - 0.0045, h - 0.0015)                # orange lid
     _rbox(p, M["white"], 0.015, w - 0.015, d - 0.078, d - 0.010, h - 0.010, h + 0.003, 0.010)
     p.box(M["grey"], w * 0.35, w * 0.65, -0.002, 0.014, h - 0.026, h - 0.014, bevel=0.003)
     p.cyl(M["white"], (w - 0.055, 0.055, h - 0.005), (w - 0.055, 0.055, h + 0.002), 0.022, seg=28)
@@ -375,7 +388,8 @@ def prusa(spool, zx=0.20, random_print=True):
         p.cyl(M["chrome"], (x, 0.06, 0.035), (x, d - 0.06, 0.035), 0.004, seg=10)
     bed_y = 0.12
     p.box(M["alu"], 0.12, w - 0.12, bed_y, bed_y + 0.25, 0.048, 0.054)                          # Y carriage
-    p.box(M["pei"], 0.125, w - 0.125, bed_y - 0.005, bed_y + 0.255, 0.060, 0.064, bevel=0.002)  # PEI sheet
+    p.box(mat("Prusa_SatinSheet", "#4F5648", 0.72), 0.125, w - 0.125, bed_y - 0.005, bed_y + 0.255, 0.060, 0.064,
+          bevel=0.002)                                                                # satin sheet (lab photo i-006)
     p.box(M["gold"], 0.124, w - 0.124, bed_y - 0.006, bed_y + 0.256, 0.058, 0.0605)             # sheet edge
     # --- main frame plate (black aluminium) with its big window: four bars
     t = 0.006
@@ -524,10 +538,14 @@ def srm20(w=0.451, d=0.426, h=0.426, tip=0.13):
 def vinyl(w=0.851, d=0.310, h=0.235):
     """Roland CAMM-1 GS-24 desktop vinyl cutter (both of the lab's are GS-24s): grey body, black end caps, pinch-roller slot, vinyl roll behind."""
     p = Part()
-    p.box(M["grey"], 0.07, w - 0.07, 0.05, d - 0.02, 0.03, h, bevel=0.025)
+    char = mat("GS24_Charcoal", "#2B2C2F", 0.45)                                              # lab photo i-010
+    p.box(char, 0.07, w - 0.07, 0.05, d - 0.02, 0.03, h, bevel=0.025)
+    p.box(mat("GS24_FrontSilver", "#A9ADB1", 0.35, metal=0.5), 0.07, w - 0.07, 0.048, 0.052, 0.04, 0.098)  # lower front
     for x0 in (0.0, w - 0.07):
         p.box(M["black"], x0, x0 + 0.07, 0.02, d, 0.0, h + 0.01, bevel=0.02)
-    p.box(M["dark"], 0.07, w - 0.07, 0.035, 0.07, 0.10, 0.125, bevel=0.003)                   # media slot
+    p.box(M["black"], 0.07, w - 0.07, 0.035, 0.07, 0.10, 0.125, bevel=0.003)                  # media slot
+    for k, x in enumerate((0.095, 0.112, 0.130, 0.149, 0.166, 0.184)):                        # Roland wordmark hint
+        p.box(M["white"], x, x + 0.012, 0.0485, 0.049, h - 0.045, h - 0.030)
     p.box(M["white"], 0.10, w - 0.10, 0.02, 0.05, 0.106, 0.110)                               # vinyl coming out
     p.box(M["black"], w - 0.16, w - 0.08, 0.16, 0.26, h - 0.002, h + 0.006, bevel=0.003)      # control panel
     p.box(M["lcd"], w - 0.15, w - 0.11, 0.18, 0.21, h + 0.006, h + 0.007)
@@ -537,12 +555,28 @@ def vinyl(w=0.851, d=0.310, h=0.235):
 
 
 def mayku(w=0.274, d=0.466, h=0.315):
+    """Mayku FormBox (the list's 274 x 466 x 315 footprint; look from the lab photo i-011): light grey base with a
+    dark top frame and the vacuum bed, two yellow knobs on the front, the forming frame (light grey, yellow handles on
+    both long sides) clamped down, two chrome posts at the back, dark grey heater hood up top with a yellow handle."""
     p = Part()
-    p.box(M["white"], 0, w, 0.05, d - 0.05, 0, h, bevel=0.02)
-    for y in (0.0, d - 0.05):
-        p.box(M["dark"], 0.06, w - 0.06, y, y + 0.05, h * 0.6, h * 0.7, bevel=0.008)           # handles
+    base = mat("Mayku_Base", "#D5D7D6", 0.45)
+    grey = mat("Mayku_Grey", "#5E6267", 0.4)
+    yel = mat("Mayku_Yellow", "#F2B705", 0.4)
+    _rbox(p, base, 0.0, w, 0.0, d, 0.0, 0.085, 0.02)                                      # base
+    p.box(grey, 0.015, w - 0.015, 0.015, d - 0.07, 0.085, 0.092, bevel=0.002)             # top frame
+    p.box(mat("Mayku_Bed", "#2E3033", 0.7), 0.035, w - 0.035, 0.035, d - 0.09, 0.0921, 0.0925)  # perforated bed
+    for x in (0.08, w - 0.08):
+        p.cyl(yel, (x, -0.012, 0.045), (x, 0.0, 0.045), 0.016, seg=24)                    # front knobs
+    p.box(base, 0.01, w - 0.01, 0.01, d - 0.065, 0.093, 0.108, bevel=0.003)               # forming frame (clamped)
+    p.box(M["smoke"], 0.04, w - 0.04, 0.04, d - 0.095, 0.1075, 0.1085)                     # sheet in the frame
+    for x0 in (-0.022, w):
+        p.box(yel, x0, x0 + 0.022, d * 0.30, d * 0.62, 0.095, 0.106, bevel=0.003)          # frame handles
+    for x in (0.03, w - 0.03):
+        p.cyl(M["chrome"], (x, d - 0.035, 0.085), (x, d - 0.035, h - 0.05), 0.009, seg=16)  # posts
+    _rbox(p, grey, -0.005, w + 0.005, 0.0, d, h - 0.075, h, 0.018)                         # heater hood
+    p.box(mat("Mayku_Heater", "#1A1B1D", 0.6), 0.02, w - 0.02, 0.02, d - 0.07, h - 0.076, h - 0.075)  # element face
+    p.box(yel, w + 0.004, w + 0.024, d * 0.35, d * 0.58, h - 0.055, h - 0.035, bevel=0.003)  # hood handle
     return p
-
 
 def _rounded_poly(pts, radii, seg=6):
     """Closed 2D polygon with each corner replaced by a quadratic fillet of radius r (0 = sharp)."""
@@ -740,7 +774,7 @@ def overlock(w=0.335, d=0.282, h=0.296):
     for i in range(4):                                                                      # tension dials in a recess
         x = 0.13 + i * 0.038
         p.box(dk, x - 0.016, x + 0.016, 0.07, 0.10, 0.247, 0.251)
-        c = ("#43A047", "#1E88E5", "#E53935", "#FBC02D")[i]
+        c = "#7A1F3D"                                                                       # lab photo i-023: maroon
         p.cyl(mat(f"Ovl_Dial_{c[1:]}", c, 0.45), (x, 0.085, 0.24), (x, 0.085, 0.262), 0.014, seg=20)
     p.cyl(ch, (0.08, 0.07, 0.21), (0.08, 0.07, 0.11), 0.003, seg=8)                         # needle bar
     p.cyl(ch, (0.08, 0.07, 0.11), (0.08, 0.07, 0.085), 0.0007, seg=6)
@@ -769,21 +803,38 @@ def overlock(w=0.335, d=0.282, h=0.296):
 
 
 def dust_collector(w=0.84, d=0.50, h=2.20):
-    """ACword FT100 single-bag collector: stand, motor/impeller, white filter bag, clear lower bag."""
+    """ACword FT100 single-bag collector (lab photo i-012): grey stand, motor/impeller, white felt filter bag with the
+    blue ACword band, blue clamp ring at the waist, clear lower chip bag about a third full of chips."""
     p = Part()
     cx = w / 2
     for x in (0.08, w - 0.12):
         for y in (0.08, d - 0.12):
             p.box(M["dark"], x, x + 0.04, y, y + 0.04, 0.0, 1.0)
+    blue = mat("ACword_Blue", "#1F4FA8", 0.4)
     p.cyl(M["dark"], (cx, d / 2, 0.98), (cx, d / 2, 1.06), 0.27, seg=32)                       # ring
+    p.cyl(blue, (cx, d / 2, 1.055), (cx, d / 2, 1.095), 0.247, seg=40)                        # clamp band
     p.cyl(M["grey"], (cx - 0.05, d / 2, 1.12), (cx + 0.30, d / 2, 1.12), 0.17, seg=28)         # motor
     p.cyl(M["grey"], (cx, -0.02, 1.12), (cx, d / 2, 1.12), 0.06, seg=20)                       # inlet
-    p.cyl(M["felt"], (cx, d / 2, 1.06), (cx, d / 2, h - 0.06), 0.24, seg=32)                   # filter bag
-    bmesh.ops.create_uvsphere(p.bm(M["felt"]), u_segments=32, v_segments=8, radius=0.24,
+    p.cyl(M["felt"], (cx, d / 2, 1.06), (cx, d / 2, h - 0.06), 0.24, seg=40)                   # filter bag
+    bmesh.ops.create_uvsphere(p.bm(M["felt"]), u_segments=40, v_segments=8, radius=0.24,
                               matrix=Matrix.Translation((cx, d / 2, h - 0.06)) @ Matrix.Scale(0.25, 4, (0, 0, 1)))
-    p.cyl(M["bag"], (cx, d / 2, 0.10), (cx, d / 2, 0.98), 0.24, seg=32)                       # chip bag
+    for k in range(9):                                                                         # blue ACword band (front)
+        a0 = math.radians(-24 + k * 6)                                                       # local -y = the front
+        p.box(blue, cx + 0.2405 * math.sin(a0) - 0.013, cx + 0.2405 * math.sin(a0) + 0.013,
+              d / 2 - 0.2405 * math.cos(a0) - 0.004, d / 2 - 0.2405 * math.cos(a0) + 0.004, 1.30, 1.72)
+    clear = mat("ChipBag_Clear", "#DCE6EA", 0.12, coat=0.6)
+    _b = next(n_ for n_ in clear.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
+    _b.inputs["Alpha"].default_value = 0.28
+    if hasattr(clear, "surface_render_method"):
+        clear.surface_render_method = "BLENDED"
+    p.cyl(clear, (cx, d / 2, 0.10), (cx, d / 2, 0.98), 0.24, seg=40)                           # clear chip bag
+    chips = mat("Chips_Wood", "#C8A877", 0.95)
+    _cone_mesh = lambda r0, r1, z0, z1: bmesh.ops.create_cone(p.bm(chips), cap_ends=True, segments=36, radius1=r0,
+                                                               radius2=r1, depth=z1 - z0,
+                                                               matrix=Matrix.Translation((cx, d / 2, (z0 + z1) / 2)))
+    _cone_mesh(0.232, 0.225, 0.11, 0.36)                                                       # chips inside
+    _cone_mesh(0.225, 0.12, 0.36, 0.42)
     return p
-
 
 def control_box(w=0.50, d=0.30, h=0.70):
     p = Part()
@@ -1361,6 +1412,8 @@ def build():
     METAL = {"alu": 1.0, "rail": 1.0, "gearbox": 0.9, "collet": 1.0, "carbide": 1.0, "zplate": 1.0, "prox": 0.8,
              "copper": 1.0, "clamp": 1.0, "shard": 1.0, "spindle": 0.0, "steel": 0.15}
     def sb_mat(name, e, mats):
+        if e["name"].startswith(("side.", "stand.")) and not e["name"].startswith(("stand.nut", "stand.stem", "stand.pad")):
+            return _w["srgb_mat"](bpy, "SB_frame_blue", "#22408E", 0.38, coat=0.25)   # lab photo i-003: blue frame
         if name == "mdf":
             return M["mdf"]
         if name == "ply":

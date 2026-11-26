@@ -523,10 +523,32 @@ def srm20_wiki(milling=False):
     (SRM-20 1, my pose for build_jobs' board): carriage at X 60, table at Y 45, end mill down on the copper (Z 3.3)."""
     _w = {}
     exec(open(HERE + "wiki_machine.py").read(), _w)
-    f = _w["gl_material_factory"](bpy, "SRM", glass_alpha={"smoke": 0.32})
+    # lab photo i-005 (the lab's units are DGSHAPE-branded): white side panels (wiki: amber plates/liners), the
+    # cover lettering reads DGSHAPE (wiki: Roland) - the baked wiki lettering is skipped, srm20_lettering() adds it
+    shell = _w["srgb_mat"](bpy, "SRM_side_white", "#EDEDEA", 0.35)
+    grip = _w["srgb_mat"](bpy, "SRM_side_grip", "#C9CBCC", 0.4)
+    rx = _w["re"].compile
+    f = _w["gl_material_factory"](bpy, "SRM", glass_alpha={"smoke": 0.30},
+                                  part_overrides=[(rx(r"Plate$|Liner$"), shell), (rx(r"WindowBead$|Grip$"), grip)])
     off = {"table": (0, -45, 0), "stock": (0, -45, 0), "xcar": (60, 0, 0), "head": (60, 0, 3.3)} if milling else None
-    p, _ = _w["wiki_tri_part"](Part, HERE + "../assets/wiki/srm20.json", f, offsets=off)
+    p, _ = _w["wiki_tri_part"](Part, HERE + "../assets/wiki/srm20.json", f, offsets=off,
+                               skip=rx(r"^(cover\.name|body\.(left|right)Name)$"))
     return p
+
+
+def srm20_lettering(root):
+    """DGSHAPE wordmark on the cover header (white, as on the lab's units), parented to the machine root."""
+    fb = bpy.data.fonts.get("Roboto-Bold") or bpy.data.fonts.load(bpy.path.abspath("//refs/branding/fonts/Roboto-Bold.ttf"))
+    cu = bpy.data.curves.new(root.name + "_DGSHAPE", "FONT")
+    cu.body, cu.font, cu.size, cu.space_character = "DGSHAPE", fb, 0.0115, 1.08
+    cu.materials.append(mat("SRM_Lettering", "#F2F2F0", 0.4))
+    ob = bpy.data.objects.new(root.name + "_DGSHAPE", cu)
+    root.users_collection[0].objects.link(ob)
+    ob.parent = root
+    ob.matrix_parent_inverse.identity()
+    # header front face: y ~ 0.0889 at z 0.39-0.423 (wiki cover.header), text left at x 0.086 (wiki cover.name)
+    ob.matrix_basis = Matrix.Translation((0.088, 0.0884, 0.4005)) @ Matrix.Rotation(math.pi / 2, 4, "X")
+    return ob
 
 
 def build():
@@ -838,7 +860,7 @@ def electronics_commons(m, col):
     # SRM-20s (column end), open on the counter between anchor cleats; milling PC at the end with knee space
     pk = Part()
     for n, sx in enumerate((S2 + 0.08, S2 + 0.60)):
-        srm20_wiki(milling=(n == 0)).emit(f"Roland_SRM20_{n + 1}", col, Vector((sx, cy1 - 0.05 - 0.426, CH)), 0.0)
+        srm20_lettering(srm20_wiki(milling=(n == 0)).emit(f"Roland_SRM20_{n + 1}", col, Vector((sx, cy1 - 0.05 - 0.426, CH)), 0.0))
         for ux, sg in ((sx, -1), (sx + 0.451, 1)):
             for yy in (cy1 - 0.42, cy1 - 0.14):
                 pk.box(MAT["profile"], min(ux, ux + sg * 0.04), max(ux, ux + sg * 0.04), yy, yy + 0.04, CH, CH + 0.003)

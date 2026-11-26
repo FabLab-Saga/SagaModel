@@ -360,6 +360,14 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   portal around its door; logo "FAB LAB SAGA".
 - **Art piece** above the demo bays (`hex_relief` in build_demo.py): ~700 3D-printed hex tiles, brand gradient,
   wave depths, lit by `Art_Spot`. Replaced the "make anything" neon (user: ugly, cliché - no neon signs). Zone signs removed 2026-11-26 (`build_signs.py` now has an empty list; Magnús: better signs later).
+- Colour pass against the lab photos (2026-11-26; refs/equipment PDF, `pdfimages -png -p`, img-001-NNN; peers have
+  no other photos of the lab machines): ShopBot stand/sides blue (photo 003 - probably VoN's PRS Alpha 120, not the
+  HÍ 144-60, so inferred), Epilog navy bands and white sides (001), xTool graphite body/roof with a deep-green
+  shield (014), SRM-20 white sides with the DGSHAPE wordmark (005), Aura deep-orange transmissive lid over a dark bed
+  (002), Prusa satin sheet (006), GS-24 charcoal (010), overlocker maroon dials (023), Mayku FormBox rebuilt to the
+  photo (011), ACword blue band and clamp, clear chip bag with chips (012). wiki_machine.gl_material_factory now
+  re-applies colours on every rebuild (it used to keep a stale cached .blend material) and takes colours= and
+  part_overrides=. Tinted acrylic = transmission, not alpha (alpha lit by the windows reads opaque).
 
 ## Look rules
 - Photorealism (user's choice). It's a LAB, not a house: no rugs, no indoor plants, no homey décor.

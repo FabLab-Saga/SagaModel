@@ -129,7 +129,10 @@ def xtool_wiki():
     outlet) and the controller cable; the controller moves to the machine's left (the Aura stands on its right)."""
     _w = {}
     exec(open(bpy.path.abspath("//scripts/wiki_machine.py")).read(), _w)
-    f = _w["gl_material_factory"](bpy, "XT", glass_alpha={"green": 0.30})
+    # colours from the lab photo (i-014): graphite body, deep green see-through shield (wiki: silver, light green)
+    f = _w["gl_material_factory"](bpy, "XT", glass_alpha={"green": 0.42},
+                                  colours={"silver": (0.045, 0.048, 0.053), "green": (0.045, 0.16, 0.004),
+                                           "graphite": (0.03, 0.032, 0.035), "steel": (0.10, 0.105, 0.11)})
     p, _ = _w["wiki_tri_part"](Part, bpy.path.abspath("//assets/wiki/xtool.json"), f,
                                skip=_w["re"].compile(r"^(beam\.|lens\.protector|slats\.|stock\.wood|exhaust\.hose|controller\.cable)"),
                                part_offsets=[(_w["re"].compile(r"^controller\."), (-538, 0, 0))])
@@ -154,10 +157,15 @@ def machines(col):
     # over the sheet mid-job. Logos as the wiki draws them (white emblem + bold/thin wordmarks; Roboto here).
     _w = {}
     exec(open(bpy.path.abspath("//scripts/wiki_machine.py")).read(), _w)
+    J = _w["json"].load(open(bpy.path.abspath("//assets/wiki/epilog_fusion_edge_24.json")))
     EPM = {"alu": 1.0, "steel": 1.0, "brass": 1.0, "mirror": 1.0, "lens": 0.6, "grid": 0.8, "tube": 0.5}
     def ep_mat(name, mt, part):
         if name == "ply":
             return MAT["ply"]
+        if part in ("side.left.cover", "side.right.cover"):                # lab photo i-001: white sides, not blue
+            name, mt = "body", J["mats"][[m["n"] for m in J["mats"]].index("body")]
+        if name == "teal":                                                # lab photo i-001: navy bands (wiki: teal)
+            return _w["srgb_mat"](bpy, "EP_navy_band", "#1F3A72", 0.35, coat=0.3)
         key = f"EP_{name}"
         if key in bpy.data.materials:
             return bpy.data.materials[key]
@@ -179,7 +187,6 @@ def machines(col):
             bs.inputs["Emission Strength"].default_value = 1.5 if name == "led" else 0.8
         m_.diffuse_color = (*[min(1.0, v) for v in mt["c"]], 1)
         return m_
-    J = _w["json"].load(open(bpy.path.abspath("//assets/wiki/epilog_fusion_edge_24.json")))
     W_, D_ = J["W"], J["D"]
     BED_X0, BED_Y0 = (W_ - 610) / 2, 100
     SX, SY, ST = BED_X0 + 60, BED_Y0 + 230, 6                           # wiki STOCK position + thickness

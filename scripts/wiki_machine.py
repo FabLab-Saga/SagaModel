@@ -213,33 +213,57 @@ def wiki_tri_part(Part, path, material_for, offsets=None, skip=None, scale=0.001
 GL_METAL = {"alu": 1.0, "steel": 1.0, "silver": 0.7, "tool": 1.0, "copper": 1.0, "plate": 0.6, "brass": 1.0}
 
 
-def gl_material_factory(bpy, prefix, overrides=None, metal=None, glass_alpha=None):
+def gl_material_factory(bpy, prefix, overrides=None, metal=None, glass_alpha=None, part_overrides=(), colours=None):
     """material_for() for wiki_tri_part: Principled per wiki material (colour, spec -> roughness, alpha -> blended).
-    overrides: {wiki mat name: bpy Material}; glass_alpha: {wiki mat name: alpha} to replace the wiki's."""
+    overrides: {wiki mat name: bpy Material}; glass_alpha: {wiki mat name: alpha} to replace the wiki's;
+    part_overrides: [(regex on the part name, bpy Material)]; colours: {wiki mat name: linear rgb} (photo-matched)."""
     metal = metal or GL_METAL
+    done = {}
 
     def f(name, mt, part):
+        for rx, m_ in part_overrides:
+            if rx.search(part):
+                return m_
         if overrides and name in overrides:
             return overrides[name]
         key = f"{prefix}_{name}"
-        if key in bpy.data.materials:
-            return bpy.data.materials[key]
-        m_ = bpy.data.materials.new(key)
+        if key in done:                                  # configured once per factory; always re-applied on rebuild
+            return done[key]                             # (a cached .blend material would keep stale colours)
+        m_ = bpy.data.materials.get(key) or bpy.data.materials.new(key)
+        done[key] = m_
         m_.use_nodes = True
         bs = next(n_ for n_ in m_.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
-        c = [min(1.0, v) for v in mt["c"]]
+        c = [min(1.0, v) for v in (colours or {}).get(name, mt["c"])]
         bs.inputs["Base Color"].default_value = (*c, 1)
         bs.inputs["Metallic"].default_value = metal.get(name, 0.0)
         bs.inputs["Roughness"].default_value = max(0.08, 0.7 - 0.45 * min(1.0, mt["s"]))
         a = (glass_alpha or {}).get(name, mt["a"])
-        if a < 1:
-            bs.inputs["Alpha"].default_value = a
-            bs.inputs["Coat Weight"].default_value = 0.2
-            if hasattr(m_, "surface_render_method"):
-                m_.surface_render_method = "BLENDED"
+        bs.inputs["Alpha"].default_value = min(a, 1.0)
+        bs.inputs["Coat Weight"].default_value = 0.2 if a < 1 else 0.0
+        if hasattr(m_, "surface_render_method"):
+            m_.surface_render_method = "BLENDED" if a < 1 else "DITHERED"
         if name in ("led", "screen"):
             bs.inputs["Emission Color"].default_value = (*c, 1)
             bs.inputs["Emission Strength"].default_value = 1.2 if name == "led" else 0.6
         m_.diffuse_color = (*c, 1)
         return m_
     return f
+
+
+def srgb_mat(bpy, name, hexcol, rough=0.4, metal=0.0, alpha=1.0, coat=0.0):
+    """Principled material from an sRGB hex (photo-sampled colours), optional alpha blend."""
+    m_ = bpy.data.materials.get(name) or bpy.data.materials.new(name)
+    m_.use_nodes = True
+    bs = next(n_ for n_ in m_.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
+    h = hexcol.lstrip("#")
+    c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    c = [x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+    bs.inputs["Base Color"].default_value = (*c, 1)
+    bs.inputs["Roughness"].default_value = rough
+    bs.inputs["Metallic"].default_value = metal
+    bs.inputs["Coat Weight"].default_value = coat
+    bs.inputs["Alpha"].default_value = alpha
+    if alpha < 1 and hasattr(m_, "surface_render_method"):
+        m_.surface_render_method = "BLENDED"
+    m_.diffuse_color = (*c, alpha)
+    return m_

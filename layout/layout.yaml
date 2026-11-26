@@ -754,7 +754,7 @@ items:
     pos: [21.15, 29.37]
     z: 0.92
     rot: 90
-    size: [0.274, 0.466, 0.315]
+    size: [0.32, 0.478, 0.315]
     "on": lab.cuttercounter
     locked: false
     objects: [Mayku_FormBox]
@@ -1502,18 +1502,6 @@ items:
     locked: true
     objects: [Exhaust_Central]
 
-  - id: laser.job-glowforge-1
-    label: Job Glowforge 1
-    kind: fixture
-    zone: laser-room
-    pos: [32.088, 20.792]
-    z: 0.823
-    rot: -90
-    size: [0.805, 0.35, 0.137]
-    "on": laser.glowforge-prohd-1
-    locked: false
-    objects: [Job_Glowforge_1]
-
   - id: laser.xtool-f1-ultra
     label: xTool F1 Ultra
     kind: machine
@@ -1525,30 +1513,6 @@ items:
     "on": laser.laserbench
     locked: false
     objects: [xTool_F1_Ultra]
-
-  - id: cnc.job-shopbot
-    label: Job ShopBot
-    kind: fixture
-    zone: cnc-room
-    pos: [22.754, 19.88]
-    z: 0.904
-    rot: 90
-    size: [2.44, 1.22, 0.021]
-    "on": cnc.shopbot-prsalpha-144-60
-    locked: false
-    objects: [Job_ShopBot]
-
-  - id: lab.job-srm20-1
-    label: Job SRM20 1
-    kind: fixture
-    zone: main-lab
-    pos: [25.863, 34.064]
-    z: 0.899
-    rot: 0
-    size: [0.071, 0.051, 0]
-    "on": lab.roland-srm20-1
-    locked: false
-    objects: [Job_SRM20_1]
 
   - id: lab.roland-srm20-1
     label: Roland SRM20 1
@@ -1573,6 +1537,42 @@ items:
     "on": lab.eleccounter
     locked: false
     objects: [Roland_SRM20_2]
+
+  - id: laser.job-glowforge-1
+    label: Job Glowforge 1
+    kind: fixture
+    zone: laser-room
+    pos: [32.088, 20.792]
+    z: 0.823
+    rot: -90
+    size: [0.805, 0.35, 0.137]
+    "on": laser.glowforge-prohd-1
+    locked: false
+    objects: [Job_Glowforge_1]
+
+  - id: cnc.job-shopbot
+    label: Job ShopBot
+    kind: fixture
+    zone: cnc-room
+    pos: [22.754, 19.88]
+    z: 0.904
+    rot: 90
+    size: [2.44, 1.22, 0.021]
+    "on": cnc.shopbot-prsalpha-144-60
+    locked: false
+    objects: [Job_ShopBot]
+
+  - id: lab.job-srm20-1
+    label: Job SRM20 1
+    kind: fixture
+    zone: main-lab
+    pos: [25.863, 34.064]
+    z: 0.899
+    rot: 0
+    size: [0.071, 0.051, 0]
+    "on": lab.roland-srm20-1
+    locked: false
+    objects: [Job_SRM20_1]
 
   - id: lab.job-prusa-01
     label: Job Prusa 01
