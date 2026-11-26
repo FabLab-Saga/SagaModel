@@ -27,3 +27,8 @@ in the presentation video's outro (see the table).
 - Mapillary / other 360° panoramas — none used. The window skybox will be our own on-site 360° photo (`refs/skybox/`).
 
 All of the above are placeholders until replaced with our own photography/material scans.
+
+## SAGA keyring tag (2026-11-26)
+`scripts/saga_tag.py` re-creates the Fab Lab SAGA keyring tag from the lab's own teaching wiki (print-cycle job,
+original geometry by the project's agents); lettering in Roboto Bold from `refs/branding/fonts` (the brand font
+already used in the model). No external mesh is imported.

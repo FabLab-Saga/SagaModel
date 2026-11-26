@@ -7,9 +7,10 @@ must run AFTER the machine builders (machines, print farm, laser room); layout.y
   dry-fitted on work table 2: six seats cut, the leg row being cut under the spindle, the rest still to come.
 - Glowforge Pro HD 1: 3 mm ply on the crumb tray with the finger-joint box (work table 0's laser-cut box) cut out and
   its lid engraving in progress; the head carriage over it.
-- Prusa MK3S+ 01/03/04/06: one print each in its own filament - a project enclosure for the electronics table (half
-  printed), a spiral vase (half), a pencil holder (half) next to finished Fab Lab key tags, and a finished batch of
-  hex tiles for the art wall.
+- Prusa MK3S+ 01/03/04/06: one print each in its own filament, each printer's nozzle at the job's current height
+  (PRUSA_ZX in build_print_farm.py): a project enclosure for the electronics table (half printed), a spiral vase (half),
+  six SAGA keyring tags (the teaching wiki's print-cycle tag, scripts/saga_tag.py) with the lettering half printed,
+  and a finished batch of hex tiles for the art wall.
 """
 import math
 
@@ -133,18 +134,22 @@ def glowforge_job(col):
 
 
 def prusa_jobs(col):
+    import re
+    zx = eval(re.search(r"PRUSA_ZX = (\{[^}]*\})", open(HERE + "build_print_farm.py").read())[1])
+    tag = {}
+    exec(open(HERE + "saga_tag.py").read(), tag)
     BEDZ, NX, NY = 0.064, 0.245, 0.24                                # PEI top, nozzle x/y (prusa(): ex + 0.035, fy - 0.07)
-    H = 0.150 - BEDZ                                                  # nozzle tip height above the sheet
-    for no, fil, kind in ((1, "Orange", "enclosure"), (3, "Green", "vase"), (4, "Yellow", "holder"), (6, "Blue", "hex")):
+    for no, fil, kind in ((1, "Orange", "enclosure"), (3, "Green", "vase"), (4, "Yellow", "tags"), (6, "Blue", "hex")):
         f = frame(f"Prusa_MK3S_{no:02d}")
         if not f:
             continue
+        H = zx.get(no, 0.20) - 0.05 - BEDZ                           # print height = nozzle tip above the sheet
         m = bpy.data.materials.get(f"Filament_{fil}") or mat(f"Filament_{fil}", "#888888", 0.4)
         inner = mat(f"Print_Shadow_{fil}", "#1E1E1E", 0.8)
         p = Part()
         z = BEDZ
-        if kind == "enclosure":                                     # 90 x 60 box shell, walls 2 mm, half printed
-            w, d, t, h = 0.09, 0.06, 0.002, H - 0.0004
+        if kind == "enclosure":                                     # 90 x 60 x 60 box shell, walls 2 mm, half printed
+            w, d, t, h = 0.09, 0.06, 0.002, H - 0.0003
             p.box(m, NX - w / 2, NX + w / 2, NY - d / 2, NY + d / 2, z, z + 0.002)            # floor
             for a, b, c, e in ((-w / 2, w / 2, -d / 2, -d / 2 + t), (-w / 2, w / 2, d / 2 - t, d / 2),
                                (-w / 2, -w / 2 + t, -d / 2, d / 2), (w / 2 - t, w / 2, -d / 2, d / 2)):
@@ -152,22 +157,35 @@ def prusa_jobs(col):
             for sx in (-1, 1):                                        # screw bosses
                 for sy in (-1, 1):
                     p.cyl(m, (NX + sx * 0.036, NY + sy * 0.021, z), (NX + sx * 0.036, NY + sy * 0.021, z + h), 0.004, seg=12)
-        elif kind == "vase":
-            p.cyl(m, (NX, NY, z), (NX, NY, z + H - 0.0004), 0.042, seg=48)
-            p.cyl(inner, (NX, NY, z + H - 0.0004), (NX, NY, z + H - 0.0002), 0.0405, seg=48)
-        elif kind == "holder":
-            p.cyl(m, (NX, NY, z), (NX, NY, z + H - 0.0004), 0.036, seg=6)
-            p.cyl(inner, (NX, NY, z + H - 0.0004), (NX, NY, z + H - 0.0002), 0.033, seg=6)
-            for k in range(4):                                       # finished key tags beside it
-                tx, ty = 0.15 + k * 0.03, 0.15
-                p.box(m, tx, tx + 0.022, ty, ty + 0.045, z, z + 0.003, bevel=0.0008)
-        else:                                                        # finished batch of art-wall hex tiles
+        elif kind == "vase":                                         # spiral vase, 60 of 120 mm printed
+            p.cyl(m, (NX, NY, z), (NX, NY, z + H - 0.0003), 0.042, seg=48)
+            p.cyl(inner, (NX, NY, z + H - 0.0003), (NX, NY, z + H - 0.0001), 0.0405, seg=48)
+        elif kind == "hex":                                          # finished batch of art-wall hex tiles
             for i in range(4):
                 for j in range(3):
                     cx = 0.165 + i * 0.056 + (0.028 if j % 2 else 0.0)
                     cy = 0.16 + j * 0.05
                     p.cyl(m, (cx, cy, z), (cx, cy, z + 0.008 + 0.004 * ((i + j) % 3)), 0.027, seg=6)
-        p.emit(f"Job_Prusa_{no:02d}", col, *f)
+        if kind != "tags":
+            p.emit(f"Job_Prusa_{no:02d}", col, *f)
+        else:                                           # 2 x 3 SAGA tags, lettering half printed
+            me = tag["saga_tag_mesh"](raise_mm=round((H - 0.003) * 1000, 2))
+            me.materials.clear()
+            me.materials.append(m)
+            loc, rot = f
+            from mathutils import Matrix
+            base = Matrix.Translation(loc) @ Matrix.Rotation(rot, 4, "Z")
+            root = bpy.data.objects.new(f"Job_Prusa_{no:02d}", None)
+            col.objects.link(root)
+            root.matrix_world = base
+            for i in range(2):
+                for j in range(3):
+                    t = bpy.data.objects.new(f"Job_Prusa_{no:02d}_Tag_{i}{j}", me)
+                    col.objects.link(t)
+                    t.parent = root
+                    cx, cy = NX + 0.006 - 0.064 + i * 0.064, NY - 0.03 + j * 0.03   # nozzle over tag (1, 1)'s lettering
+                    t.matrix_parent_inverse.identity()
+                    t.location = (cx, cy, z)
 
 
 def build():

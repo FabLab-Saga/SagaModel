@@ -227,7 +227,11 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   to block noise or divide the area. No zone signs (all removed 2026-11-26, Magnús: better signs later).
 - **Machines at work** (branch, my design; `build_jobs.py`, collection Jobs): jobs built in each machine's frame and
   registered as `on:` items of the machine: ShopBot mid-way through the CNC-stool nest (seats cut, leg row under the
-  spindle), Glowforge Pro HD 1 cutting the finger-joint box (inner bed lights on), Prusa 01/03/04/06 printing. The
+  spindle), Glowforge Pro HD 1 cutting the finger-joint box (inner bed lights on), Prusa 01/03/04/06 printing with each nozzle on
+  its job (`PRUSA_ZX` in build_print_farm.py; prusa(zx=)). 04 prints SAGA keyring tags: `scripts/saga_tag.py` ports the
+  teaching wiki's original tag generator (Hermes on the coordinator host: original geometry; port uses Roboto Bold).
+  The wiki machine models themselves are NOT used (procedural WebGL, rights reserved; the Prusa one contains GPL
+  Prusa STLs). The
   Glowforge Pro shell is hollow under a see-through tinted lid with a crumb tray. After changing a job's geometry run
   `python3 tools/rehost_jobs.py drop`, rebuild jobs, `layout_export.py`, then `tools/rehost_jobs.py host` (the exporter
   keeps old poses and hosts jobs on benches otherwise).

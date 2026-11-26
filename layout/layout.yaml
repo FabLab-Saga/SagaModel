@@ -1580,7 +1580,7 @@ items:
     pos: [29.095, 24.963]
     z: 1.544
     rot: -90
-    size: [0.09, 0.06, 0.086]
+    size: [0.09, 0.06, 0.03]
     "on": lab.prusa-mk3s-01
     locked: false
     objects: [Job_Prusa_01]
@@ -1592,7 +1592,7 @@ items:
     pos: [29.095, 23.635]
     z: 0.184
     rot: -90
-    size: [0.084, 0.084, 0.086]
+    size: [0.084, 0.084, 0.06]
     "on": lab.prusa-mk3s-03
     locked: false
     objects: [Job_Prusa_03]
@@ -1601,10 +1601,10 @@ items:
     label: Job Prusa 04
     kind: fixture
     zone: main-lab
-    pos: [29.068, 24.331]
+    pos: [29.095, 24.325]
     z: 0.864
     rot: -90
-    size: [0.126, 0.126, 0.086]
+    size: [0.122, 0.084, 0.004]
     "on": lab.prusa-mk3s-04
     locked: false
     objects: [Job_Prusa_04]

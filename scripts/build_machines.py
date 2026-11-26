@@ -352,8 +352,9 @@ def spool_part(p, filament, cx, cy, cz, axis="x", r_out=0.100, width=0.065):
     p.cyl(M["dark"], c - ax * (width / 2 + 0.003), c + ax * (width / 2 + 0.003), 0.027, seg=24)
 
 
-def prusa(spool):
-    """Prusa MK3S+ (~500 x 550 x 400): frame plate, rods, motors, PEI bed, orange parts, LCD, spool on top."""
+def prusa(spool, zx=0.20):
+    """Prusa MK3S+ (~500 x 550 x 400): frame plate, rods, motors, PEI bed, orange parts, LCD, spool on top. zx = X-axis
+    height (nozzle tip at zx - 0.05 above the base; the PEI top is at 0.064), so a print job can sit under the nozzle."""
     p = Part()
     w, d = 0.50, 0.55
     fy = 0.31                                                                                    # frame plane (y)
@@ -385,7 +386,6 @@ def prusa(spool):
               (x + 0.03 * (1 if x < w / 2 else -1), fy - 0.024, 0.38), 0.004, seg=10)
         p.box(M["orange"], x - 0.03, x + 0.04 if x < w / 2 else x + 0.03, fy - 0.05, fy, 0.37, 0.40, bevel=0.004)
     # --- X axis at print height: two rods, X-ends, extruder + fan + nozzle
-    zx = 0.20
     for dz in (0.0, 0.045):
         p.cyl(M["chrome"], (0.07, fy - 0.035, zx + dz), (w - 0.07, fy - 0.035, zx + dz), 0.004, seg=10)
     for x0 in (0.035, w - 0.095):

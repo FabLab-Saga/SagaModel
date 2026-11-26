@@ -47,6 +47,9 @@ LAYOUT = {                                                           # (bay, row
     (0, 0): "bambu", (1, 0): "ad5m", (2, 0): "prusa", (3, 0): "dry", (4, 0): "dry",
 }
 MERGED = {0: (0, 2)}                                                # bay -> (row a, row b): one cell from deck a to deck b
+# X-axis height per printer (prusa(zx=...)): nozzle on top of its job in build_jobs.py (branch 2026-11-26, mine);
+# PEI top 0.064, nozzle tip = zx - 0.05. 01 enclosure 30 mm up, 03 vase 60 mm, 04 SAGA tags at 3.6 mm, 06 done (parked).
+PRUSA_ZX = {1: 0.144, 3: 0.174, 4: 0.1176, 6: 0.23}
 PRUSA_NO = {(0, 2): 1, (1, 2): 2, (2, 0): 3, (1, 1): 4, (2, 1): 5, (3, 1): 6, (4, 1): 7}   # stable object names
 
 
@@ -209,7 +212,8 @@ def build():
     for (b, r), what in sorted(LAYOUT.items(), key=lambda kv: (-kv[0][1], kv[0][0])):
         if what == "prusa":
             k = PRUSA_NO[(b, r)]
-            put(mach["prusa"](M["spools"][(k * 3) % len(M["spools"])]), f"Prusa_MK3S_{k:02d}", b, r, 0.50, 0.075)
+            put(mach["prusa"](M["spools"][(k * 3) % len(M["spools"])], zx=PRUSA_ZX.get(k, 0.20)), f"Prusa_MK3S_{k:02d}", b, r,
+                0.50, 0.075)
         elif what == "cr200b":
             c += 1
             put(mach["creality_cr200b"](), f"Creality_CR200B_{c}", b, r, 0.411, 0.10)
