@@ -7,8 +7,10 @@ leftovers deleted, every listed machine modelled (MACHINES.md), on-call desk + F
 area, CNC room, corner-bay entrance + hall set, layout system (layout/), theft lock-down (private plan in Vinnuskjol;
 done E1 print farm, E2 hand-tool wall, E3 tool library, E4 electronics, E5 cutter corner, E8 work tables; on the branch
 also E6 craft corner, E7 laser room, E9 CNC room, my designs: the lock-down plan is complete), electronics re-layout + bank-wall counter, spine shrunk one bay,
-work tables option 7b, one project in progress per table, third-party models removed. NEXT on the branch: quality pass
-(stale cameras, zone detail) - see the branch log.
+work tables option 7b, one project in progress per table, third-party models removed. Branch also has: jobs in progress
+on 8 machines, remodelled sewing/embroidery/overlocker/Prusa LCD/stool kit, 7 reframed cameras. Review: `tools/review_sheets.sh`
+(all cameras -> renders/tmp/sheets/review_*.png). Open ideas: demo-shelf projects from the teaching wikis' workpieces
+(SRM-20 board, xTool coupon), Cam_Cutaway needs the upper floors.
 Renders/film only on his request (RENDER.md).
 This is a Hermes project; this file is the agent's own brief (Magnús): keep it current in every commit, no permission
 needed (renamed from CLAUDE.md 2026-11-25). Read this first; then `git log --oneline` for history, `LICENSES.md` for
