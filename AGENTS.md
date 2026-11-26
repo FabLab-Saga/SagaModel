@@ -361,8 +361,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Art piece** above the demo bays (`hex_relief` in build_demo.py): ~700 3D-printed hex tiles, brand gradient,
   wave depths, lit by `Art_Spot`. Replaced the "make anything" neon (user: ugly, cliché - no neon signs). Zone signs removed 2026-11-26 (`build_signs.py` now has an empty list; Magnús: better signs later).
 - Colour pass against the lab photos (2026-11-26; refs/equipment PDF, `pdfimages -png -p`, img-001-NNN; peers have
-  no other photos of the lab machines): ShopBot stand/sides blue (photo 003 - probably VoN's PRS Alpha 120, not the
-  HÍ 144-60, so inferred), Epilog navy bands and white sides (001), xTool graphite body/roof with a deep-green
+  no other photos of the lab machines): ShopBot stand/sides blue (photo 003 - probably VoN's PRS Alpha 120; HÍ's is
+  also a 120-60, colour inferred), Epilog navy bands and white sides (001), xTool graphite body/roof with a deep-green
   shield (014), SRM-20 white sides with the DGSHAPE wordmark (005), Aura deep-orange transmissive lid over a dark bed
   (002), Prusa satin sheet (006), GS-24 charcoal (010), overlocker maroon dials (023), Mayku FormBox rebuilt to the
   photo (011), ACword blue band and clamp, clear chip bag with chips (012). wiki_machine.gl_material_factory now
@@ -391,9 +391,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 
 ## Open items
 - On-site 360° photo for the window view → `refs/skybox/` (current HDRI is a CC0 stand-in).
-- CNC model: settled as PRS Alpha 120-60 on 2026-11-25, then Magnús 2026-11-26: the ShopBot is the wrong size and should
-  look like the teaching wiki's -> branch uses the wiki's PRSalpha 144-60 (HÍ's machine per the wiki: SB3 3.8.70,
-  firmware 224).
+- CNC model: PRSalpha 120-60 (Magnús 2026-11-26: second largest, 120x60; the wiki's 144-60 was the error). Built with
+  the wiki's generator re-run at 120-60 (assets/wiki/README.md); re-export once MPTVPC pushes the wiki correction.
 - Stairwell (Magnús 2026-11-25): the windowless box x 29.2–34.3, y 12.8–16.1 at the ShopBot end is its exterior; no
   door from the lab; interior not modelled. The room behind the staff room is electrical/storage.
 - Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which
