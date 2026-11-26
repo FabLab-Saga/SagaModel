@@ -210,13 +210,21 @@ def wiki_tri_part(Part, path, material_for, offsets=None, skip=None, scale=0.001
     return p, d
 
 
+def srgb_to_lin(c):
+    """The wiki WebGL shaders write material colours straight to the canvas (no gamma step), so the wiki's numbers
+    are sRGB display values; Blender's Base Color is linear. Used raw they render ~2x lighter and greyer."""
+    return [v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4 for v in (min(1.0, max(0.0, x)) for x in c)]
+
+
 GL_METAL = {"alu": 1.0, "steel": 1.0, "silver": 0.7, "tool": 1.0, "copper": 1.0, "plate": 0.6, "brass": 1.0}
 
 
-def gl_material_factory(bpy, prefix, overrides=None, metal=None, glass_alpha=None, part_overrides=(), colours=None):
+def gl_material_factory(bpy, prefix, overrides=None, metal=None, glass_alpha=None, part_overrides=(), colours=None,
+                        srgb=True):
     """material_for() for wiki_tri_part: Principled per wiki material (colour, spec -> roughness, alpha -> blended).
     overrides: {wiki mat name: bpy Material}; glass_alpha: {wiki mat name: alpha} to replace the wiki's;
-    part_overrides: [(regex on the part name, bpy Material)]; colours: {wiki mat name: linear rgb} (photo-matched)."""
+    part_overrides: [(regex on the part name, bpy Material)]; colours: {wiki mat name: linear rgb} (photo-matched).
+    srgb=False keeps the wiki numbers raw as linear (the xTool's approved look was tuned that way)."""
     metal = metal or GL_METAL
     done = {}
 
@@ -233,7 +241,7 @@ def gl_material_factory(bpy, prefix, overrides=None, metal=None, glass_alpha=Non
         done[key] = m_
         m_.use_nodes = True
         bs = next(n_ for n_ in m_.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
-        c = [min(1.0, v) for v in (colours or {}).get(name, mt["c"])]
+        c = list((colours or {}).get(name)) if name in (colours or {}) else (srgb_to_lin(mt["c"]) if srgb else [min(1.0, v) for v in mt["c"]])
         bs.inputs["Base Color"].default_value = (*c, 1)
         bs.inputs["Metallic"].default_value = metal.get(name, 0.0)
         bs.inputs["Roughness"].default_value = max(0.08, 0.7 - 0.45 * min(1.0, mt["s"]))

@@ -1411,18 +1411,25 @@ def build():
     sb_x0, sb_y0 = 24.09, 21.26 - 4.19                                  # wiki (0, 0) -> room; machine x along room +y
     METAL = {"alu": 1.0, "rail": 1.0, "gearbox": 0.9, "collet": 1.0, "carbide": 1.0, "zplate": 1.0, "prox": 0.8,
              "copper": 1.0, "clamp": 1.0, "shard": 1.0, "spindle": 0.0, "steel": 0.15}
+    sb_done = {}
+    # lab photo i-003, measured on the apron, leg and gantry end plate: one dark violet-navy paint (#151C45) for the
+    # stand, side beams and the wiki's blue plates (gantry ends, carriage). Semi-gloss, no coat (a coat over dark paint read milky/powdery).
+    NAVY = _w["srgb_mat"](bpy, "SB_frame_navy", "#151C45", 0.26)
+
     def sb_mat(name, e, mats):
-        if e["name"].startswith(("side.", "stand.")) and not e["name"].startswith(("stand.nut", "stand.stem", "stand.pad")):
-            return _w["srgb_mat"](bpy, "SB_frame_blue", "#22408E", 0.38, coat=0.25)   # lab photo i-003: blue frame
+        if name == "plate" or (e["name"].startswith(("side.", "stand."))
+                               and not e["name"].startswith(("stand.nut", "stand.stem", "stand.pad"))):
+            return NAVY
         if name == "mdf":
             return M["mdf"]
         if name == "ply":
             return lib["MAT"]["ply"]
         key = f"SB_{name}"
-        if key in bpy.data.materials:
-            return bpy.data.materials[key]
-        c, sp = mats[name]["rgb"], mats[name]["spec"]
-        m_ = bpy.data.materials.new(key)
+        if key in sb_done:
+            return sb_done[key]
+        c, sp = _w["srgb_to_lin"](mats[name]["rgb"]), mats[name]["spec"]   # wiki colours are sRGB display values
+        m_ = bpy.data.materials.get(key) or bpy.data.materials.new(key)
+        sb_done[key] = m_
         m_.use_nodes = True
         bs = next(n_ for n_ in m_.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
         bs.inputs["Base Color"].default_value = (*c, 1)

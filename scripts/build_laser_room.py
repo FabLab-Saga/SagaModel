@@ -132,7 +132,8 @@ def xtool_wiki():
     # colours from the lab photo (i-014): graphite body, deep green see-through shield (wiki: silver, light green)
     f = _w["gl_material_factory"](bpy, "XT", glass_alpha={"green": 0.42},
                                   colours={"silver": (0.045, 0.048, 0.053), "green": (0.045, 0.16, 0.004),
-                                           "graphite": (0.03, 0.032, 0.035), "steel": (0.10, 0.105, 0.11)})
+                                           "graphite": (0.03, 0.032, 0.035), "steel": (0.10, 0.105, 0.11)},
+                                  srgb=False)                        # Magnús approved this look 2026-11-26
     p, _ = _w["wiki_tri_part"](Part, bpy.path.abspath("//assets/wiki/xtool.json"), f,
                                skip=_w["re"].compile(r"^(beam\.|lens\.protector|slats\.|stock\.wood|exhaust\.hose|controller\.cable)"),
                                part_offsets=[(_w["re"].compile(r"^controller\."), (-538, 0, 0))])
@@ -159,22 +160,36 @@ def machines(col):
     exec(open(bpy.path.abspath("//scripts/wiki_machine.py")).read(), _w)
     J = _w["json"].load(open(bpy.path.abspath("//assets/wiki/epilog_fusion_edge_24.json")))
     EPM = {"alu": 1.0, "steel": 1.0, "brass": 1.0, "mirror": 1.0, "lens": 0.6, "grid": 0.8, "tube": 0.5}
+    ep_done = {}
+    # lab photo i-001 (the lab's own Fusion Edge), measured: navy bands (wiki: teal) at about 2.5 % of the white
+    # body's luminance, hue rgb 0.05:0.14:1 after white balance -> #0A1844 (renders at ~4 % vs the photo's 2.3 %: a phone crushes darks); body and sides a neutral white, the control housing and lid frame charcoal.
+    EP_PHOTO = {"teal": "#0A1844", "navy": "#081335", "body": "#E6E6E2", "panel": "#D9DAD7"}
+
     def ep_mat(name, mt, part):
         if name == "ply":
             return MAT["ply"]
         if part in ("side.left.cover", "side.right.cover"):                # lab photo i-001: white sides, not blue
             name, mt = "body", J["mats"][[m["n"] for m in J["mats"]].index("body")]
-        if name == "teal":                                                # lab photo i-001: navy bands (wiki: teal)
-            return _w["srgb_mat"](bpy, "EP_navy_band", "#1F3A72", 0.35, coat=0.3)
         key = f"EP_{name}"
-        if key in bpy.data.materials:
-            return bpy.data.materials[key]
-        m_ = bpy.data.materials.new(key)
+        if key in ep_done:
+            return ep_done[key]
+        if name in EP_PHOTO:
+            m_ = _w["srgb_mat"](bpy, key, EP_PHOTO[name], 0.22 if name in ("teal", "navy") else 0.45,
+                                coat=0.0 if name in ("teal", "navy") else 0.1)    # a coat over dark paint read milky
+            ep_done[key] = m_
+            return m_
+        m_ = bpy.data.materials.get(key) or bpy.data.materials.new(key)
+        ep_done[key] = m_
         m_.use_nodes = True
         bs = next(n_ for n_ in m_.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
-        bs.inputs["Base Color"].default_value = (*[min(1.0, v) for v in mt["c"]], 1)
+        c = _w["srgb_to_lin"](mt["c"])                                    # wiki colours are sRGB display values
+        bs.inputs["Base Color"].default_value = (*c, 1)
         bs.inputs["Metallic"].default_value = EPM.get(name, 0.0)
         bs.inputs["Roughness"].default_value = max(0.1, 0.7 - 0.6 * mt["s"])
+        bs.inputs["Alpha"].default_value = 1.0
+        bs.inputs["Coat Weight"].default_value = 0.0
+        if hasattr(m_, "surface_render_method"):
+            m_.surface_render_method = "DITHERED"
         if mt["a"] < 1:                                                  # tinted lid window
             bs.inputs["Base Color"].default_value = (0.10, 0.11, 0.13, 1)    # smoked, clear (milky at the wiki's 0.8)
             bs.inputs["Alpha"].default_value = 0.32
@@ -183,9 +198,9 @@ def machines(col):
             if hasattr(m_, "surface_render_method"):
                 m_.surface_render_method = "BLENDED"
         if name in ("led", "screen"):
-            bs.inputs["Emission Color"].default_value = (*mt["c"], 1)
+            bs.inputs["Emission Color"].default_value = (*c, 1)
             bs.inputs["Emission Strength"].default_value = 1.5 if name == "led" else 0.8
-        m_.diffuse_color = (*[min(1.0, v) for v in mt["c"]], 1)
+        m_.diffuse_color = (*c, 1)
         return m_
     W_, D_ = J["W"], J["D"]
     BED_X0, BED_Y0 = (W_ - 610) / 2, 100
