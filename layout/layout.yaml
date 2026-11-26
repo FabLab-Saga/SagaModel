@@ -1555,10 +1555,10 @@ items:
     label: ShopBot PRSalpha 120 60
     kind: machine
     zone: cnc-room
-    pos: [22.775, 19.117]
+    pos: [22.775, 18.99]
     z: 0
     rot: 90
-    size: [4.795, 2.653, 2.94]
+    size: [4.54, 2.653, 2.94]
     locked: false
     objects: [ShopBot_PRSalpha_120_60]
 

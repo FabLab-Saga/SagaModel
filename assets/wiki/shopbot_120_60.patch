@@ -19,7 +19,7 @@
  export const DECK_TOP = TABLE.deckTop;
  export const STOCK = { w: 244, d: 122, t: 1.8 }; // 2440 x 1220 x 18 plywood, corner at machine (2, 2)
 --- shopbot-prsalpha-wiki/generator/figures/shopbot/build_export.mjs	2026-11-26 21:25:17.332960816 +0000
-+++ sb120/generator/figures/shopbot/build_export.mjs	2026-11-26 22:41:36.347322769 +0000
++++ sb120/generator/figures/shopbot/build_export.mjs	2026-11-26 23:08:00.513063171 +0000
 @@ -30,7 +30,7 @@
  const RACK_T = 1.4;
  const FAR = { outer: T.farOuter, inner: T.farOuter + T.sideW, sign: -1 };
@@ -29,7 +29,22 @@
  const PLATE = { bottomHalf: 25, topHalf: 15, z0: 78, z1: 126, t: 2, gap: 1.6 };
  const BEAM = { half: 6, z: [101, 126] };
  const CAR = { half: 20, z: [99, 134], x: [10, 12] }; // x relative to beam centre
-@@ -108,8 +108,9 @@
+@@ -74,9 +74,12 @@
+   disc("stand.stem", F, 3, 6, 1.1, { tone: "mid" });
+   box("stand.leg", [x, y0, 6], [x + 7.5, y0 + 7.5, SIDE_Z[0]], { tone: "lo" }, { r: 0.6, steps: 3, inner: Ln(k.sideSeam({ x, y: y0, w: 7.5, d: 7.5, r: 0.6 }, 9, P, 3), { tone: "faint" }) });
+   // gusset brace: a diagonal bar from the leg up to the side extrusion, on the +x side of the leg
+-  const edge = x + 7.5;
++  // (fix: on the table-end leg the +x brace ran 30 cm past the table end into thin air - point it inward there)
++  const inward = x + 7.5 + 30 > TABLE.x1;
++  const edge = inward ? x : x + 7.5, reach = inward ? -30 : 30;
+   const BF = G.frameOf([0, y0 + 3.75 - 2.2, 0], AY, AX, AZ);
+-  prism("stand.brace", BF, [[edge, 33], [edge + 30, SIDE_Z[0] - 2], [edge + 30, SIDE_Z[0]], [edge, 35]], 0, 4.4, { tone: "lo" });
++  const pts = [[edge, 33], [edge + reach, SIDE_Z[0] - 2], [edge + reach, SIDE_Z[0]], [edge, 35]];
++  prism("stand.brace", BF, inward ? pts.reverse() : pts, 0, 4.4, { tone: "lo" });
+   // upper table support: steel channel under the side at this station, reaching across to the other side
+   if (side === NEAR) box("stand.support", [x, FAR.inner, SIDE_Z[0] - 6], [x + 7.5, NEAR.inner, SIDE_Z[0]], { tone: "lo" }, { r: 0.4, steps: 2 });
+   // lower cross stretcher between the leg pair
+@@ -108,8 +111,9 @@
  
  // cross supports and the deck
  setLayer(LAYER.nearStatic, "stand");
@@ -41,7 +56,7 @@
    box("stand.bearer", [x, FAR.inner, 80], [x + 5, NEAR.inner, 86], { tone: "mid" }, { r: 0.4, steps: 2 });
  }
  box("deck.ply", [T.x0 + 2, FAR.inner, 86], [T.x1 - 2, NEAR.inner, 88], { tone: "lo" }, { r: 0.3, steps: 2 });
-@@ -196,7 +197,7 @@
+@@ -196,7 +200,7 @@
  // ---------------------------------------------------------------- control box, VFD, pendant, PC (front side, X = 0 end)
  {
    setLayer(LAYER.nearStatic, "stand");
@@ -50,7 +65,7 @@
    const face = CB.y1 + 0.01;
    // brackets to the inside of the table side
    for (const x of [CB.x0 + 4, CB.x1 - 6]) box("box.bracket", [x, CB.y1 - 3, CB.z1], [x + 2, CB.y1 + 2, SIDE_Z[0]], { tone: "lo" }, { r: 0.3, steps: 2 });
-@@ -274,14 +275,14 @@
+@@ -274,14 +278,14 @@
  }
  
  // ---------------------------------------------------------------- X cable carrier trough and brackets (front side)
