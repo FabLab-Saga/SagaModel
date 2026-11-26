@@ -1409,8 +1409,9 @@ def build():
     _w = {}
     _HERE = bpy.path.abspath("//scripts/")
     exec(open(_HERE + "wiki_machine.py").read(), _w)
-    sb_x0, sb_y0 = 24.09, 21.26 - 4.19                                  # wiki (0, 0) = far end, fixed at room y 17.07;
-    #      the 120-60 table ends 0.61 m earlier than the 144-60 did (operator end at room y 20.65)
+    sb_x0, sb_y0 = 24.09, 21.26 - 3.581                                 # wiki (0, 0) = far end; table end (operator end)
+    #      at room y 21.26 as before: the operator-end parts (x-chain end, control box, end legs) sit where the 144-60's
+    #      did, so the glass door's swing still clears by 44 mm; the 0.61 m saved goes to the loading zone
     METAL = {"alu": 1.0, "rail": 1.0, "gearbox": 0.9, "collet": 1.0, "carbide": 1.0, "zplate": 1.0, "prox": 0.8,
              "copper": 1.0, "clamp": 1.0, "shard": 1.0, "spindle": 0.0, "steel": 0.15}
     sb_done = {}
@@ -1443,10 +1444,10 @@ def build():
         m_.diffuse_color = (*c, 1)
         return m_
     skip = re.compile(r"^(pc\.|pendant|tray|collector|stock|screw|clamp|cable\.(pendant|usb)|zplate$|zplate\.post$)")
-    # hose.floor ends at the wiki collector's inlet (room 20.81, 16.45, 1.20): move it to the ACword inlet
+    # hose.floor ends at the wiki collector's inlet (room 20.81, 17.06, 1.20): move it to the ACword inlet
     # (21.50, 16.72, 1.12). Local frame = room rotated -90 deg: local (dx, dy) = (room dy, -room dx).
     sbp, nparts, _d = _w["wiki_part"](Part, _HERE + "../assets/wiki/shopbot_prsalpha_120_60.json", sb_mat, skip=skip,
-                                       retarget={"hose.floor": (0.27, -0.69, -0.08)})
+                                       retarget={"hose.floor": (0.27 - 0.609, -0.69, -0.08)})
     sbp.emit("ShopBot_PRSalpha_120_60", col, Vector((sb_x0, sb_y0, 0.0)), math.pi / 2)
     place(dust_collector(), "ACword_FT100", col, 21.50, 16.45, 0.0, 0.84, 0.50, "+y")
     print("ShopBot from the wiki:", nparts, "parts")

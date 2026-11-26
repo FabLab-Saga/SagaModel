@@ -194,7 +194,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   geometry is the lab's ShopBot teaching wiki's own part list (`assets/wiki/`, `scripts/wiki_machine.py`, imported in
   build_machines.py as `ShopBot_PRSalpha_120_60`; the wiki generator re-run at 120-60, not scaled - assets/wiki/README.md): 3.58 x 2.33 m table, deck 0.90, gantry parked, floor-standing dust
   boom by the loading end, hose to the ACword FT100 inlet, under-table control box + VFD, cable carriers. Along the
-  interior wall (far side 0.20 m off it), table x ~21.62-24.10, y 17.07-21.26 (+ the wiki's end braces to 21.45);
+  interior wall (far side 0.20 m off it), table x ~21.62-24.10, y 17.68-21.26 (+ end braces to 21.52; operator end kept
+  where the 144-60 had it, the 0.61 m saved went to the loading zone);
   the glass door's swing clears the x-chain by 44 mm, PC station desk 0.175 m. Operator corner in the ex-WC bay:
   standing PC station (e-stop pendant; the old separate control box is gone, the wiki's is under the table) + tool bench with drawers and pegboard (bits, wrenches,
   ear defenders, glasses); E9 (branch, my design): the pegboard is inside a 0.20 deep ply wall cabinet behind an acrylic
