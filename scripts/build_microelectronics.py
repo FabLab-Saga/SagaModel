@@ -504,14 +504,19 @@ def component_storage(m, col):
     dob = cdoor.emit("WindowCabinets_Doors", col, Vector((0, 0, 0)))
     for o in [dob, *dob.children_recursive]:
         o["layout_skip"] = True
-    # (C) one bay (the second from the bench, so its doors swing clear of the bench end) behind acrylic doors:
-    # locked drawers for meters and soldering spares (lockdown, Magnús 2026-11-25; my placement).
-    cd = Part()
-    b0, b1 = Y0 + Lu / 3, Y0 + 2 * Lu / 3
-    ld["door_run"](cd, "+x", XB + D + 0.024, b0 + 0.02, b1 - 0.02, 0.10, H - 0.03, leaves=2, lock_z=0.75)
-    dob = cd.emit("ComponentStorage_Doors", col, Vector((0, 0, 0)))
-    for o in [dob, *dob.children_recursive]:
-        o["layout_skip"] = True
+    # (C) the middle bay's drawers lock with a pin (Magnús 2026-11-26: "drilling a pin down through each drawer,
+    # locking at the top"; replaced my acrylic doors in front of the drawers): a 12 mm steel rod drops from the top
+    # through a hole in every drawer's side rail, just behind the fronts at the bay's right side; its head ends in the
+    # top, under a lock housing on the top's front edge (clear of the upper cabinet's doors) (keyed cylinder; the RFID lock fits the same housing).
+    pin = Part()
+    steel = mat("Pin_Steel", "#B9BDC1", 0.25, metal=1.0)
+    xa, xb, _, _, _ = slots[(1, 0)]
+    px, py = xb - 0.030, 0.034                                          # local: behind the fronts (0.016), in the bay
+    pin.cyl(steel, (px, py, 0.10), (px, py, H + 0.014), 0.006, seg=16)  # through every drawer, head in the top
+    pin.box(blk, px - 0.030, px + 0.030, -0.026, -0.010, H + 0.001, H + 0.024, bevel=0.002)  # lock on the top's edge
+    pin.cyl(steel, (px, -0.026, H + 0.0125), (px, -0.028, H + 0.0125), 0.008, seg=24)        # key cylinder face
+    pin.box(gap, px - 0.0012, px + 0.0012, -0.0286, -0.0280, H + 0.0075, H + 0.0175)        # keyway
+    pin.emit("ComponentStorage_DrawerPin", col, loc, rot)
 
 
 # ---------------------------------------------------------------- build

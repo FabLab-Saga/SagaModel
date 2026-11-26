@@ -489,9 +489,9 @@ items:
     pos: [21.137, 32.18]
     z: 0
     rot: 90
-    size: [3.764, 0.525, 2.218]
+    size: [3.764, 0.534, 2.218]
     locked: false
-    objects: [ComponentStorage, ComponentStorage_Top, ComponentStorage_Drawers, ComponentStorage_Doors, WindowCabinets, WindowCabinets_Doors, CompCab_0_0, CompCab_1_0, ScopePSU]
+    objects: [ComponentStorage, ComponentStorage_Top, ComponentStorage_Drawers, ComponentStorage_DrawerPin, WindowCabinets, WindowCabinets_Doors, CompCab_0_0, CompCab_1_0, ScopePSU]
 
   - id: lab.cuttercounter
     label: CutterCounter
