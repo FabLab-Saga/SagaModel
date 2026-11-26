@@ -228,6 +228,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - **Remodels on the branch** (2026-11-26, from product photos): Brother sewing + embroidery machines (`_sew_body`:
   moulded C-arm prism, buttons, screen, needle area; embroidery unit + hoop with a part-stitched hex badge), Brother
   M343D overlocker (tension dials, thread stand, cones), Prusa MK3S+ LCD unit (tilted face, 20x4 text, knurled knob).
+  Work table 2's CNC stool dry fit now matches the ShopBot nest (ø340 seat with ply laminations, tapered wedged legs,
+  stretcher, open mortise for the third leg).
   Glowforge Pro: dark cavity liner, lid coat 0.25 (`_acrylic(coat=)`). `_prism_xz`/`_rounded_poly`/`_cone` in
   build_machines.py are the helpers for silhouette-based machine bodies. A footprint change means re-registering the
   item (delete its yaml entry, rebuild, export) - apply() otherwise shifts the new geometry to the old centre.

@@ -1286,18 +1286,6 @@ items:
     locked: false
     objects: [Laptop_1b]
 
-  - id: lab.benchprops-2
-    label: BenchProps 2
-    kind: furniture
-    zone: main-lab
-    pos: [26.891, 24.354]
-    z: 1.1
-    rot: 0
-    size: [0.403, 1.453, 0.43]
-    "on": lab.worktable-2
-    locked: false
-    objects: [BenchProps_2]
-
   - id: lab.laptop-2
     label: Laptop 2
     kind: fixture
@@ -1644,3 +1632,15 @@ items:
     "on": lab.printfarm-frame
     locked: false
     objects: [Prusa_MK3S_07]
+
+  - id: lab.benchprops-2
+    label: BenchProps 2
+    kind: furniture
+    zone: main-lab
+    pos: [26.891, 24.491]
+    z: 1.1
+    rot: 0
+    size: [0.403, 1.728, 0.451]
+    "on": lab.worktable-2
+    locked: false
+    objects: [BenchProps_2]

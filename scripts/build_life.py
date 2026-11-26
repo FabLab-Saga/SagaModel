@@ -218,21 +218,61 @@ def build():
     # ---- WorkTable_2: CNC stool kit, dry fit (standing)
     at, zt = frame(benches[2])
     p = Part()
+    # stool from the ShopBot nest (build_jobs.py): seat ø340 x 18 birch ply upside down, two tapered legs wedged into
+    # their mortises and splayed 10 deg, a stretcher between them; the third leg and its wedge wait beside the open
+    # slot (branch remodel 2026-11-26, my design). Ply laminations on the seat edge as alternating 2 mm rings.
     sx, sy = at(0.0, 0.0)
-    p.cyl(ply, (sx, sy, zt), (sx, sy, zt + 0.018), 0.17, seg=48)                             # seat, upside down
-    for k, ang in enumerate((math.radians(90), math.radians(210))):                        # 2 flat ply legs in
-        c_, s_ = math.cos(ang), math.sin(ang)
+    lam = (ply, mat("Ply_Lamination_Dark", "#B48A5A", 0.75))
+    for k in range(9):
+        p.cyl(lam[k % 2], (sx, sy, zt + k * 0.002), (sx, sy, zt + (k + 1) * 0.002), 0.17 - (0.0015 if k in (0, 8) else 0),
+              seg=64)
+    p.cyl(ply, (sx, sy, zt + 0.0179), (sx, sy, zt + 0.0182), 0.1685, seg=64)                   # seat face (up)
+    dark = mat("Mortise_Shadow", "#2A1E14", 0.9)
+    def leg(ang, splay, z0, lying=None):
+        """Tapered leg: 75 mm wide at the tenon end, 50 at the foot, 440 long, 18 thick."""
         bm = p.bm(ply)
-        verts = []
-        for (r_, zz) in ((0.10, zt + 0.018), (0.15, zt + 0.43)):                              # splayed outward
-            for (w_, t_) in ((-0.035, -0.009), (0.035, -0.009), (0.035, 0.009), (-0.035, 0.009)):
-                px_ = sx + r_ * c_ - w_ * s_ + t_ * c_
-                py_ = sy + r_ * s_ + w_ * c_ + t_ * s_
-                verts.append(bm.verts.new((px_, py_, zz)))
+        vs = []
+        if lying is None:
+            c_, s_ = math.cos(ang), math.sin(ang)
+            pts = []
+            for (r_, zz, hw) in ((0.105, z0, 0.0375), (0.105 + 0.44 * math.sin(splay), z0 + 0.44 * math.cos(splay), 0.025)):
+                pts.append((r_, zz, hw))
+            for (r_, zz, hw) in pts:
+                for (w_, t_) in ((-hw, -0.009), (hw, -0.009), (hw, 0.009), (-hw, 0.009)):
+                    vs.append(bm.verts.new((sx + r_ * c_ - w_ * s_ + t_ * c_, sy + r_ * s_ + w_ * c_ + t_ * s_, zz)))
+        else:
+            lu, lv = lying
+            for (uu, hw) in ((0.0, 0.0375), (0.44, 0.025)):
+                for (w_, zz) in ((-hw, zt), (hw, zt), (hw, zt + 0.018), (-hw, zt + 0.018)):
+                    x_, y_ = at(lu + uu, lv + w_)
+                    vs.append(bm.verts.new((x_, y_, zz)))
+            vs = [vs[i] for i in (0, 1, 2, 3, 4, 5, 6, 7)]
         for f in ((0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
-            bm.faces.new([verts[i] for i in f])
-    rect(p, ply, at, 0.45, -0.05, 0.42, 0.07, zt, 0.018)                                    # third leg, waiting
-    rect(p, ply, at, 0.45, 0.07, 0.30, 0.06, zt, 0.018)                                     # stretcher
+            try:
+                bm.faces.new([vs[i] for i in f])
+            except ValueError:
+                pass
+    for ang in (math.radians(90), math.radians(210)):
+        leg(ang, math.radians(10), zt + 0.018)
+        c_, s_ = math.cos(ang), math.sin(ang)
+        wx, wy = sx + 0.105 * c_, sy + 0.105 * s_                                               # wedge in the tenon
+        p.box(mat("Wedge_Walnut", "#5A3B24", 0.6), wx - 0.004, wx + 0.004, wy - 0.004, wy + 0.004, zt + 0.018, zt + 0.024)
+    a3 = math.radians(330)                                                                     # open mortise
+    mxx, myy = sx + 0.105 * math.cos(a3), sy + 0.105 * math.sin(a3)
+    bmm = p.bm(dark)
+    import bmesh as _bm
+    from mathutils import Matrix as _Mx
+    _bm.ops.create_cube(bmm, size=1.0, matrix=_Mx.Translation((mxx, myy, zt + 0.0182)) @ _Mx.Rotation(a3 + math.pi / 2, 4, "Z")
+                        @ _Mx.Diagonal((0.075, 0.018, 0.0006, 1)))
+    # stretcher between the two fitted legs, 200 mm up their length
+    def legpt(ang, t):
+        r_ = 0.105 + 0.44 * t * math.sin(math.radians(10))
+        return (sx + r_ * math.cos(ang), sy + r_ * math.sin(ang), zt + 0.018 + 0.44 * t * math.cos(math.radians(10)))
+    pa, pb = legpt(math.radians(90), 0.48), legpt(math.radians(210), 0.48)
+    p.cyl(ply, pa, pb, 0.011, seg=12)
+    leg(None, None, None, lying=(0.40, -0.05))                                                  # third leg, waiting
+    rect(p, mat("Wedge_Walnut", "#5A3B24", 0.6), at, 0.92, -0.05, 0.03, 0.008, zt, 0.008)   # its wedge
+    rect(p, ply, at, 0.45, 0.07, 0.30, 0.06, zt, 0.018)                                     # spare stretcher blank
     mx, my = at(-0.40, 0.12)                                                                 # rubber mallet
     p.cyl(blk, (mx - 0.05, my, zt + 0.03), (mx + 0.05, my, zt + 0.03), 0.03, seg=20)
     hx, hy = at(-0.40 - 0.25, 0.12)
