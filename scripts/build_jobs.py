@@ -3,7 +3,7 @@ on the machines, tied to the projects on the work tables, so the lab reads as us
 ("Jobs" collection). Each job is built in its machine's local frame and placed on the machine's current pose, so it
 must run AFTER the machine builders (machines, print farm, laser room); layout.yaml carries each job as an `on:` item.
 
-- ShopBot PRSalpha 144-60 (the teaching wiki's model): a 2440 x 1220 x 18 birch sheet on the deck, mid-way through
+- ShopBot PRSalpha 120-60 (the teaching wiki's model): a 2440 x 1220 x 18 birch sheet on the deck, mid-way through
   the CNC-stool nest being dry-fitted on work table 2: six seats cut, the leg row being cut under the parked spindle.
 - Glowforge Pro HD 1: 3 mm ply on the crumb tray with the finger-joint box (work table 0's laser-cut box) cut out and
   its lid engraving in progress; the head carriage over it.
@@ -14,6 +14,7 @@ must run AFTER the machine builders (machines, print farm, laser room); layout.y
   six SAGA keyring tags (the teaching wiki's print-cycle tag, scripts/saga_tag.py) with the lettering half printed,
   and a finished batch of hex tiles for the art wall.
 """
+import json
 import math
 
 import bpy
@@ -66,16 +67,18 @@ def rect_lines(p, m, x0, y0, x1, y1, z, w=0.006):
 
 def shopbot_job(col):
     """On the wiki ShopBot's deck (frame = the machine's local frame, wiki cm * 0.01; deck top z 0.90; the wiki's own
-    stock position: machine (2, 2) = local x 1.59-4.03, y 0.726-1.946). Tool parked at local (2.55, 1.266), the
+    stock position: machine (2, 2) = local x origin-2.46 .. origin-0.02, y 0.726-1.946). Tool parked at machine X 150, the
     gantry's rest pose. A 2440 x 1220 x 18 birch sheet mid-way through the CNC-stool nest that work table 2 is
     dry-fitting: six ø340 seats cut (held by tabs) along the far edge; the leg row through the spindle, legs on the
     operator side of the cutter done, the leg under the cutter three sides cut."""
-    f = frame("ShopBot_PRSalpha_144_60")
+    f = frame("ShopBot_PRSalpha_120_60")
     if not f:
         return
     p = Part()
     ply = MAT["ply"]
-    X0, X1, Y0, Y1, Z = 1.59, 4.03, 0.726, 1.946, 0.904            # sheet (deck top + 4 mm spoilboard skim)
+    ox = json.load(open(bpy.path.abspath("//assets/wiki/shopbot_prsalpha_120_60.json")))["origin"]["x"] / 100
+    X1 = ox - 0.02                                                   # stock at machine X 2: from the export's origin
+    X0, Y0, Y1, Z = X1 - 2.44, 0.726, 1.946, 0.904                   # sheet (deck top + 4 mm spoilboard skim)
     zt = Z + 0.018
     p.box(ply, X0, X1, Y0, Y1, Z, zt, bevel=0.001)
     for x in (X0 + 0.03, X0 + 0.62, X0 + 1.22, X0 + 1.82, X1 - 0.03):   # hold-down screws round the edge
@@ -88,7 +91,7 @@ def shopbot_job(col):
         for a0 in (0.15, 0.15 + math.pi / 2, 0.15 + math.pi, 0.15 + 3 * math.pi / 2):
             ring(p, KERF, cx, cy, zt, 0.17, seg=10, a0=a0, a1=a0 + math.pi / 2 - 0.06)
         p.cyl(KERF, (cx, cy, zt), (cx, cy, zt + 0.0004), 0.004, seg=10)          # centre drill mark
-    spx, spy = 2.55, 1.266                                           # tool at rest (wiki PARK)
+    spx, spy = ox - 1.50, 1.266                                      # tool at rest (wiki PARK, machine X 150)
     ly0, ly1 = spy - 0.30, spy + 0.14                                 # leg row: 440 long along y, spindle near its end
     x = X1 - 0.05 - 0.075                                            # operator side (high x) first: done
     while x > X0 + 0.04:

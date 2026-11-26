@@ -1,0 +1,70 @@
+--- shopbot-prsalpha-wiki/generator/figures/shopbot/machine.mjs	2026-11-26 21:21:20.834359041 +0000
++++ sb120/generator/figures/shopbot/machine.mjs	2026-11-26 22:40:55.221140965 +0000
+@@ -4,7 +4,7 @@
+ 
+ export const MACHINE = {
+   name: "ShopBot PRSalpha 144-60",
+-  travel: { x: 388.6, y: 155, z: 20.3 }, // 153 x 61 x 8 in movement area, 2023 spec sheet
++  travel: { x: 327.7, y: 155, z: 20.3 }, // 120-60: 129 x 61 x 8 in movement area, 2023 spec sheet
+   rapid: { xy: 76.2, z: 38.1 }, // 1800 in/min XY, 900 in/min Z
+   stepsPerCm: 977.5, // 2482.8 steps/in with 30-tooth pinions through 7.2:1 alphaStep gearboxes
+   gearbox: 7.2,
+@@ -14,7 +14,7 @@
+ };
+ 
+ // Table geometry that the toolpath needs
+-export const TABLE = { x0: 0, x1: 419, farOuter: 20, nearOuter: 217.6, sideW: 10, deckTop: 90 }; // 165 in footprint; 77-13/16 in rail spacing
++export const TABLE = { x0: 0, x1: 358.1, farOuter: 20, nearOuter: 217.6, sideW: 10, deckTop: 90 }; // 165 in footprint; 77-13/16 in rail spacing
+ export const ORIGIN = { x: TABLE.x1 - 14, y: TABLE.nearOuter - TABLE.sideW - 11 }; // machine (0,0) in world cm
+ export const DECK_TOP = TABLE.deckTop;
+ export const STOCK = { w: 244, d: 122, t: 1.8 }; // 2440 x 1220 x 18 plywood, corner at machine (2, 2)
+--- shopbot-prsalpha-wiki/generator/figures/shopbot/build_export.mjs	2026-11-26 21:25:17.332960816 +0000
++++ sb120/generator/figures/shopbot/build_export.mjs	2026-11-26 22:41:36.347322769 +0000
+@@ -30,7 +30,7 @@
+ const RACK_T = 1.4;
+ const FAR = { outer: T.farOuter, inner: T.farOuter + T.sideW, sign: -1 };
+ const NEAR = { outer: T.nearOuter, inner: T.nearOuter - T.sideW, sign: 1 };
+-const LEG_XS = [12, 206, 400];
++const LEG_XS = [12, 179, 346.1];
+ const PLATE = { bottomHalf: 25, topHalf: 15, z0: 78, z1: 126, t: 2, gap: 1.6 };
+ const BEAM = { half: 6, z: [101, 126] };
+ const CAR = { half: 20, z: [99, 134], x: [10, 12] }; // x relative to beam centre
+@@ -108,8 +108,9 @@
+ 
+ // cross supports and the deck
+ setLayer(LAYER.nearStatic, "stand");
+-for (let i = 0; i < 9; i++) {
+-  const x = 6 + i * 50.5;
++const NBEAR = 8;                                   // 120-60: 8 bearers over the 358 cm table (144-60: 9 at 50.5)
++for (let i = 0; i < NBEAR; i++) {
++  const x = 6 + i * (T.x1 - 17) / (NBEAR - 1);
+   box("stand.bearer", [x, FAR.inner, 80], [x + 5, NEAR.inner, 86], { tone: "mid" }, { r: 0.4, steps: 2 });
+ }
+ box("deck.ply", [T.x0 + 2, FAR.inner, 86], [T.x1 - 2, NEAR.inner, 88], { tone: "lo" }, { r: 0.3, steps: 2 });
+@@ -196,7 +197,7 @@
+ // ---------------------------------------------------------------- control box, VFD, pendant, PC (front side, X = 0 end)
+ {
+   setLayer(LAYER.nearStatic, "stand");
+-  const CB = { x0: 312, x1: 372, y0: NEAR.inner - 25, y1: NEAR.inner, z0: 12, z1: 70 };
++  const CB = { x0: 312 + (TABLE.x1 - 419), x1: 372 + (TABLE.x1 - 419), y0: NEAR.inner - 25, y1: NEAR.inner, z0: 12, z1: 70 };
+   const face = CB.y1 + 0.01;
+   // brackets to the inside of the table side
+   for (const x of [CB.x0 + 4, CB.x1 - 6]) box("box.bracket", [x, CB.y1 - 3, CB.z1], [x + 2, CB.y1 + 2, SIDE_Z[0]], { tone: "lo" }, { r: 0.3, steps: 2 });
+@@ -274,14 +275,14 @@
+ }
+ 
+ // ---------------------------------------------------------------- X cable carrier trough and brackets (front side)
+-const XCHAIN = { troughY: 244, troughZ: 69.2, fixedX: 203, bracketZ: 97.2, r: 14 };
++const XCHAIN = { troughY: 244, troughZ: 69.2, fixedX: Math.round(ORIGIN.x - MACHINE.travel.x / 2 - 7), bracketZ: 97.2, r: 14 };
+ {
+   setLayer(LAYER.front, "stand");
+-  const TR = { y0: 240.5, y1: 247.5, z0: 66, z1: 72, x0: 15, x1: 391 };
++  const TR = { y0: 240.5, y1: 247.5, z0: 66, z1: 72, x0: 15, x1: 391 + (TABLE.x1 - 419) };
+   box("xchain.trough", [TR.x0, TR.y0, TR.z0], [TR.x1, TR.y1, TR.z0 + 1], { tone: "lo" });
+   for (const y of [TR.y0, TR.y1 - 0.7]) box("xchain.trough", [TR.x0, y, TR.z0 + 1], [TR.x1, y + 0.7, TR.z1], { tone: "lo" });
+   box("xchain.fixed", [XCHAIN.fixedX - 1.2, TR.y0 + 0.7, TR.z0 + 1], [XCHAIN.fixedX, TR.y1 - 0.7, TR.z1], { tone: "lo" });
+-  for (const x of [60, 203, 350]) {
++  for (const x of [60, XCHAIN.fixedX, 350 + (TABLE.x1 - 419)]) {
+     box("xchain.bracket", [x, NEAR.outer, TR.z0 - 2], [x + 2.4, NEAR.outer + 2.4, 76], { tone: "lo" });
+     box("xchain.bracket", [x, NEAR.outer + 2.4, TR.z0 - 2], [x + 2.4, TR.y1, TR.z0], { tone: "lo" });
+   }

@@ -190,9 +190,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   the rest stays clear so the ShopBot is visible from the main room. The colleague's glazed front
   (y 23.05) is cut away (`Cut_CNC_Front`/`Cut_CNC_Side`), the strip in front is main lab. The colleague's 1.08 x 2.49 m hallway door was invented (user): replaced by a normal
   Icelandic interior door (90 x 210, frame + casings, wall completed to the slab), the knocked-down WC's doorway next
-  to it walled up. ShopBot = HÍ's PRSalpha 144-60 (branch 2026-11-26; Magnús: the 120-60 was the wrong size): the
+  to it walled up. ShopBot = HÍ's PRSalpha 120-60 (Magnús 2026-11-26, ShopBot spec sheet 3.66 x 2.31 footprint; the wiki's 144-60 was wrong, MPTVPC is correcting the wiki): the
   geometry is the lab's ShopBot teaching wiki's own part list (`assets/wiki/`, `scripts/wiki_machine.py`, imported in
-  build_machines.py as `ShopBot_PRSalpha_144_60`): 4.19 x 2.33 m table, deck 0.90, gantry parked, floor-standing dust
+  build_machines.py as `ShopBot_PRSalpha_120_60`; the wiki generator re-run at 120-60, not scaled - assets/wiki/README.md): 3.58 x 2.33 m table, deck 0.90, gantry parked, floor-standing dust
   boom by the loading end, hose to the ACword FT100 inlet, under-table control box + VFD, cable carriers. Along the
   interior wall (far side 0.20 m off it), table x ~21.62-24.10, y 17.07-21.26 (+ the wiki's end braces to 21.45);
   the glass door's swing clears the x-chain by 44 mm, PC station desk 0.175 m. Operator corner in the ex-WC bay:
@@ -230,7 +230,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   frames; panel 3's column-end foot is set in 0.30 m and clears the column by ~6 cm. Each is a layout item, movable
   to block noise or divide the area. No zone signs (all removed 2026-11-26, Magnús: better signs later).
 - **Teaching-wiki machines** (branch 2026-11-26, Magnús: use the teaching wiki models): `assets/wiki/` + 
-  `scripts/wiki_machine.py`. ShopBot PRSalpha 144-60 (see CNC room) and the Epilog Fusion Edge 24 (laser room;
+  `scripts/wiki_machine.py`. ShopBot PRSalpha 120-60 (see CNC room) and the Epilog Fusion Edge 24 (laser room;
   envelope 1055 x 834 x 967 from the wiki, lid closed with a smoked clear window so bridge/head/sheet read, table
   focused, head mid-sheet; logos re-drawn as the wiki does: white emblem + bold/thin wordmarks on fascia, lid band,
   both side covers, in Roboto). The exhaust branch meets the wiki model's rear port (centre, z 0.637).
