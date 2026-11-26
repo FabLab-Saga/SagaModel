@@ -824,7 +824,7 @@ def electronics_commons(m, col):
     # SRM-20s (column end), open on the counter between anchor cleats; milling PC at the end with knee space
     pk = Part()
     for n, sx in enumerate((S2 + 0.08, S2 + 0.60)):
-        mach["srm20"]().emit(f"Roland_SRM20_{n + 1}", col, Vector((sx, cy1 - 0.05 - 0.426, CH)), 0.0)
+        mach["srm20"](tip=0.1172 if n == 0 else 0.13).emit(f"Roland_SRM20_{n + 1}", col, Vector((sx, cy1 - 0.05 - 0.426, CH)), 0.0)
         for ux, sg in ((sx, -1), (sx + 0.451, 1)):
             for yy in (cy1 - 0.42, cy1 - 0.14):
                 pk.box(MAT["profile"], min(ux, ux + sg * 0.04), max(ux, ux + sg * 0.04), yy, yy + 0.04, CH, CH + 0.003)

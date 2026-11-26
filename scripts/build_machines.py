@@ -471,7 +471,7 @@ def ams_2_pro(p, x0, y0, z0, spools=None):
     p.box(M["white"], x0 + W - 0.07, x0 + W - 0.03, y0 + 0.004, y0 + 0.012, z0 + Hb - 0.03, z0 + Hb - 0.018)  # label
 
 
-def srm20(w=0.451, d=0.426, h=0.426):
+def srm20(w=0.451, d=0.426, h=0.426, tip=0.13):
     """Roland SRM-20: white shell (base, sides, back, roof) + smoked violet see-through front cover;
     inside: aluminium bed with a copper blank, spindle on its Z carriage."""
     p = Part()
@@ -485,8 +485,9 @@ def srm20(w=0.451, d=0.426, h=0.426):
     p.box(M["alusatin"] if "alusatin" in M else M["chrome"], 0.08, w - 0.08, 0.10, d - 0.10, 0.10, 0.115)   # bed
     p.box(M["gold"], 0.13, 0.27, 0.15, 0.27, 0.115, 0.117)                                  # copper blank
     p.box(M["white"], w * 0.40, w * 0.62, d - 0.16, d - 0.06, 0.20, h - 0.03, bevel=0.006)  # Z carriage
-    p.cyl(M["dark"], (w * 0.51, d - 0.17, 0.17), (w * 0.51, d - 0.17, 0.30), 0.022, seg=24) # spindle motor
-    p.cyl(M["chrome"], (w * 0.51, d - 0.17, 0.13), (w * 0.51, d - 0.17, 0.17), 0.004, seg=8)  # end mill
+    dz = tip - 0.13                                                                            # tip = end-mill tip height
+    p.cyl(M["dark"], (w * 0.51, d - 0.17, 0.17 + dz), (w * 0.51, d - 0.17, 0.30 + dz), 0.022, seg=24)  # spindle motor
+    p.cyl(M["chrome"], (w * 0.51, d - 0.17, tip), (w * 0.51, d - 0.17, 0.17 + dz), 0.004, seg=8)      # end mill
     p.box(M["lcd"], w - 0.04, w - 0.02, -0.001, 0.0, 0.05, 0.07)                            # status LED
     return p
 

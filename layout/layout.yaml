@@ -1561,6 +1561,18 @@ items:
     locked: false
     objects: [Job_Glowforge_1]
 
+  - id: laser.job-xtool
+    label: Job xTool
+    kind: fixture
+    zone: laser-room
+    pos: [32.185, 23.396]
+    z: 0.804
+    rot: -90
+    size: [0.1, 0.1, 0.005]
+    "on": laser.xtool-f1-ultra
+    locked: false
+    objects: [Job_xTool]
+
   - id: cnc.job-shopbot
     label: Job ShopBot
     kind: fixture
@@ -1572,6 +1584,18 @@ items:
     "on": cnc.shopbot-prsalpha-120
     locked: false
     objects: [Job_ShopBot]
+
+  - id: lab.job-srm20-1
+    label: Job SRM20 1
+    kind: fixture
+    zone: main-lab
+    pos: [25.881, 34.067]
+    z: 0.867
+    rot: 0
+    size: [0.072, 0.057, 0]
+    "on": lab.roland-srm20-1
+    locked: false
+    objects: [Job_SRM20_1]
 
   - id: lab.job-prusa-01
     label: Job Prusa 01
