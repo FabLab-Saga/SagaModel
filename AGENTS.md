@@ -218,7 +218,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   screens on black 40x40 castor frames (feet set in 0.20 m, locking castors); default spot (Magnús: the old row line
   moved 0.30 m towards the workshop) y 29.465, x 21.50–27.82 (starts past the cutter counter), 0.04 m between
   frames; panel 3's column-end foot is set in 0.30 m and clears the column by ~6 cm. Each is a layout item, movable
-  to block noise or divide the area. The electronics sign hangs over the bench.
+  to block noise or divide the area. No electronics sign (removed 2026-11-25, Magnús).
 - **Lock-down detail** (`scripts/lockdown.py`, exec'd by builders): clear acrylic leaves hung in pairs, one surface
   RFID electronic cabinet lock per pair (Magnús: acrylic doors, electronic locks where reasonable; the detail is my
   design). Enclosure door objects carry `layout_skip` and belong to their item's `objects`. Portable tools live behind
