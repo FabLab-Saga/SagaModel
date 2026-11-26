@@ -282,7 +282,22 @@ def operator_corner(col, M):
     p.box(gl, wx - 0.05, wx - 0.015, by1 - 0.42, by1 - 0.26, 1.50, 1.55, bevel=0.005)
     p.box(blk, wx - 0.18, wx - 0.012, by0 + 0.55, by0 + 0.58, 1.40, 1.42)                 # shelf strip
     p.cyl(mat("Clamp_Orange", "#FFA13D", 0.4), (wx - 0.14, by0 + 0.25, 0.90), (wx - 0.14, by0 + 0.45, 0.90), 0.018, seg=12)
+    # E9 (2026-11-26, my design on Magnus's go-ahead to iterate): the pegboard sits in a shallow ply wall cabinet
+    # (0.20 deep: clears the bit blocks and ear defenders) behind a pair of clear acrylic doors with one e-lock
+    # (scripts/lockdown.py); the room is locked as well.
+    cz0, cz1, cd = 1.02, 1.98, 0.20
+    p.box(ply, wx - cd, wx - 0.012, by0 - 0.02, by1 + 0.02, cz0, cz0 + 0.018, bevel=0.0015)     # bottom
+    p.box(ply, wx - cd, wx - 0.012, by0 - 0.02, by1 + 0.02, cz1 - 0.018, cz1, bevel=0.0015)     # top
+    for y in (by0 - 0.02, by1 + 0.002):
+        p.box(ply, wx - cd, wx - 0.012, y, y + 0.018, cz0, cz1)                                # ends
     p.emit("CNC_ToolBench", col, Vector((0, 0, 0)))
+    ld = {}
+    exec(open(bpy.path.abspath("//scripts/lockdown.py")).read(), ld)
+    dr = Part()
+    ld["door_run"](dr, "-x", wx - cd, by0 - 0.017, by1 + 0.017, cz0 + 0.003, cz1 - 0.003, leaves=2, lock_z=1.36)
+    dob = dr.emit("CNC_ToolBench_Doors", col, Vector((0, 0, 0)))
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
 
 
 def utilities(col, M):

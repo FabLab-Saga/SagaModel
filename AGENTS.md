@@ -6,8 +6,9 @@ the walls"): everything after main 4a2833f is my own design on this branch, for 
 leftovers deleted, every listed machine modelled (MACHINES.md), on-call desk + Fab Lab TV, GULLVALLA lounge, back staff
 area, CNC room, corner-bay entrance + hall set, layout system (layout/), theft lock-down (private plan in Vinnuskjol;
 done E1 print farm, E2 hand-tool wall, E3 tool library, E4 electronics, E5 cutter corner, E8 work tables; on the branch
-also E6 craft corner and E7 laser room, my designs), electronics re-layout + bank-wall counter, spine shrunk one bay,
-work tables option 7b, one project in progress per table, third-party models removed. NEXT on the branch: E9 CNC room.
+also E6 craft corner, E7 laser room, E9 CNC room, my designs: the lock-down plan is complete), electronics re-layout + bank-wall counter, spine shrunk one bay,
+work tables option 7b, one project in progress per table, third-party models removed. NEXT on the branch: quality pass
+(stale cameras, zone detail) - see the branch log.
 Renders/film only on his request (RENDER.md).
 This is a Hermes project; this file is the agent's own brief (Magnús): keep it current in every commit, no permission
 needed (renamed from CLAUDE.md 2026-11-25). Read this first; then `git log --oneline` for history, `LICENSES.md` for
@@ -192,7 +193,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   side; ACword FT100 in the far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`). Operator
   corner in the ex-WC bay:
   standing PC station (control box under it, e-stop pendant) + tool bench with drawers and pegboard (bits, wrenches,
-  ear defenders, glasses). Shop vac + extinguisher by the WNW wall. (Clearance ignored per user.) No SRM-20s here.
+  ear defenders, glasses); E9 (branch, my design): the pegboard is inside a 0.20 deep ply wall cabinet behind an acrylic
+  pair with one e-lock. Shop vac + extinguisher by the WNW wall. (Clearance ignored per user.) No SRM-20s here.
   WNW end wall (y 14.87–15.08): the 2.32 m gap (x 22.40–24.72) is a LOADING DOOR - classic double door, two
   swinging leaves (user); painted-steel leaves 2 x 1.10 x 2.40, opening outward (my details). Glass WINDOWS either
   side of it and ABOVE the door frame (user); façade-style dark frames, glazing to 3.60. Outside: concrete pavers

@@ -160,7 +160,7 @@ items:
     rot: 0
     size: [0.61, 1.22, 1.95]
     locked: false
-    objects: [CNC_ToolBench]
+    objects: [CNC_ToolBench, CNC_ToolBench_Doors]
 
   - id: cnc.cnc-utilities
     label: CNC Utilities
