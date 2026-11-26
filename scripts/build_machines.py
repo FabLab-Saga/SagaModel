@@ -158,6 +158,10 @@ def glowforge_pro(w=0.965, d=0.527, h=0.211):
     _rbox(p, M["white"], 0.0, w, 0.0, d, 0.012, 0.035, 0.03)
     for x0, x1, y0, y1 in ((0.0, w, 0.0, 0.05), (0.0, w, d - 0.125, d), (0.0, 0.055, 0.0, d), (w - 0.055, w, 0.0, d)):
         _rbox(p, M["white"], x0, x1, y0, y1, 0.012, h - 0.012, min(0.03, (x1 - x0) / 2 - 0.001, (y1 - y0) / 2 - 0.001))
+    liner = mat("Glowforge_Liner", "#26282B", 0.6)                                       # dark cavity, as the real one
+    for x0, x1, y0, y1 in ((0.055, w - 0.055, 0.050, 0.054), (0.055, w - 0.055, d - 0.129, d - 0.125),
+                           (0.055, 0.059, 0.050, d - 0.125), (w - 0.059, w - 0.055, 0.050, d - 0.125)):
+        p.box(liner, x0, x1, y0, y1, 0.035, h - 0.012)
     hc = mat("Honeycomb_Dark", "#4A4D50", 0.5, metal=0.6)
     p.box(hc, 0.07, w - 0.07, 0.06, d - 0.135, 0.035, 0.043)
     for k in range(1, 24):                                                               # tray cells (hint)
@@ -172,7 +176,7 @@ def glowforge_pro(w=0.965, d=0.527, h=0.211):
     for x0, x1, y0, y1 in ((0.03, w - 0.03, 0.030, 0.050), (0.03, w - 0.03, d - 0.125, d - 0.105),
                            (0.03, 0.055, 0.030, d - 0.105), (w - 0.055, w - 0.03, 0.030, d - 0.105)):
         p.box(M["white"], x0, x1, y0, y1, h - 0.012, h - 0.004, bevel=0.002)               # lid frame (ring)
-    p.box(_acrylic("Glowforge_LidGlass", "#2A2420", 0.05, alpha=0.38), 0.055, w - 0.055, 0.050, d - 0.125, h - 0.0045,
+    p.box(_acrylic("Glowforge_LidGlass", "#2A2420", 0.05, alpha=0.30, coat=0.25), 0.055, w - 0.055, 0.050, d - 0.125, h - 0.0045,
           h - 0.0015)                                                                     # lid glass (tinted, see-through)
     _rbox(p, M["white"], 0.02, w - 0.02, d - 0.100, d - 0.012, h - 0.012, h + 0.004, 0.012)  # rear hinge band
     p.box(M["grey"], w * 0.38, w * 0.62, -0.002, 0.018, h - 0.030, h - 0.016, bevel=0.004)   # lid lift recess
@@ -202,11 +206,12 @@ def glowforge_aura(w=0.556, d=0.521, h=0.127):
     return p
 
 
-def _acrylic(name, hexcol, rough=0.08, alpha=0.45):
+def _acrylic(name, hexcol, rough=0.08, alpha=0.45, coat=0.8):
     """Tinted acrylic sheet without refraction (alpha-blended colour + clear-coat reflections): thin sheets
     modelled as boxes otherwise render like warped chrome."""
-    m = mat(name, hexcol, rough, coat=0.8)
+    m = mat(name, hexcol, rough, coat=coat)
     b = next(n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+    b.inputs["Coat Weight"].default_value = coat
     b.inputs["Transmission Weight"].default_value = 0.0
     b.inputs["Alpha"].default_value = alpha
     if hasattr(m, "surface_render_method"):
@@ -352,7 +357,7 @@ def spool_part(p, filament, cx, cy, cz, axis="x", r_out=0.100, width=0.065):
     p.cyl(M["dark"], c - ax * (width / 2 + 0.003), c + ax * (width / 2 + 0.003), 0.027, seg=24)
 
 
-def prusa(spool, zx=0.20):
+def prusa(spool, zx=0.20, random_print=True):
     """Prusa MK3S+ (~500 x 550 x 400): frame plate, rods, motors, PEI bed, orange parts, LCD, spool on top. zx = X-axis
     height (nozzle tip at zx - 0.05 above the base; the PEI top is at 0.064), so a print job can sit under the nozzle."""
     p = Part()
@@ -415,25 +420,48 @@ def prusa(spool, zx=0.20):
         a = (ex + 0.05 + t0 * 0.12, fy - 0.03 + t0 * 0.03, zx + 0.10 + 0.08 * (1 - (2 * t0 - 1) ** 2))
         b = (ex + 0.05 + t1 * 0.12, fy - 0.03 + t1 * 0.03, zx + 0.10 + 0.08 * (1 - (2 * t1 - 1) ** 2))
         p.cyl(M["black"], a, b, 0.006, seg=10)
-    # --- LCD box at the front left
-    p.box(M["orange"], 0.10, 0.36, -0.035, 0.03, 0.01, 0.085, bevel=0.006)
-    p.box(M["lcd"], 0.13, 0.27, -0.0365, -0.034, 0.03, 0.07)
-    p.cyl(M["dark"], (0.31, -0.045, 0.05), (0.31, -0.035, 0.05), 0.011, seg=20)                  # knob
+    # --- LCD unit at the front left (branch remodel): printed housing with the face tilted back 25 deg, 20 x 4
+    # character display (white on blue) in a black bezel, knurled knob, reset button, SD slot, beeper grille
+    tilt = math.radians(25)
+    face = Matrix.Translation((0.23, -0.012, 0.048)) @ Matrix.Rotation(-tilt, 4, "X")       # face frame: x right, z up
+    def fbox(m, x0, x1, z0, z1, n0, n1):
+        bmesh.ops.create_cube(p.bm(m), size=1.0, matrix=face @ Matrix.Translation(((x0 + x1) / 2, -(n0 + n1) / 2,
+                              (z0 + z1) / 2)) @ Matrix.Diagonal((x1 - x0, abs(n1 - n0), z1 - z0, 1)))
+    p.box(M["orange"], 0.10, 0.36, -0.01, 0.03, 0.008, 0.07, bevel=0.005)                    # housing body
+    fbox(M["orange"], -0.13, 0.13, -0.042, 0.042, 0.0, 0.03)                                  # tilted front block
+    fbox(M["black"], -0.115, 0.04, -0.03, 0.03, 0.03, 0.032)                                  # bezel
+    fbox(M["lcd"], -0.105, 0.03, -0.022, 0.022, 0.032, 0.0325)                                # display
+    txt = mat("LCD_Text", "#F4F8FF", 0.4, emit=1.5)
+    for r, n in enumerate((14, 18, 11, 16)):                                                  # character rows
+        for c in range(n):
+            x = -0.10 + c * 0.0062
+            z = 0.014 - r * 0.0105
+            fbox(txt, x, x + 0.0045, z - 0.0035, z + 0.0035, 0.0325, 0.0328)
+    for k in range(16):                                                                       # knurled knob
+        a_ = 2 * math.pi * k / 16
+        fbox(M["dark"], 0.075 + 0.0105 * math.cos(a_) - 0.0016, 0.075 + 0.0105 * math.cos(a_) + 0.0016,
+             0.006 + 0.0105 * math.sin(a_) - 0.0016, 0.006 + 0.0105 * math.sin(a_) + 0.0016, 0.03, 0.045)
+    fbox(M["dark"], 0.075 - 0.0095, 0.075 + 0.0095, 0.006 - 0.0095, 0.006 + 0.0095, 0.03, 0.046)
+    fbox(M["black"], 0.104, 0.112, -0.03, -0.022, 0.03, 0.034)                                # reset button
+    for k in range(4):
+        fbox(M["black"], 0.064 + k * 0.006, 0.067 + k * 0.006, -0.032, -0.024, 0.03, 0.0305)  # beeper grille
+    p.box(M["black"], 0.098, 0.1005, 0.0, 0.02, 0.02, 0.026)                                  # SD slot (left side)
     # --- spool holder on the top bar + spool
     p.box(M["orange"], w / 2 - 0.012, w / 2 + 0.012, fy - 0.01, fy + 0.03, 0.40, 0.46, bevel=0.003)
     spool_part(p, spool, w / 2, fy + 0.045, 0.47)
-    if PRINT_RNG.random() < 0.55:                                                               # a print in progress
+    _pp = Part() if not random_print else p                                                    # keep RNG draws stable
+    if PRINT_RNG.random() < 0.55:                                              # a print in progress
         kind = PRINT_RNG.choice(("box", "vase", "bracket"))
         bx, by = w / 2 + PRINT_RNG.uniform(-0.06, 0.06), bed_y + 0.12 + PRINT_RNG.uniform(-0.04, 0.04)
         hgt = PRINT_RNG.uniform(0.015, 0.09)
         if kind == "vase":
-            p.cyl(spool, (bx, by, 0.064), (bx, by, 0.064 + hgt), PRINT_RNG.uniform(0.025, 0.045), seg=40)
+            _pp.cyl(spool, (bx, by, 0.064), (bx, by, 0.064 + hgt), PRINT_RNG.uniform(0.025, 0.045), seg=40)
         elif kind == "box":
             sx, sy = PRINT_RNG.uniform(0.03, 0.09), PRINT_RNG.uniform(0.03, 0.09)
-            p.box(spool, bx - sx / 2, bx + sx / 2, by - sy / 2, by + sy / 2, 0.064, 0.064 + hgt, bevel=0.002)
+            _pp.box(spool, bx - sx / 2, bx + sx / 2, by - sy / 2, by + sy / 2, 0.064, 0.064 + hgt, bevel=0.002)
         else:
-            p.box(spool, bx - 0.05, bx + 0.05, by - 0.015, by + 0.015, 0.064, 0.072, bevel=0.0015)
-            p.box(spool, bx - 0.05, bx - 0.04, by - 0.015, by + 0.015, 0.072, 0.064 + hgt, bevel=0.0015)
+            _pp.box(spool, bx - 0.05, bx + 0.05, by - 0.015, by + 0.015, 0.064, 0.072, bevel=0.0015)
+            _pp.box(spool, bx - 0.05, bx - 0.04, by - 0.015, by + 0.015, 0.072, 0.064 + hgt, bevel=0.0015)
     return p
 
 
@@ -515,20 +543,169 @@ def mayku(w=0.274, d=0.466, h=0.315):
     return p
 
 
+def _rounded_poly(pts, radii, seg=6):
+    """Closed 2D polygon with each corner replaced by a quadratic fillet of radius r (0 = sharp)."""
+    out = []
+    n = len(pts)
+    for i in range(n):
+        p0, p1, p2 = Vector(pts[i - 1]), Vector(pts[i]), Vector(pts[(i + 1) % n])
+        r = radii[i]
+        if r <= 0:
+            out.append(p1)
+            continue
+        a = p1 + (p0 - p1).normalized() * min(r, (p0 - p1).length / 2)
+        b = p1 + (p2 - p1).normalized() * min(r, (p2 - p1).length / 2)
+        for k in range(seg + 1):
+            t = k / seg
+            out.append(a * (1 - t) ** 2 + p1 * 2 * (1 - t) * t + b * t * t)
+    return [(v.x, v.y) for v in out]
+
+
+def _prism_xz(p, m, pts, y0, y1, bevel=0.0):
+    """Prism from a 2D outline (x, z) in the front plane, extruded from y0 to y1, edges optionally bevelled."""
+    import bmesh
+    bm = p.bm(m)
+    vs = [bm.verts.new((x, y0, z)) for x, z in pts]
+    f = bm.faces.new(vs)
+    ex = bmesh.ops.extrude_face_region(bm, geom=[f])
+    nv = [g for g in ex["geom"] if isinstance(g, bmesh.types.BMVert)]
+    bmesh.ops.translate(bm, verts=nv, vec=(0, y1 - y0, 0))
+    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+    if bevel:
+        ring = [e for e in bm.edges if e.verts[0] in set(vs + nv) and e.verts[1] in set(vs + nv)
+                and abs(e.verts[0].co.y - e.verts[1].co.y) < 1e-6]
+        bmesh.ops.bevel(bm, geom=ring, offset=bevel, segments=3, affect="EDGES", clamp_overlap=True)
+
+
+def _cone(p, m, a, b, r0, r1, seg=20):
+    import bmesh
+    a, b = Vector(a), Vector(b)
+    d = b - a
+    mtx = Matrix.Translation((a + b) / 2) @ d.to_track_quat("Z", "Y").to_matrix().to_4x4()
+    bmesh.ops.create_cone(p.bm(m), cap_ends=True, segments=seg, radius1=r0, radius2=r1, depth=d.length, matrix=mtx)
+
+
+def _sew_body(p, x0, w, d, h, screen_w=0.08):
+    """Computerised sewing-machine body (Brother Innov-is style) in the local frame, front at y=0, starting at x0.
+    Returns the needle (x, y)."""
+    wh, gry, dk = M["white"], mat("Sew_Grey", "#B8BEC6", 0.4), M["dark"]
+    X = lambda v: x0 + v
+    _prism_xz(p, wh, _rounded_poly([(X(0), 0), (X(w), 0), (X(w), 0.075), (X(0), 0.075)], [0.01, 0.01, 0.02, 0.02]),
+              0.0, d, bevel=0.006)                                                         # bed
+    yf, yb = 0.035, d - 0.035
+    c = [(X(0.025), 0.115), (X(0.115), 0.115), (X(0.115), 0.205), (X(w - 0.125), 0.205), (X(w - 0.125), 0.07),
+         (X(w - 0.012), 0.07), (X(w - 0.012), h), (X(0.025), h - 0.004)]
+    _prism_xz(p, wh, _rounded_poly(c, [0.012, 0.008, 0.03, 0.03, 0, 0, 0.05, 0.035]), yf, yb, bevel=0.008)   # arm
+    p.box(gry, X(0.13), X(w - 0.14), yf - 0.002, yf, 0.215, h - 0.02, bevel=0.002)        # grey arm-front panel
+    p.box(dk, X(0.135), X(w - 0.15), yf - 0.0025, yf - 0.002, 0.25, 0.252)                # thread-path groove
+    p.box(dk, X(0.088), X(0.096), yf - 0.002, yf, 0.18, 0.272)                             # take-up lever slot
+    p.box(gry, X(0.084), X(0.100), yf - 0.012, yf - 0.002, 0.236, 0.246, bevel=0.002)     # take-up lever
+    for i, cc in enumerate(("#2E7D32", "#C62828", "#455A64", "#455A64")):                 # start/stop, reverse, needle, cut
+        bm_ = mat(f"Sew_Btn_{cc[1:]}", cc, 0.4)
+        p.box(bm_, X(0.032 + i * 0.02), X(0.047 + i * 0.02), yf - 0.004, yf, 0.255, 0.268, bevel=0.002)
+    p.box(dk, X(0.035), X(0.11), yf - 0.0025, yf - 0.002, 0.24, 0.244)                   # speed slider slot
+    p.box(gry, X(0.06), X(0.07), yf - 0.006, yf - 0.002, 0.236, 0.248, bevel=0.0015)
+    sx0 = w - 0.012 - 0.01 - screen_w                                                      # screen + keys on the pillar
+    p.box(dk, X(sx0), X(sx0 + screen_w), yf - 0.003, yf, 0.15, 0.20, bevel=0.002)
+    p.box(M["lcd"], X(sx0 + 0.004), X(sx0 + screen_w - 0.004), yf - 0.0035, yf - 0.003, 0.155, 0.195)
+    for k in range(3):
+        for r in range(2):
+            p.box(gry, X(sx0 + 0.006 + k * screen_w / 3), X(sx0 + 0.018 + k * screen_w / 3), yf - 0.003, yf,
+                  0.10 + r * 0.02, 0.112 + r * 0.02, bevel=0.0015)
+    hy, hz = d / 2, 0.21                                                                   # hand wheel (right side)
+    p.cyl(wh, (X(w - 0.012), hy, hz), (X(w + 0.004), hy, hz), 0.046, seg=36)
+    p.cyl(gry, (X(w + 0.004), hy, hz), (X(w + 0.016), hy, hz), 0.044, seg=36)
+    p.cyl(dk, (X(w + 0.016), hy, hz), (X(w + 0.018), hy, hz), 0.012, seg=20)
+    nx, ny = 0.07, 0.085                                                                   # needle position
+    ch = M["chrome"]
+    p.cyl(ch, (X(nx), ny, 0.115), (X(nx), ny, 0.097), 0.0032, seg=10)                     # needle bar
+    p.cyl(ch, (X(nx), ny, 0.097), (X(nx), ny, 0.081), 0.0007, seg=6)                      # needle
+    p.cyl(ch, (X(nx + 0.012), ny + 0.012, 0.115), (X(nx + 0.012), ny + 0.012, 0.088), 0.003, seg=10)   # presser bar
+    p.box(ch, X(nx - 0.012), X(nx + 0.018), ny - 0.028, ny + 0.022, 0.0775, 0.0815, bevel=0.0012)   # presser foot
+    p.box(ch, X(nx - 0.04), X(nx + 0.05), 0.04, 0.13, 0.075, 0.0765, bevel=0.0008)        # needle plate
+    for k in range(3):
+        p.box(dk, X(nx - 0.008 + k * 0.006), X(nx - 0.006 + k * 0.006), ny - 0.02, ny + 0.02, 0.0765, 0.0768)   # feed slots
+    p.box(_acrylic("Sew_Bobbin_Cover", "#3A4048", 0.1, 0.6), X(nx + 0.055), X(nx + 0.11), 0.05, 0.12, 0.075, 0.0768,
+          bevel=0.001)
+    p.box(dk, X(0.02), X(w - 0.02), -0.0005, 0.0, 0.035, 0.037)                            # accessory-box seam
+    sy, sz = d * 0.62, h + 0.018                                                           # horizontal spool on top
+    p.cyl(ch, (X(w - 0.20), sy, sz), (X(w - 0.10), sy, sz), 0.003, seg=8)
+    p.cyl(M["spools"][0], (X(w - 0.185), sy, sz), (X(w - 0.135), sy, sz), 0.017, seg=24)
+    p.cyl(gry, (X(w - 0.135), sy, sz), (X(w - 0.128), sy, sz), 0.02, seg=24)              # spool cap
+    p.box(gry, X(w - 0.08), X(w - 0.05), d * 0.5, d * 0.72, h - 0.002, h + 0.012, bevel=0.003)   # bobbin winder
+    for x in (0.03, w - 0.03):
+        for y in (0.03, d - 0.03):
+            p.cyl(M["rubber"], (X(x), y, -0.004), (X(x), y, 0.0), 0.008, seg=10)
+    return X(nx), ny
+
+
 def sewing(w=0.42, d=0.20, h=0.30):
-    """Domestic sewing machine: bed, pillar, arm, needle head, hand wheel, thread spool, screen."""
+    """Brother computerised sewing machine (Innov-is style; branch 2026-11-26 remodel): moulded C-arm and bed with
+    soft edges, grey arm panel, take-up lever, button row + speed slider, screen and keys on the pillar, hand wheel,
+    needle bar, presser foot, needle plate with feed slots, smoked bobbin cover, horizontal spool on top. A quilting
+    cotton piece is under the foot, half sewn (stitch line up to the needle)."""
     p = Part()
-    p.box(M["white"], 0, w, 0, d, 0, 0.085, bevel=0.018)                                  # bed
-    p.box(M["white"], w - 0.12, w - 0.01, 0.015, d - 0.015, 0.06, h, bevel=0.025)          # pillar
-    p.box(M["white"], 0.02, w - 0.01, 0.025, d - 0.025, h - 0.085, h, bevel=0.025)         # arm
-    p.box(M["white"], 0.02, 0.10, 0.03, d - 0.03, 0.12, h - 0.06, bevel=0.012)            # needle head
-    p.cyl(M["chrome"], (0.06, 0.07, 0.09), (0.06, 0.07, 0.125), 0.003, seg=8)            # needle
-    p.box(M["chrome"], 0.045, 0.085, 0.05, 0.09, 0.085, 0.09)                             # presser foot
-    p.cyl(M["white"], (w - 0.005, d / 2, h - 0.06), (w + 0.025, d / 2, h - 0.06), 0.045, seg=32)  # hand wheel
-    p.cyl(M["chrome"], (w - 0.06, d / 2, h), (w - 0.06, d / 2, h + 0.05), 0.003, seg=8)  # spool pin
-    p.cyl(M["spools"][0], (w - 0.06, d / 2, h + 0.005), (w - 0.06, d / 2, h + 0.045), 0.016, seg=20)
-    p.box(M["lcd"], w - 0.10, w - 0.04, -0.001, 0.0, 0.15, 0.22)
-    p.box(M["dark"], 0.11, w - 0.13, -0.001, 0.0, h - 0.07, h - 0.04)                     # front decal strip
+    nx, ny = _sew_body(p, 0.0, w, d, h)
+    fab = mat("Fabric_Gingham", "#C7D9E8", 0.9)
+    p.box(fab, nx - 0.13, nx + 0.06, ny - 0.17, ny + 0.06, 0.0766, 0.0776)
+    for k in range(6):                                                                      # gingham checks
+        p.box(mat("Fabric_Gingham_Dark", "#7FA6C7", 0.9), nx - 0.13 + k * 0.032, nx - 0.114 + k * 0.032, ny - 0.17,
+              ny + 0.06, 0.0776, 0.0778)
+    thread = mat("Thread_Red", "#C62828", 0.6)
+    for k in range(14):                                                                     # straight stitch, done
+        y = ny - 0.165 + k * 0.012
+        if y > ny - 0.004:
+            break
+        p.box(thread, nx - 0.0008, nx + 0.0008, y, y + 0.007, 0.0778, 0.0782)
+    return p
+
+
+def embroidery(w=0.50, d=0.24, h=0.32):
+    """Brother embroidery machine: the sewing body at the right with its embroidery unit clipped on the left; carriage
+    arm holding a hoop under the needle; the hoop's fabric shows a Fab Lab hex badge part-embroidered (branch remodel)."""
+    p = Part()
+    bw = 0.36
+    nx, ny = _sew_body(p, w - bw, bw, d - 0.03, h, screen_w=0.10)
+    wh, gry, dk = M["white"], mat("Sew_Grey", "#B8BEC6", 0.4), M["dark"]
+    _prism_xz(p, wh, _rounded_poly([(0, 0), (w - bw + 0.01, 0), (w - bw + 0.01, 0.07), (0, 0.07)], [0.01, 0, 0, 0.02]),
+              0.10, d, bevel=0.006)                                                         # embroidery unit body
+    p.box(gry, 0.02, w - bw - 0.02, 0.095, 0.11, 0.07, 0.072)                               # carriage track
+    hx, hy = nx, ny - 0.01                                                                  # hoop centre under the needle
+    p.box(gry, hx - 0.135, hx - 0.105, hy - 0.02, 0.13, 0.072, 0.086, bevel=0.003)          # carriage arm
+    ring = _rounded_poly([(hx - 0.11, hy - 0.09), (hx + 0.07, hy - 0.09), (hx + 0.07, hy + 0.09), (hx - 0.11, hy + 0.09)],
+                         [0.03] * 4)
+    import bmesh
+    # hoop: outer + inner frames as thin walls (boxes along the rounded outline)
+    hoop = mat("Hoop_Grey", "#5F6670", 0.45)
+    for a, b in zip(ring, ring[1:] + ring[:1]):
+        L = math.hypot(b[0] - a[0], b[1] - a[1])
+        if L < 1e-5:
+            continue
+        mtx = Matrix.Translation(((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, 0.081)) @ \
+            Matrix.Rotation(math.atan2(b[1] - a[1], b[0] - a[0]), 4, "Z") @ Matrix.Diagonal((L + 0.004, 0.008, 0.01, 1))
+        bmesh.ops.create_cube(p.bm(hoop), size=1.0, matrix=mtx)
+    p.box(mat("Fabric_Linen", "#F1ECE2", 0.9), hx - 0.106, hx + 0.066, hy - 0.086, hy + 0.086, 0.0805, 0.0812)
+    cols = ["#E53935", "#FBC02D", "#1E88E5", "#43A047"]
+    cx, cy = hx - 0.02, hy                                                                  # hex badge, 3 of 4 colours done
+    for i in range(7):
+        a = math.pi / 6 + i * math.pi / 3
+        if i == 6:
+            px, py = cx, cy
+        else:
+            px, py = cx + 0.024 * math.cos(a), cy + 0.024 * math.sin(a)
+        if i in (4, 5):
+            continue                                                                         # not stitched yet
+        p.cyl(mat(f"Thread_{cols[i % 3][1:]}", cols[i % 3], 0.5), (px, py, 0.0812), (px, py, 0.0822), 0.011, seg=6)
+    for k in range(6):                                                                      # outline satin border
+        a0, a1 = k * math.pi / 3, (k + 1) * math.pi / 3
+        if k >= 4:
+            continue
+        x0_, y0_ = cx + 0.045 * math.cos(a0), cy + 0.045 * math.sin(a0)
+        x1_, y1_ = cx + 0.045 * math.cos(a1), cy + 0.045 * math.sin(a1)
+        L = math.hypot(x1_ - x0_, y1_ - y0_)
+        mtx = Matrix.Translation(((x0_ + x1_) / 2, (y0_ + y1_) / 2, 0.0817)) @ \
+            Matrix.Rotation(math.atan2(y1_ - y0_, x1_ - x0_), 4, "Z") @ Matrix.Diagonal((L, 0.004, 0.001, 1))
+        bmesh.ops.create_cube(p.bm(mat("Thread_Black", "#202124", 0.5)), size=1.0, matrix=mtx)
     return p
 
 
@@ -546,12 +723,47 @@ def cricut(w=0.60, d=0.179, h=0.158, body=None):
 
 
 def overlock(w=0.335, d=0.282, h=0.296):
-    """Overlocker, identified 2026-11-25 as Brother Lock M343D (schedule photo; body 335 x 282 x 296 per the Brother
-    manual p. 34). Still a simple body + thread cones: remodel from photos when it matters in a shot."""
+    """Brother Lock M343D overlocker (335 x 282 x 296, Brother manual p. 34; branch 2026-11-26 remodel from product
+    photos): moulded base with the narrow work plate on the left, body with the sloped front cover and the four tension
+    dials in a recess on top, needle head left, hand wheel right, telescopic thread stand with its guide bar, four cones
+    on pins behind; a fabric strip running through the knives."""
     p = Part()
-    p.box(M["white"], 0, w, 0, d, 0, h * 0.7, bevel=0.03)
-    for i, x in enumerate((0.08, 0.13, 0.18, 0.23)):                                            # thread cones
-        p.cyl(M["spools"][i], (x, d * 0.6, h * 0.7), (x, d * 0.6, h * 1.25), 0.018, seg=12)
+    wh, gry, dk, ch = M["white"], mat("Sew_Grey", "#B8BEC6", 0.4), M["dark"], M["chrome"]
+    _prism_xz(p, wh, _rounded_poly([(0, 0), (w, 0), (w, 0.07), (0.0, 0.07)], [0.01, 0.01, 0.02, 0.02]), 0.02, d - 0.02,
+              bevel=0.006)                                                                  # base
+    body = [(0.06, 0.07), (w - 0.01, 0.07), (w - 0.01, 0.22), (w - 0.06, 0.25), (0.10, 0.25), (0.06, 0.21)]
+    _prism_xz(p, wh, _rounded_poly(body, [0, 0, 0.03, 0.04, 0.03, 0.02]), 0.04, d - 0.08, bevel=0.008)
+    _prism_xz(p, gry, _rounded_poly([(0.13, 0.08), (w - 0.03, 0.08), (w - 0.03, 0.20), (0.13, 0.20)], [0.02] * 4),
+              0.036, 0.04, bevel=0.002)                                                     # front looper cover
+    p.box(dk, 0.13, w - 0.03, 0.0355, 0.036, 0.136, 0.138)                                  # cover seam
+    for i in range(4):                                                                      # tension dials in a recess
+        x = 0.13 + i * 0.038
+        p.box(dk, x - 0.016, x + 0.016, 0.07, 0.10, 0.247, 0.251)
+        c = ("#43A047", "#1E88E5", "#E53935", "#FBC02D")[i]
+        p.cyl(mat(f"Ovl_Dial_{c[1:]}", c, 0.45), (x, 0.085, 0.24), (x, 0.085, 0.262), 0.014, seg=20)
+    p.cyl(ch, (0.08, 0.07, 0.21), (0.08, 0.07, 0.11), 0.003, seg=8)                         # needle bar
+    p.cyl(ch, (0.08, 0.07, 0.11), (0.08, 0.07, 0.085), 0.0007, seg=6)
+    p.box(ch, 0.06, 0.10, 0.04, 0.10, 0.072, 0.076, bevel=0.001)                            # presser foot
+    p.box(ch, 0.02, 0.13, 0.03, 0.12, 0.07, 0.0715)                                         # work plate
+    p.cyl(wh, (w - 0.01, d * 0.45, 0.17), (w + 0.006, d * 0.45, 0.17), 0.05, seg=36)       # hand wheel
+    p.cyl(gry, (w + 0.006, d * 0.45, 0.17), (w + 0.016, d * 0.45, 0.17), 0.047, seg=36)
+    ty = d - 0.04                                                                           # thread stand
+    p.box(gry, 0.04, w - 0.03, ty - 0.03, ty + 0.03, 0.07, 0.08, bevel=0.003)
+    p.cyl(ch, (w / 2, ty, 0.08), (w / 2, ty, h * 1.75), 0.004, seg=10)                      # telescopic pole
+    p.box(gry, 0.04, w - 0.04, ty - 0.008, ty + 0.008, h * 1.75, h * 1.75 + 0.012, bevel=0.003)   # guide bar
+    for i in range(4):
+        x = 0.07 + i * 0.065
+        p.cyl(ch, (x, ty, 0.08), (x, ty, 0.20), 0.003, seg=8)                              # cone pins
+        _cone(p, M["spools"][i], (x, ty, 0.085), (x, ty, 0.195), 0.030, 0.012, seg=24)      # thread cones
+        p.cyl(ch, (x, ty - 0.004, h * 1.75 + 0.012), (x, ty - 0.004, h * 1.75 + 0.02), 0.004, seg=8)  # guide eyes
+        th = mat(f"Ovl_Thread_{i}", "#EDEDED", 0.6)
+        p.cyl(M["spools"][i], (x, ty, 0.195), (x, ty - 0.004, h * 1.75 + 0.012), 0.0004, seg=4)     # thread up
+        p.cyl(M["spools"][i], (x, ty - 0.004, h * 1.75 + 0.012), (0.10 + i * 0.03, 0.10, 0.251), 0.0004, seg=4)
+    p.box(mat("Fabric_Jersey", "#3F5E8C", 0.9), -0.10, 0.12, 0.05, 0.11, 0.0715, 0.0725)    # jersey strip through
+    p.box(mat("Thread_White", "#F2F2F2", 0.6), -0.10, 0.08, 0.048, 0.056, 0.0725, 0.0735)   # overlocked edge
+    for x in (0.03, w - 0.03):
+        for y in (0.04, d - 0.04):
+            p.cyl(M["rubber"], (x, y, -0.004), (x, y, 0.0), 0.009, seg=10)
     return p
 
 

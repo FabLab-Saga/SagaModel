@@ -111,7 +111,7 @@ def build():
             cl.box(MAT["zinc"], x0, x1, ay, ay + 0.04, BH, BH + 0.003)
             cl.box(MAT["zinc"], (x1 - 0.003) if ax < 0.3 else x0, x1 if ax < 0.3 else x0 + 0.003, ay, ay + 0.04, BH, BH + 0.035)
     cl.emit("LOKLiK_Anchors", col, loc, rot)
-    put(mach["sewing"](0.50, 0.24, 0.32), "Brother_Embroidery", loc, rot, 1.62, 0.26, BH, 0.50, 0.24)
+    put(mach["embroidery"](0.50, 0.24, 0.32), "Brother_Embroidery", loc, rot, 1.62, 0.26, BH, 0.50, 0.24)
     put(mach["sewing"](), "Brother_Sewing", loc, rot, 2.30, 0.26, BH, 0.42, 0.20)
     props = Part()
     fab = [bpy.data.materials["Sofa_LightGrey"], mat("Fabric_Navy", "#2B3550", 0.9),

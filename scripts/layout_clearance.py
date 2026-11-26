@@ -114,7 +114,7 @@ def audit(items, room, only=None):
                     found.append((clear, need, "clear height to the item above (" + min(above, key=lambda o: o["z"])["id"] + ")"))
             elif rule["check"] == "cabinet_internal_offsets":
                 top = P.get("top_mm")
-                above = [o for o in items if o["id"] != it["id"] and o.get("size") and (o.get("z") or 0) > (it.get("z") or 0) + 0.05
+                above = [o for o in items if o["id"] != it["id"] and o.get("on") != it["id"] and o.get("size") and (o.get("z") or 0) > (it.get("z") or 0) + 0.05
                          and abs(_local(it, o["pos"])[0]) < it["size"][0] / 2 and abs(_local(it, o["pos"])[1]) < it["size"][1] / 2]
                 if top is not None and above:
                     gap = min(o["z"] for o in above) - ((it.get("z") or 0) + it["size"][2])

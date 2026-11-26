@@ -212,7 +212,8 @@ def build():
     for (b, r), what in sorted(LAYOUT.items(), key=lambda kv: (-kv[0][1], kv[0][0])):
         if what == "prusa":
             k = PRUSA_NO[(b, r)]
-            put(mach["prusa"](M["spools"][(k * 3) % len(M["spools"])], zx=PRUSA_ZX.get(k, 0.20)), f"Prusa_MK3S_{k:02d}", b, r,
+            put(mach["prusa"](M["spools"][(k * 3) % len(M["spools"])], zx=PRUSA_ZX.get(k, 0.20),
+                                  random_print=k not in PRUSA_ZX), f"Prusa_MK3S_{k:02d}", b, r,
                 0.50, 0.075)
         elif what == "cr200b":
             c += 1

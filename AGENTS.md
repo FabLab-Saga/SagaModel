@@ -225,6 +225,12 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   moved 0.30 m towards the workshop) y 29.465, x 21.50–27.82 (starts past the cutter counter), 0.04 m between
   frames; panel 3's column-end foot is set in 0.30 m and clears the column by ~6 cm. Each is a layout item, movable
   to block noise or divide the area. No zone signs (all removed 2026-11-26, Magnús: better signs later).
+- **Remodels on the branch** (2026-11-26, from product photos): Brother sewing + embroidery machines (`_sew_body`:
+  moulded C-arm prism, buttons, screen, needle area; embroidery unit + hoop with a part-stitched hex badge), Brother
+  M343D overlocker (tension dials, thread stand, cones), Prusa MK3S+ LCD unit (tilted face, 20x4 text, knurled knob).
+  Glowforge Pro: dark cavity liner, lid coat 0.25 (`_acrylic(coat=)`). `_prism_xz`/`_rounded_poly`/`_cone` in
+  build_machines.py are the helpers for silhouette-based machine bodies. A footprint change means re-registering the
+  item (delete its yaml entry, rebuild, export) - apply() otherwise shifts the new geometry to the old centre.
 - **Machines at work** (branch, my design; `build_jobs.py`, collection Jobs): jobs built in each machine's frame and
   registered as `on:` items of the machine: ShopBot mid-way through the CNC-stool nest (seats cut, leg row under the
   spindle), Glowforge Pro HD 1 cutting the finger-joint box (inner bed lights on), SRM-20 1 isolation-milling an ATtiny board
@@ -380,7 +386,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 - Cameras reframed 2026-11-25 (`scripts/reframe_cameras.py`): Entrance, Lounge, SecretDoor; new Cam_EntranceHero
   (TV + on-call desk) and Cam_ToolLibrary (no shot_order yet: not in the finals set until Magnús picks).
   Branch 2026-11-26: FeltDetail, Craft, SewingDetail, Micro, Workshop, ShopBot reframed too (old framings in the script
-  for undo; my framings). Cam_Cutaway still shows the slab top (upper floors not modelled): unused.
+  for undo; my framings), and LaserDetail (now from above the lid). Cam_Cutaway still shows the slab top (upper floors not modelled): unused.
 - Confirmed by the lab: Epilog is 80 W; scanner is a handheld one; presses = a LOKLiK + a classic red industrial
   clam press (+ the Cricut ones); the Flashforge model doesn't matter. Still unknown (stand-ins in the model): clay
   printer (Eazao Zero; lab unsure), handheld scanner model, red press model, LOKLiK model, Brother sewing/embroidery,

@@ -38,6 +38,9 @@ VIEWS = {
     "Cam_Workshop": ((27.9, 29.0, 1.65), (24.0, 22.0, 1.0), 18, {}),
     # inside the CNC room from the glass-side aisle: the ShopBot bed, boom and loading door
     "Cam_ShopBot": ((21.25, 21.35, 1.85), (23.0, 18.8, 0.85), 20, {}),
+    # Glowforge 1 from above the lid so the job reads through the glass (was a grazing view: all sky reflection).
+    # Old: (31.2, 21.3, 1.3) fwd (0.844, -0.38, -0.38) 30 mm
+    "Cam_LaserDetail": ((31.35, 20.55, 1.62), (32.14, 20.80, 0.84), 32, {}),
 }
 
 

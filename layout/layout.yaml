@@ -935,114 +935,6 @@ items:
     locked: false
     objects: [Flashforge_AD5M_Pro]
 
-  - id: lab.prusa-mk3s-01
-    label: Prusa MK3S 01
-    kind: machine
-    zone: main-lab
-    pos: [29.093, 24.958]
-    z: 1.48
-    rot: -90
-    size: [0.46, 0.565, 0.57]
-    "on": lab.printfarm-frame
-    locked: false
-    objects: [Prusa_MK3S_01]
-
-  - id: lab.prusa-mk3s-02
-    label: Prusa MK3S 02
-    kind: machine
-    zone: main-lab
-    pos: [29.093, 24.294]
-    z: 1.48
-    rot: -90
-    size: [0.46, 0.565, 0.57]
-    "on": lab.printfarm-frame
-    locked: false
-    objects: [Prusa_MK3S_02]
-
-  - id: lab.prusa-mk3s-03
-    label: Prusa MK3S 03
-    kind: machine
-    zone: main-lab
-    pos: [29.093, 23.63]
-    z: 0.12
-    rot: -90
-    size: [0.46, 0.565, 0.57]
-    "on": lab.printfarm-frame
-    locked: false
-    objects: [Prusa_MK3S_03]
-
-  - id: lab.prusa-mk3s-04
-    label: Prusa MK3S 04
-    kind: machine
-    zone: main-lab
-    pos: [29.093, 24.294]
-    z: 0.8
-    rot: -90
-    size: [0.46, 0.565, 0.57]
-    "on": lab.printfarm-frame
-    locked: false
-    objects: [Prusa_MK3S_04]
-
-  - id: lab.prusa-mk3s-05
-    label: Prusa MK3S 05
-    kind: machine
-    zone: main-lab
-    pos: [29.093, 23.63]
-    z: 0.8
-    rot: -90
-    size: [0.46, 0.565, 0.57]
-    "on": lab.printfarm-frame
-    locked: false
-    objects: [Prusa_MK3S_05]
-
-  - id: lab.prusa-mk3s-06
-    label: Prusa MK3S 06
-    kind: machine
-    zone: main-lab
-    pos: [29.093, 22.966]
-    z: 0.8
-    rot: -90
-    size: [0.46, 0.565, 0.57]
-    "on": lab.printfarm-frame
-    locked: false
-    objects: [Prusa_MK3S_06]
-
-  - id: lab.prusa-mk3s-07
-    label: Prusa MK3S 07
-    kind: machine
-    zone: main-lab
-    pos: [29.093, 22.302]
-    z: 0.8
-    rot: -90
-    size: [0.46, 0.565, 0.57]
-    "on": lab.printfarm-frame
-    locked: false
-    objects: [Prusa_MK3S_07]
-
-  - id: lab.brother-embroidery
-    label: Brother Embroidery
-    kind: machine
-    zone: main-lab
-    pos: [30.718, 27.451]
-    z: 0.76
-    rot: 180
-    size: [0.525, 0.241, 0.37]
-    "on": lab.sewingbench
-    locked: false
-    objects: [Brother_Embroidery]
-
-  - id: lab.brother-sewing
-    label: Brother Sewing
-    kind: machine
-    zone: main-lab
-    pos: [30.038, 27.451]
-    z: 0.76
-    rot: 180
-    size: [0.445, 0.201, 0.35]
-    "on": lab.sewingbench
-    locked: false
-    objects: [Brother_Sewing]
-
   - id: lab.cricut-mugpress
     label: Cricut MugPress
     kind: machine
@@ -1066,18 +958,6 @@ items:
     "on": lab.sewingbench
     locked: false
     objects: [LOKLiK_AutoPress]
-
-  - id: lab.overlock
-    label: Overlock
-    kind: machine
-    zone: main-lab
-    pos: [31.21, 27.41]
-    z: 0.76
-    rot: 180
-    size: [0.335, 0.282, 0.37]
-    "on": lab.sewingbench
-    locked: false
-    objects: [Overlock]
 
   - id: lab.toollibrary
     label: ToolLibrary
@@ -1549,6 +1429,42 @@ items:
     locked: false
     objects: [LOKLiK_Anchors]
 
+  - id: lab.brother-embroidery
+    label: Brother Embroidery
+    kind: machine
+    zone: main-lab
+    pos: [30.721, 27.46]
+    z: 0.756
+    rot: 180
+    size: [0.518, 0.259, 0.362]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Brother_Embroidery]
+
+  - id: lab.brother-sewing
+    label: Brother Sewing
+    kind: machine
+    zone: main-lab
+    pos: [30.071, 27.493]
+    z: 0.756
+    rot: 180
+    size: [0.498, 0.285, 0.342]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Brother_Sewing]
+
+  - id: lab.overlock
+    label: Overlock
+    kind: machine
+    zone: main-lab
+    pos: [31.252, 27.405]
+    z: 0.756
+    rot: 180
+    size: [0.451, 0.252, 0.542]
+    "on": lab.sewingbench
+    locked: false
+    objects: [Overlock]
+
   - id: laser.job-glowforge-1
     label: Job Glowforge 1
     kind: fixture
@@ -1644,3 +1560,87 @@ items:
     "on": lab.prusa-mk3s-06
     locked: false
     objects: [Job_Prusa_06]
+
+  - id: lab.prusa-mk3s-01
+    label: Prusa MK3S 01
+    kind: machine
+    zone: main-lab
+    pos: [29.087, 24.958]
+    z: 1.48
+    rot: -90
+    size: [0.46, 0.577, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_01]
+
+  - id: lab.prusa-mk3s-02
+    label: Prusa MK3S 02
+    kind: machine
+    zone: main-lab
+    pos: [29.087, 24.294]
+    z: 1.48
+    rot: -90
+    size: [0.46, 0.577, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_02]
+
+  - id: lab.prusa-mk3s-03
+    label: Prusa MK3S 03
+    kind: machine
+    zone: main-lab
+    pos: [29.087, 23.63]
+    z: 0.12
+    rot: -90
+    size: [0.46, 0.577, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_03]
+
+  - id: lab.prusa-mk3s-04
+    label: Prusa MK3S 04
+    kind: machine
+    zone: main-lab
+    pos: [29.087, 24.294]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.577, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_04]
+
+  - id: lab.prusa-mk3s-05
+    label: Prusa MK3S 05
+    kind: machine
+    zone: main-lab
+    pos: [29.087, 23.63]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.577, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_05]
+
+  - id: lab.prusa-mk3s-06
+    label: Prusa MK3S 06
+    kind: machine
+    zone: main-lab
+    pos: [29.087, 22.966]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.577, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_06]
+
+  - id: lab.prusa-mk3s-07
+    label: Prusa MK3S 07
+    kind: machine
+    zone: main-lab
+    pos: [29.087, 22.302]
+    z: 0.8
+    rot: -90
+    size: [0.46, 0.577, 0.57]
+    "on": lab.printfarm-frame
+    locked: false
+    objects: [Prusa_MK3S_07]
