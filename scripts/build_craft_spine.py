@@ -61,6 +61,21 @@ def vinyl_stand(w=0.95, d=0.50, h=0.82):
     for i, y in enumerate((0.12, 0.25, 0.38)):                          # vinyl rolls on the lower shelf
         for j in range(2):
             p.cyl(MAT["bins"][(i * 2 + j) % 6], (0.06 + j * 0.44, y, 0.26), (0.06 + j * 0.44 + 0.40, y, 0.26), 0.045, seg=20)
+    # E5 (Magnús 2026-11-26): cable lock per cutter - a steel adhesive anchor plate on the cutter's end cap with a barrel
+    # lock, a coated steel cable to a screw-down anchor on the stand top; the stand keeps its locking castors. Kept
+    # inside the stand's footprint so the layout centre doesn't move. Hardware details are mine.
+    steel, cable = mat("Lock_Steel", "#B4B9BD", 0.3, metal=1.0), mat("Lock_Cable", "#3A3D40", 0.45)
+    xc = 0.9005                                                         # cutter end-cap outer face (cutter centred at 0.475)
+    p.box(steel, xc, xc + 0.004, 0.20, 0.26, h + 0.06, h + 0.12, bevel=0.001)            # anchor plate
+    p.cyl(steel, (xc + 0.004, 0.23, h + 0.09), (xc + 0.028, 0.23, h + 0.09), 0.011, seg=16)  # barrel lock head
+    p.cyl(cable, (xc + 0.028, 0.23, h + 0.09), (xc + 0.030, 0.23, h + 0.09), 0.006, seg=12)  # key face
+    ax, ay = w - 0.025, d - 0.075                                       # screw-down cable anchor on the stand top
+    p.box(steel, ax - 0.016, ax + 0.016, ay - 0.022, ay + 0.022, h, h + 0.004, bevel=0.001)
+    p.box(steel, ax - 0.004, ax + 0.004, ay - 0.009, ay + 0.009, h + 0.004, h + 0.022, bevel=0.002)  # loop
+    pts = [(xc + 0.024, 0.23, h + 0.08), (w - 0.020, 0.26, h + 0.05), (w - 0.016, 0.31, h + 0.006),
+           (w - 0.022, 0.37, h + 0.0045), (ax, ay - 0.012, h + 0.008), (ax, ay, h + 0.016)]
+    for a, b in zip(pts, pts[1:]):
+        p.cyl(cable, a, b, 0.0035, seg=8)
     return p
 
 

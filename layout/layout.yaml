@@ -505,28 +505,6 @@ items:
     locked: false
     objects: [Demo_Pieces]
 
-  - id: lab.bekant-cart-1
-    label: Bekant Cart 1
-    kind: storage
-    zone: main-lab
-    pos: [21.805, 28.944]
-    z: 0
-    rot: 0
-    size: [0.63, 0.472, 1.028]
-    locked: false
-    objects: [Bekant_Cart_1, Bekant_Cart_1_Boxes]
-
-  - id: lab.bekant-cart-2
-    label: Bekant Cart 2
-    kind: storage
-    zone: main-lab
-    pos: [22.465, 28.944]
-    z: 0
-    rot: 0
-    size: [0.63, 0.472, 1.028]
-    locked: false
-    objects: [Bekant_Cart_2, Bekant_Cart_2_Boxes]
-
   - id: lab.chair-0
     label: Chair 0
     kind: furniture
@@ -580,7 +558,7 @@ items:
     rot: 90
     size: [1.004, 0.57, 0.92]
     locked: false
-    objects: [CutterCounter, CutterCounter_Bins]
+    objects: [CutterCounter, CutterCounter_Bins, CutterCounter_Cupboard, CutterCounter_Doors]
 
   - id: lab.elec-chair-1-0
     label: Elec Chair 1 0
@@ -798,7 +776,7 @@ items:
     pos: [21.15, 26.98]
     z: 0
     rot: 90
-    size: [0.954, 0.53, 0.82]
+    size: [0.954, 0.53, 0.94]
     locked: false
     objects: [VinylStand_1]
 
@@ -809,33 +787,9 @@ items:
     pos: [21.15, 28]
     z: 0
     rot: 90
-    size: [0.954, 0.53, 0.82]
+    size: [0.954, 0.53, 0.94]
     locked: false
     objects: [VinylStand_2]
-
-  - id: lab.cricut-maker-3
-    label: Cricut Maker 3
-    kind: machine
-    zone: main-lab
-    pos: [21.805, 28.85]
-    z: 1.028
-    rot: 0
-    size: [0.538, 0.478, 0.233]
-    "on": lab.bekant-cart-1
-    locked: false
-    objects: [Cricut_Maker_3]
-
-  - id: lab.handheld-3dscanner
-    label: Handheld 3DScanner
-    kind: machine
-    zone: main-lab
-    pos: [22.468, 28.933]
-    z: 1.026
-    rot: 0
-    size: [0.365, 0.375, 0.212]
-    "on": lab.bekant-cart-2
-    locked: false
-    objects: [Handheld_3DScanner]
 
   - id: lab.cricut-maker-1
     label: Cricut Maker 1
@@ -1234,7 +1188,7 @@ items:
     label: PCB Chair
     kind: furniture
     zone: main-lab
-    pos: [27.14, 33.36]
+    pos: [26.7, 33.36]
     z: 0
     rot: 179.7
     size: [0.464, 0.464, 0.86]
@@ -1547,3 +1501,38 @@ items:
     "on": lab.worktable-1
     locked: false
     objects: [Laptop_1, Laptop_1_Base]
+
+  - id: lab.cuttercart
+    label: CutterCart
+    kind: storage
+    zone: main-lab
+    pos: [22.607, 28.87]
+    z: 0
+    rot: 0
+    size: [0.813, 0.62, 0.9]
+    locked: false
+    objects: [CutterCart, CutterCart_Contents, CutterCart_Doors]
+
+  - id: lab.cricut-maker-3
+    label: Cricut Maker 3
+    kind: machine
+    zone: main-lab
+    pos: [22.52, 28.82]
+    z: 0.158
+    rot: 0
+    size: [0.538, 0.478, 0.233]
+    "on": lab.cuttercart
+    locked: false
+    objects: [Cricut_Maker_3]
+
+  - id: lab.handheld-3dscanner
+    label: Handheld 3DScanner
+    kind: machine
+    zone: main-lab
+    pos: [22.502, 28.902]
+    z: 0.516
+    rot: 0
+    size: [0.365, 0.375, 0.212]
+    "on": lab.cuttercart
+    locked: false
+    objects: [Handheld_3DScanner]

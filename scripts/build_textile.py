@@ -4,9 +4,10 @@ lounge nook; the main circulation x 28.0-29.5 stays clear. Re-runnable ("Textile
   Heat Press, Cricut Mug Press, overlocker, Brother embroidery + sewing machine; 2 Cricut EasyPress 3 on the shelf.
 - Large-format/clay bench 1.9 x 0.8 m on the SSW glass (x 31.65-32.45, y 28.18-30.08): red industrial clam press,
   Eazao Zero clay printer (microwave + clay buckets on the shelf), Creality CR-10 Max.
-- Two IKEA BEKANT rolling carts (birch-ply top) against felt panel 1 by the cutter corner: Cricut Maker 3, handheld 3D scanner kit (tripod, turntable, case).
+- One lockable rolling cabinet 813 x 610 x 0.90 (E5, replaced the two BEKANT carts) against felt panel 1 by the cutter
+  corner: Cricut Maker 3 and the handheld 3D scanner kit stored inside behind acrylic doors.
 - Cutter counter (Cricut Maker + Mayku FormBox, 1.0 x 0.55 m, standing height) on the NNE glass next to the
-  vinyl cutters (y 28.55-29.55): all the cutters in one corner.
+  vinyl cutters (y 28.55-29.55): all the cutters in one corner; lockable cupboard underneath (E5).
 """
 import math
 import random
@@ -116,24 +117,53 @@ def build():
         mach["spool_part"](sp, M["spools"][(j * 3 + 1) % len(M["spools"])], 0.06 + j * 0.10, 0.12, 0.10, axis="x", width=0.07)
     put(sp, "GlassBench_Spools", gloc, grot, 1.52, 0.40, 0.16, 0.40, 0.24)
 
-    # ---- two BEKANT rolling carts (from the equipment list, birch-ply top) parked against felt panel 1
-    for i, (cx, what) in enumerate(((21.805, "cricut3"), (22.465, "scanner"))):
-        cloc_, crot_ = lib["placement"](cx, 29.62 - 0.225, 0.61, 0.45, "-y")       # tool-wall base starts at y 29.64
-        put(mach["bekant_cart"](), f"Bekant_Cart_{i + 1}", cloc_, crot_, 0.305, 0.225, 0.0, 0.61, 0.45)
-        zt = 1.01 + 0.018
-        if what == "cricut3":
-            blue = mat("Cricut3_Blue", "#C7D5E2", 0.35, coat=0.2)
-            put(mach["cricut"](0.538, 0.178, 0.151, body=blue), "Cricut_Maker_3", cloc_, crot_, 0.305, 0.20, zt, 0.538, 0.178)
-        else:
-            put(mach["revopoint_pop3_kit"](), "Handheld_3DScanner", cloc_, crot_, 0.305, 0.20, zt, 0.40, 0.40)
-        stuff = Part()                                                  # kit boxes on the cart shelves
-        for zs in (0.448, 0.698):
-            x = 0.02
-            while x < 0.52:
-                bw = rng.uniform(0.12, 0.22)
-                stuff.box(MAT["bins"][rng.randrange(6)], x, min(x + bw, 0.58), 0.05, 0.38, zs, zs + rng.uniform(0.08, 0.18), bevel=0.004)
-                x += bw + 0.02
-        stuff.emit(f"Bekant_Cart_{i + 1}_Boxes", col, cloc_, crot_)
+    # ---- E5 (Magnús 2026-11-26): ONE lockable rolling cabinet replaces the two BEKANT carts - 813 x 610 (a third of a
+    # 2440 strip), worktop 0.90 m for standing work (his picks), along felt panel 1 at x 22.20-23.01 so 0.75 m stays
+    # free in front of the cutter counter. 40x40 frame on four locking castors, birch-ply top/bottom/shelf/sides/back,
+    # a pair of clear acrylic doors with one e-lock (scripts/lockdown.py). Stored inside: Cricut Maker 3 on the bottom,
+    # handheld scanner kit on the shelf (his option text); mats + material packs beside them. Frame/panel details mine.
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    KW, KD, KH, KZ0 = 0.813, 0.61, 0.90, 0.10              # cabinet; frame starts on the castor plates at KZ0
+    kloc, krot = lib["placement"](22.20 + KW / 2, 29.18 - KD / 2, KW, KD, "-y")
+    kc, kdr, kin = Part(), Part(), Part()
+    ply = MAT["ply"]
+    ft = KH - 0.018                                        # frame top / underside of the worktop
+    for x in (0.0, KW - 0.04):
+        for y in (0.0, KD - 0.04):
+            kc.profile(0.04, "z", x, y, KZ0, ft - KZ0)
+    for z in (KZ0, ft - 0.04):
+        for y in (0.0, KD - 0.04):
+            kc.profile(0.04, "x", 0.04, y, z, KW - 0.08)
+        for x in (0.0, KW - 0.04):
+            kc.profile(0.04, "y", x, 0.04, z, KD - 0.08)
+    kc.box(ply, 0.0, KW, 0.0, KD, ft, KH, bevel=0.002)                                   # worktop
+    kc.box(ply, 0.04, KW - 0.04, 0.052, 0.567, KZ0 + 0.04, KZ0 + 0.058, bevel=0.001)         # bottom 733 x 515
+    kc.box(ply, 0.04, KW - 0.04, KD - 0.031, KD - 0.013, KZ0 + 0.04, ft - 0.04)        # back (in the slots)
+    for x in (0.011, KW - 0.029):
+        kc.box(ply, x, x + 0.018, 0.04, KD - 0.04, KZ0 + 0.04, ft - 0.04)              # sides
+    ZS = 0.50
+    kc.box(ply, 0.04, KW - 0.04, 0.06, 0.575, ZS, ZS + 0.018, bevel=0.001)              # shelf 733 x 515 (both carcasses nest in two boards: AGENTS.md)
+    for x in (0.045, KW - 0.045):                                                      # locking castors
+        for y in (0.045, KD - 0.045):
+            kc.box(MAT["zinc"], x - 0.035, x + 0.035, y - 0.035, y + 0.035, KZ0 - 0.006, KZ0)      # top plate
+            kc.box(MAT["zinc"], x - 0.016, x + 0.016, y - 0.02, y + 0.02, 0.06, KZ0 - 0.006)       # fork
+            kc.cyl(MAT["foot"], (x - 0.012, y, 0.0375), (x + 0.012, y, 0.0375), 0.0375, seg=18)  # 75 mm wheel
+            kc.box(mat("Castor_Brake_Red", "#B3261E", 0.5), x - 0.012, x + 0.012, y - 0.055, y - 0.02, 0.05, 0.058)
+    kc.emit("CutterCart", col, kloc, krot)
+    blue = mat("Cricut3_Blue", "#C7D5E2", 0.35, coat=0.2)
+    put(mach["cricut"](0.538, 0.178, 0.151, body=blue), "Cricut_Maker_3", kloc, krot, 0.32, 0.32, KZ0 + 0.058, 0.538, 0.178)
+    put(mach["revopoint_pop3_kit"](), "Handheld_3DScanner", kloc, krot, 0.30, 0.32, ZS + 0.018, 0.40, 0.40)
+    zb = KZ0 + 0.058
+    for k in range(4):                                                                 # Cricut mats standing at the side
+        kin.box(MAT["bins"][(1, 2, 4, 3)[k]], 0.64 + k * 0.006, 0.643 + k * 0.006, 0.12, 0.45, zb, zb + 0.33)
+    kin.box(mat("Cardstock_Pack", "#E8DCC4", 0.7), 0.66, 0.76, 0.10, 0.45, ZS + 0.018, ZS + 0.07, bevel=0.002)
+    kin.box(MAT["bins"][5], 0.66, 0.76, 0.12, 0.43, ZS + 0.07, ZS + 0.10, bevel=0.002)
+    kin.emit("CutterCart_Contents", col, kloc, krot)
+    ld["door_run"](kdr, "-y", -0.004, 0.01, KW - 0.01, KZ0 + 0.01, ft - 0.005, leaves=2, lock_z=ft - 0.08)
+    dob = kdr.emit("CutterCart_Doors", col, kloc, krot)
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
 
     # ---- standing cutter counter on the NNE glass (x 20.90), next to the vinyl stands, front faces +x
     CL, CD, CH = 1.00, 0.55, 0.92
@@ -148,6 +178,30 @@ def build():
     b.cyl(MAT["bins"][2], (0.09, 0.18, 0.26), (0.43, 0.18, 0.26), 0.04, seg=20)        # vinyl rolls
     b.cyl(MAT["bins"][0], (0.09, 0.30, 0.26), (0.43, 0.30, 0.26), 0.04, seg=20)
     b.emit("CutterCounter_Bins", col, cloc, crot)
+    # E5 (Magnús 2026-11-26): lockable cupboard under the counter - ply back + sides in the frame, a mid shelf, and a
+    # pair of clear acrylic doors with one e-lock on the front (the scripts/lockdown.py detail). Room inside for both
+    # machines (Cricut Maker 0.60 x 0.18 x 0.24 + Mayku 0.27 x 0.47 x 0.32 side by side on the mid shelf); the model
+    # shows them out on the counter in use, consumables inside (my choice). Panel sizes are mine.
+    ld = {}
+    exec(open(HERE + "lockdown.py").read(), ld)
+    ply = MAT["ply"]
+    za = CH - 0.025 - 0.04                                              # apron underside
+    cb, cd = Part(), Part()
+    cb.box(ply, 0.04, CL - 0.04, CD - 0.022, CD - 0.004, 0.16, za)      # back
+    for x in (0.011, CL - 0.029):
+        cb.box(ply, x, x + 0.018, 0.04, CD - 0.04, 0.16, za)            # sides (in the leg slots)
+    zs = 0.50
+    cb.box(ply, 0.04, CL - 0.04, 0.05, CD - 0.022, zs, zs + 0.018, bevel=0.0015)   # mid shelf
+    for k in range(5):                                                  # cutting mats (12x12 / 12x24) lying flat
+        cb.box(MAT["bins"][(1, 2, 4, 1, 3)[k]], 0.06, 0.40, 0.08, 0.42, zs + 0.018 + k * 0.004, zs + 0.021 + k * 0.004)
+    cb.box(mat("Mayku_Sheet", "#E9EEF0", 0.25), 0.46, 0.66, 0.10, 0.40, zs + 0.018, zs + 0.07, bevel=0.002)  # forming sheets
+    cb.box(mat("Cardstock_Pack", "#E8DCC4", 0.7), 0.70, 0.92, 0.10, 0.40, zs + 0.018, zs + 0.055, bevel=0.002)
+    cb.box(MAT["bins"][0], 0.72, 0.90, 0.12, 0.38, zs + 0.055, zs + 0.075, bevel=0.002)
+    cb.emit("CutterCounter_Cupboard", col, cloc, crot)
+    ld["door_run"](cd, "-y", -0.004, 0.02, CL - 0.02, 0.15, za - 0.005, leaves=2, lock_z=za - 0.08)
+    dob = cd.emit("CutterCounter_Doors", col, cloc, crot)
+    for o in [dob, *dob.children_recursive]:
+        o["layout_skip"] = True
     print("textile area built")
 
 

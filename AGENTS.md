@@ -1,13 +1,12 @@
 # Fab Lab SAGA — Blender model (project brief for the agent)
 
-Authoritative project state as of 2026-11-25 late evening (modelling workstation). Built up since 2026-10-08: hidden
+Authoritative project state as of 2026-11-26 (modelling workstation). Built up since 2026-10-08: hidden
 leftovers deleted, every listed machine modelled (MACHINES.md), on-call desk + Fab Lab TV, GULLVALLA lounge, back staff
 area, CNC room, corner-bay entrance + hall set, layout system (layout/), theft lock-down (private plan in Vinnuskjol;
-done E1 print farm, E2 hand-tool wall, E3 tool library, E4 electronics, E8 work tables), electronics re-layout + bank-wall
-counter, spine shrunk one bay, work tables option 7b, one project in progress per table, third-party models removed.
-NEXT (paused 2026-11-25): E5 cutter corner - Magnús skipped the four questions (carts -> one rolling cabinet 1220x610?
-cutter-counter cupboard? vinyl-cutter cable locks? move the SRM-20 PC chair out of the tool-library doors' swing?);
-then E6 craft corner, E7 laser room, E9 CNC room. Renders/film only on his request (RENDER.md).
+done E1 print farm, E2 hand-tool wall, E3 tool library, E4 electronics, E5 cutter corner, E8 work tables), electronics
+re-layout + bank-wall counter, spine shrunk one bay, work tables option 7b, one project in progress per table, third-party
+models removed. NEXT: E6 craft corner, then E7 laser room, E9 CNC room (ask before designing each).
+Renders/film only on his request (RENDER.md).
 This is a Hermes project; this file is the agent's own brief (Magnús): keep it current in every commit, no permission
 needed (renamed from CLAUDE.md 2026-11-25). Read this first; then `git log --oneline` for history, `LICENSES.md` for
 asset rules, `layout/TRUTH.md` for his answers, `SETUP.md` for machine setup (partly written for the old laptop).
@@ -84,7 +83,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   windows, hallway glass end door, outdoor paving, operator corner; `Cut_CNC_*` booleans), `purge_hidden` (deletes
   hidden leftovers). Boolean cutters live in Facade_Cutters, render-hidden AND viewport-hidden (`hide_set(True)`),
   else the Rendered viewport draws them as solid blocks. ALL machine models (incl. CR-200B, AD5M Pro, CR-10 Max, Eazao,
-  handheld scanner, red clam press, LOKLiK, EasyPress, Mug Press, BEKANT cart) are functions in build_machines.py; zone builders place them.
+  handheld scanner, red clam press, LOKLiK, EasyPress, Mug Press, BEKANT cart (unused since E5)) are functions in build_machines.py; zone builders place them.
   Helpers: `profile_furniture.py` (shelf_unit/table_unit, omit= for desk niches), `build_demo.py`,
   `mural.py` (SVG mural generator), `sun.py` (solar position), `fetch_polyhaven.py`,
   `render_review.py` (3x3 review sheet), `render_finals.py` (all cameras with shot_order),
@@ -223,7 +222,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   RFID electronic cabinet lock per pair (Magnús: acrylic doors, electronic locks where reasonable; the detail is my
   design). Enclosure door objects carry `layout_skip` and belong to their item's `objects`. Portable tools live behind
   such doors, not on tables or open walls. Done: print farm, hand-tool wall, electronics (see Microelectronics), tool
-  library (spine bay: two door zones, below/above 1.24 m, one e-lock each).
+  library (spine bay: two door zones, below/above 1.24 m, one e-lock each), cutter corner (see Cutter corner). The PC
+  chair at the SRM-20s stands at x 26.70, clear of the tool-library doors' swing (Magnús 2026-11-26).
 - **Hand-tool wall** on the NNE glass (y 24.06–26.46; starts ≥1.0 m past the old CNC-room door line y 23.04;
   the CNC door is now at y 21.66): pegboard + shelves + counter + tool chest.
   Rule: along glass = varied tool wall + storage WITH A TABLE BELOW, not plain shelving.
@@ -242,9 +242,18 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   on/closed; never move stock-list items onto tables): laser-cut box design (laptop on assets/screens/vector.png),
   electronics (SRM-20 board, breadboard, laptop on code.png), CNC stool dry fit (mallet, clamps), textile cutting
   (pinned pattern pieces, rotary cutter, ruler). Screens from scripts/make_screens.py.
-- **Cutter corner** on the NNE glass: 2 Roland vinyl cutters on rolling stands (y 26.5–28.5), Cricut Maker + Mayku
-  FormBox counter (y 28.55–29.55), two IKEA BEKANT carts (birch top) against felt panel 1 with the Cricut Maker 3 and
-  the HANDHELD 3D scanner kit (Revopoint POP 3 stand-in: head on mini tripod, turntable, case).
+- **Cutter corner** on the NNE glass (E5 done 2026-11-26, Magnús's answers): 2 Roland vinyl cutters on rolling stands
+  (y 26.5–28.5), each with a cable lock (anchor plate + barrel lock on the end cap, cable to a screw-down anchor on the
+  stand top; locking castors kept); Cricut Maker + Mayku FormBox counter (y 28.55–29.55) with a lockable cupboard
+  under it (ply back/sides, mid shelf, acrylic pair + e-lock; room for both machines, shown out in use - my choice).
+  The two BEKANT carts are GONE: ONE in-house rolling cabinet `CutterCart` (`lab.cuttercart`) 813 x 610 x 0.90 (his
+  pick of size option A and height) along felt panel 1 at x 22.20–23.01, y 28.57–29.18: 40x40 frame on 4 locking 75 mm
+  castors, birch ply, acrylic pair + e-lock; inside the Cricut Maker 3 (bottom) and the HANDHELD 3D scanner kit
+  (Revopoint POP 3 stand-in, on the shelf). RULE: keep >= 0.7 m free in front of the cutter counter (the carts had
+  stood 5 cm from it). Access is along the glass aisle; from the felt-side corridor it is 0.5 m past the end chair.
+  Ply nesting (mine): board 1 = cabinet back 733x702, sides 2x 530x702, cupboard side 470x695 | cabinet bottom +
+  shelf 733x515, cupboard shelf 920x478; board 2 = worktop 813x610, cupboard back 920x695, side 470x695, leftover
+  strip -> two 1220x400 bank box shelves.
 - **Craft & large-format corner** (`build_textile.py`, collection Textile) between the laser room's glazed ESE
   partition (y 26.94) and the nook: 2.6 m wall bench along the partition (sit facing it, 3 chairs) with the LOKLiK
   Auto Heat Press (teal), Mug Press, overlocker, Brother embroidery + sewing, 2 EasyPress 3 on the shelf; 1.9x0.8 m
