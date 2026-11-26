@@ -146,17 +146,107 @@ def machines(col):
 
     mach["place"](mach["xtool_controller"](), "xTool_F1_Ultra_Controller", col, GX - 0.30, cy + w / 2 + 0.10, T_H, 0.13, 0.032, "-x")
     ex, ey = 29.87 + 0.834 / 2, 20.35 + 1.055 / 2
-    mach["place"](mach["epilog"](), "Epilog_FusionEdge24", col, ex, ey, 0.0, 1.055, 0.834, "+x")
-    fr = bpy.data.fonts.get("Roboto-Bold") or bpy.data.fonts.load(bpy.path.abspath("//refs/branding/fonts/Roboto-Bold.ttf"))
-    xf = ex + 0.834 / 2 + 0.0015                                          # front face of the navy band
-    for name, body, size, ly in (("Epilog_Logo", "Epilog Laser", 0.032, 0.14), ("Epilog_Model", "Fusion Edge", 0.034, 0.66)):
+    # Epilog Fusion Edge 24 from the lab's teaching wiki (MagnusPetursson/epilog-fusion-edge-24-wiki, model.mjs:
+    # published envelope 1055 x 834 x 967, exterior from the official photos, schematic interior; branch 2026-11-26).
+    # Rest pose (mine, the wiki's viewer offsets): lid closed, table focused for its 6 mm sheet (grid top 774), head
+    # over the sheet mid-job. Logos as the wiki draws them (white emblem + bold/thin wordmarks; Roboto here).
+    _w = {}
+    exec(open(bpy.path.abspath("//scripts/wiki_machine.py")).read(), _w)
+    EPM = {"alu": 1.0, "steel": 1.0, "brass": 1.0, "mirror": 1.0, "lens": 0.6, "grid": 0.8, "tube": 0.5}
+    def ep_mat(name, mt, part):
+        if name == "ply":
+            return MAT["ply"]
+        key = f"EP_{name}"
+        if key in bpy.data.materials:
+            return bpy.data.materials[key]
+        m_ = bpy.data.materials.new(key)
+        m_.use_nodes = True
+        bs = next(n_ for n_ in m_.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
+        bs.inputs["Base Color"].default_value = (*[min(1.0, v) for v in mt["c"]], 1)
+        bs.inputs["Metallic"].default_value = EPM.get(name, 0.0)
+        bs.inputs["Roughness"].default_value = max(0.1, 0.7 - 0.6 * mt["s"])
+        if mt["a"] < 1:                                                  # tinted lid window
+            bs.inputs["Base Color"].default_value = (0.10, 0.11, 0.13, 1)    # smoked, clear (milky at the wiki's 0.8)
+            bs.inputs["Alpha"].default_value = 0.32
+            bs.inputs["Roughness"].default_value = 0.05
+            bs.inputs["Coat Weight"].default_value = 0.15
+            if hasattr(m_, "surface_render_method"):
+                m_.surface_render_method = "BLENDED"
+        if name in ("led", "screen"):
+            bs.inputs["Emission Color"].default_value = (*mt["c"], 1)
+            bs.inputs["Emission Strength"].default_value = 1.5 if name == "led" else 0.8
+        m_.diffuse_color = (*[min(1.0, v) for v in mt["c"]], 1)
+        return m_
+    J = _w["json"].load(open(bpy.path.abspath("//assets/wiki/epilog_fusion_edge_24.json")))
+    W_, D_ = J["W"], J["D"]
+    BED_X0, BED_Y0 = (W_ - 610) / 2, 100
+    SX, SY, ST = BED_X0 + 60, BED_Y0 + 230, 6                           # wiki STOCK position + thickness
+    TZ = 780 - ST                                                       # FOCUSED grid top
+    HX, HY = SX + 200, SY + 150                                         # head over the sheet centre
+    ep, _ = _w["wiki_tri_part"](Part, bpy.path.abspath("//assets/wiki/epilog_fusion_edge_24.json"), ep_mat,
+                                offsets={"bridge": (0, HY + 48, 0), "head": (HX, HY + 48, 0), "table": (0, 0, TZ),
+                                         "stock": (SX, SY, TZ)})
+    eloc = Vector((ex, ey, 0.0)) + Matrix.Rotation(math.pi / 2, 4, "Z") @ Vector((-W_ / 2000, -D_ / 2000, 0))
+    root = ep.emit("Epilog_FusionEdge24", col, eloc, math.pi / 2)
+    fb = bpy.data.fonts.get("Roboto-Bold") or bpy.data.fonts.load(bpy.path.abspath("//refs/branding/fonts/Roboto-Bold.ttf"))
+    fl = bpy.data.fonts.get("Roboto-Light") or bpy.data.fonts.load(bpy.path.abspath("//refs/branding/fonts/Roboto-Light.ttf"))
+    ink = mat("Epilog_Ink", "#F4F7F9", 0.4)
+    def quad_frame(o, u, v, cw, ch):
+        """canvas px -> machine-local metres (the wiki's quadTex: row 0 at o + v)."""
+        o, u, v = Vector(o), Vector(u), Vector(v)
+        def at(px, py):
+            return (o + u * (px / cw) + v * (1 - py / ch)) / 1000.0
+        ux, vz = u.normalized(), v.normalized()
+        n = ux.cross(vz)
+        R_ = Matrix((ux, vz, n)).transposed().to_4x4()                  # text x -> u, text y -> up (v), normal out
+        return at, R_, u.length / cw / 1000.0                            # metres per px
+    def text(name, body, font, at, R_, mpp, px, py, size_px, align="LEFT", max_px=None):
         cu = bpy.data.curves.new(name, "FONT")
-        cu.body, cu.size, cu.font, cu.extrude = body, size, fr, 0.0
-        cu.materials.append(mat("Mach_White", "#EEEEEC", 0.35))
+        cu.body, cu.font, cu.size, cu.align_x = body, font, size_px * mpp * 1.0, align
+        cu.materials.append(ink)
         ob = bpy.data.objects.new(name, cu)
         col.objects.link(ob)
-        ob.matrix_world = Matrix.Translation((xf, ey - 1.055 / 2 + ly, 0.85)) @ Matrix.Rotation(math.pi / 2, 4, "Z") \
-            @ Matrix.Rotation(math.pi / 2, 4, "X")
+        ob.parent = root
+        ob.matrix_parent_inverse.identity()
+        ob.matrix_basis = Matrix.Translation(at(px, py) + R_.col[2].to_3d() * 0.0006) @ R_
+        bpy.context.view_layer.update()
+        if max_px and ob.dimensions.x > max_px * mpp:
+            cu.size *= max_px * mpp / ob.dimensions.x
+        return ob
+    def emblem(name, at, R_, mpp, x, y, s):
+        p_ = Part()
+        w = s * 0.86
+        def rect(px0, py0, px1, py1):
+            a_, b_ = at(px0, py0), at(px1, py1)
+            lo = Vector((min(a_.x, b_.x), min(a_.y, b_.y), min(a_.z, b_.z)))
+            hi = Vector((max(a_.x, b_.x), max(a_.y, b_.y), max(a_.z, b_.z)))
+            nrm = R_.col[2].to_3d()
+            lo += nrm * 0.0003 if nrm.length else lo * 0
+            hi += nrm * 0.0009
+            p_.box(ink, lo.x, max(hi.x, lo.x + 1e-4), lo.y, max(hi.y, lo.y + 1e-4), lo.z, max(hi.z, lo.z + 1e-4))
+        rect(x, y, x + s * 0.36, y + s)                                  # spine
+        rect(x + s * 0.36, y, x + w, y + s * 0.29)                       # top arm
+        rect(x + s * 0.36, y + s * 0.71, x + w, y + s)                   # bottom arm
+        rect(x + s * 0.47, y + s * 0.43, x + w, y + s * 0.57)            # bar in the window
+        ob = p_.emit(name, col, Vector((0, 0, 0)))
+        ob.parent = root
+        ob.matrix_parent_inverse.identity()
+        ob.matrix_basis = Matrix()
+        return ob
+    COL_ = 158
+    at, R_, mpp = quad_frame([COL_ + 8, 7.7, 764], [700, 0, 0], [0, 0, 70], 1600, 160)
+    emblem("Epilog_Emblem_Front", at, R_, mpp, 10, 12, 136)
+    e1 = text("Epilog_Logo", "Epilog", fb, at, R_, mpp, 150, 112, 92)
+    text("Epilog_Logo_Laser", "Laser.com", fl, at, R_, mpp, 150 + e1.dimensions.x / mpp + 2, 112, 92)
+    at, R_, mpp = quad_frame([COL_ + 12, -2.3, 889], [717.5, 0, 0], [0, 0, 71.75], 1640, 164)
+    e2 = text("Epilog_Model_Edge", "Edge", fl, at, R_, mpp, 1622, 112, 84, align="RIGHT")
+    text("Epilog_Model", "Fusion", fb, at, R_, mpp, 1622 - e2.dimensions.x / mpp - 2, 112, 84, align="RIGHT")
+    for k, (o, u, v) in enumerate((([-1.3, D_ / 2 - 30, 572], [0, 0, 370], [0, 60, 0]),
+                                   ([W_ + 1.3, D_ / 2 + 30, 572], [0, 0, 370], [0, -60, 0]))):
+        at, R_, mpp = quad_frame(o, u, v, 1200, 200)
+        emblem(f"Epilog_Emblem_Side_{k}", at, R_, mpp, 20, 34, 132)
+        s1 = text(f"Epilog_Side_{k}", "Epilog", fb, at, R_, mpp, 170, 140, 112)
+        text(f"Epilog_Side_{k}_Laser", "Laser.com", fl, at, R_, mpp, 170 + s1.dimensions.x / mpp + 2, 140, 112)
     return pos, ey
 
 
@@ -201,8 +291,9 @@ def exhaust(col, pos, ey, mm):
     for xr in (XF0, XF1):
         p.cyl(M["dark"], (xr - 0.01, YR, ZC), (xr + 0.01, YR, ZC), 0.165, seg=32)
     p.box(M["dark"], XF0 + 0.14, XF0 + 0.26, YR - 0.16, YR - 0.10, ZC - 0.06, ZC + 0.06, bevel=0.005)
-    ye = ey + 0.25                                                        # Epilog branch (150 mm)
-    pts = [(29.835, ye, 0.70), (29.76, ye, 0.70), (29.76, ye, ZC), (29.76, 24.80, ZC), (XJ, 24.80, ZC), (XJ, YR, ZC)]
+    ye = ey                                                               # Epilog branch (150 mm) on the wiki model's
+    pts = [(29.83, ye, 0.637), (29.74, ye, 0.637), (29.74, ye, ZC), (29.74, 24.80, ZC), (XJ, 24.80, ZC), (XJ, YR, ZC)]
+    p.cyl(galv, (29.80, ye, 0.637), (29.845, ye, 0.637), 0.078, seg=24)   # sleeve over the Ø102 rear port (centre, z 637)
     for a, b in zip(pts, pts[1:]):
         p.cyl(galv, a, b, 0.075, seg=20)
     for q in pts[1:-1]:

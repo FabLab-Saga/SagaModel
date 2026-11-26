@@ -229,6 +229,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   moved 0.30 m towards the workshop) y 29.465, x 21.50–27.82 (starts past the cutter counter), 0.04 m between
   frames; panel 3's column-end foot is set in 0.30 m and clears the column by ~6 cm. Each is a layout item, movable
   to block noise or divide the area. No zone signs (all removed 2026-11-26, Magnús: better signs later).
+- **Teaching-wiki machines** (branch 2026-11-26, Magnús: use the teaching wiki models): `assets/wiki/` + 
+  `scripts/wiki_machine.py`. ShopBot PRSalpha 144-60 (see CNC room) and the Epilog Fusion Edge 24 (laser room;
+  envelope 1055 x 834 x 967 from the wiki, lid closed with a smoked clear window so bridge/head/sheet read, table
+  focused, head mid-sheet; logos re-drawn as the wiki does: white emblem + bold/thin wordmarks on fascia, lid band,
+  both side covers, in Roboto). The exhaust branch meets the wiki model's rear port (centre, z 0.637). Wikis for the
+  xTool F1 Ultra and SRM-20 live on the coordinator host (AgentWork, no git) - next to import; the Prusa wiki is
+  excluded (GPL Prusa STLs).
 - **Remodels on the branch** (2026-11-26, from product photos): Brother sewing + embroidery machines (`_sew_body`:
   moulded C-arm prism, buttons, screen, needle area; embroidery unit + hoop with a part-stitched hex badge), Brother
   M343D overlocker (tension dials, thread stand, cones), Prusa MK3S+ LCD unit (tilted face, 20x4 text, knurled knob).

@@ -4,28 +4,6 @@
 # root objects that move together (first = primary). Builders read this file; scripts/layout_snapshot.py diffs it.
 version: 1
 items:
-  - id: laser.epilog-fusionedge24
-    label: Epilog FusionEdge24
-    kind: machine
-    zone: laser-room
-    pos: [30.27, 20.878]
-    z: 0
-    rot: 90
-    size: [1.055, 0.872, 0.994]
-    locked: false
-    objects: [Epilog_FusionEdge24, Epilog_Logo, Epilog_Model]
-
-  - id: laser.exhaust-central
-    label: Exhaust Central
-    kind: fixture
-    zone: laser-room
-    pos: [31.113, 22.858]
-    z: 0.625
-    rot: 0
-    size: [2.883, 4.953, 3.305]
-    locked: true
-    objects: [Exhaust_Central]
-
   - id: laser.laserbench
     label: LaserBench
     kind: furniture
@@ -1633,3 +1611,25 @@ items:
     "on": lab.prusa-mk3s-06
     locked: false
     objects: [Job_Prusa_06]
+
+  - id: laser.epilog-fusionedge24
+    label: Epilog FusionEdge24
+    kind: machine
+    zone: laser-room
+    pos: [30.254, 20.886]
+    z: 0
+    rot: 90
+    size: [1.076, 0.907, 0.977]
+    locked: false
+    objects: [Epilog_FusionEdge24]
+
+  - id: laser.exhaust-central
+    label: Exhaust Central
+    kind: fixture
+    zone: laser-room
+    pos: [31.11, 22.859]
+    z: 0.559
+    rot: 0
+    size: [2.89, 4.953, 3.371]
+    locked: true
+    objects: [Exhaust_Central]

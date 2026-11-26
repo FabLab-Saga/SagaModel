@@ -8,6 +8,9 @@ renders, in metres in the machine's local frame (wiki cm * 0.01); the caller pla
 
     exec(open(HERE + "wiki_machine.py").read(), ns)
     p = ns["wiki_part"](Part, json_path, material_for, skip=re.compile(...), retarget={name: (dx, dy, dz)})
+
+Wikis whose generator already emits triangles (Epilog: generator/gl/model.mjs build(), mm, per-group arrays + part
+list) go through wiki_tri_part(Part, path, material_for, offsets={group: (dx, dy, dz) mm}).
 """
 import json
 import math
@@ -163,3 +166,40 @@ def wiki_part(Part, path, material_for, skip=None, retarget=None):
             _lines(p, m, e)
         n += 1
     return p, n, d
+
+
+def wiki_tri_part(Part, path, material_for, offsets=None, skip=None, scale=0.001):
+    """Part from a triangle-soup wiki model (groups -> base64 float32 pos/attr; attr = part id, mat, smooth, 0).
+    offsets: rest-pose translation per moving group, in the model's units. Vertices are welded per material."""
+    import base64
+    import struct
+    d = json.load(open(path))
+    p = Part()
+    mats = d["mats"]
+    names = [q["name"] for q in d["parts"]]
+    used = set()
+    for g, G in d["groups"].items():
+        off = Vector((offsets or {}).get(g, (0, 0, 0)))
+        for block in (G, G["glass"]):
+            n = block["n"]
+            if not n:
+                continue
+            pos = struct.unpack(f"<{n * 3}f", base64.b64decode(block["pos"]))
+            att = struct.unpack(f"<{n * 4}f", base64.b64decode(block["attr"]))
+            for t in range(n // 3):
+                pid = int(att[t * 12] + 0.5)
+                if skip and skip.search(names[pid]):
+                    continue
+                mi = int(att[t * 12 + 1] + 0.5)
+                m = material_for(mats[mi]["n"], mats[mi], names[pid])
+                bm = p.bm(m)
+                vs = [bm.verts.new(((pos[(t * 3 + k) * 3] + off.x) * scale, (pos[(t * 3 + k) * 3 + 1] + off.y) * scale,
+                                    (pos[(t * 3 + k) * 3 + 2] + off.z) * scale)) for k in range(3)]
+                try:
+                    bm.faces.new(vs)
+                except ValueError:
+                    pass
+                used.add(m.name)
+    for mname, (m, bm) in p.bms.items():
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=scale * 0.02)
+    return p, d

@@ -6,6 +6,7 @@ for their WebGL figures. These JSON files are that list, exported by the wiki's 
 
 | File | Source | Export |
 |---|---|---|
+| `epilog_fusion_edge_24.json` | github.com/MagnusPetursson/epilog-fusion-edge-24-wiki, `generator/gl/model.mjs` `build()` | the generator's own triangle arrays per moving group (static, lid, bridge, head, table, stock; mm, X right, Y rear, Z up) + part list + material table: `node export_epilog.mjs <dest> <commit>`; placed by `scripts/wiki_machine.py` `wiki_tri_part()` with the viewer's group offsets |
 | `shopbot_prsalpha_144_60.json` | github.com/MagnusPetursson/shopbot-prsalpha-wiki, `generator/figures/shopbot/build.mjs` (commit in the file's `commit` field) | `build.mjs` with the `MESH` list written out at the end, plus the live cable/hose routes at the rest pose (routes.mjs + the kit's fillet) and the static extras gl-live.js adds (control-box LEDs, LED strip, VFD screen); materials resolved per part with gl-live.js's `MATS`/`MAT_RULES` |
 
 Re-export (Talos, MPDESKTOP): `~/Documents/AgentWork/wiki-models/` holds the clone, `build_export.mjs` (a copy of
