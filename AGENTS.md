@@ -74,7 +74,7 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   `build_services` → `build_lighting` → `build_machines` → `build_print_farm` → `build_laser_room` → `build_bank_lounge` →
   `build_sofas` (ALWAYS after bank_lounge) → `build_craft_spine` → `build_worktables` → `build_life` (needs WorkTables) →
   `build_microelectronics` → `build_felt_dividers` → `build_textile` → `build_bank_walls` → `build_cupboard` → `cleanup_leftovers` →
-  `build_material_storage` → `build_entrance_bay` → `build_escape_doors` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_cnc_room` → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
+  `build_material_storage` → `build_entrance_bay` → `build_escape_doors` → `build_hall_entrance` → `build_welcome` → `build_staff_area` → `build_cnc_room` → `build_jobs` (after every machine builder) → `build_signs` → `apply_pbr` → `detail_materials` → `fix_glass` →
   `add_cameras` → `purge_hidden`.
   Builders added 2026-10-08: `build_lighting` (LED arrays + spots), `build_laser_room` (laser room incl. central
   exhaust; machine models live in build_machines), `build_cupboard` (mural-wall cupboard), `cleanup_leftovers`
@@ -225,6 +225,12 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   moved 0.30 m towards the workshop) y 29.465, x 21.50–27.82 (starts past the cutter counter), 0.04 m between
   frames; panel 3's column-end foot is set in 0.30 m and clears the column by ~6 cm. Each is a layout item, movable
   to block noise or divide the area. No zone signs (all removed 2026-11-26, Magnús: better signs later).
+- **Machines at work** (branch, my design; `build_jobs.py`, collection Jobs): jobs built in each machine's frame and
+  registered as `on:` items of the machine: ShopBot mid-way through the CNC-stool nest (seats cut, leg row under the
+  spindle), Glowforge Pro HD 1 cutting the finger-joint box (inner bed lights on), Prusa 01/03/04/06 printing. The
+  Glowforge Pro shell is hollow under a see-through tinted lid with a crumb tray. After changing a job's geometry run
+  `python3 tools/rehost_jobs.py drop`, rebuild jobs, `layout_export.py`, then `tools/rehost_jobs.py host` (the exporter
+  keeps old poses and hosts jobs on benches otherwise).
 - **Lock-down detail** (`scripts/lockdown.py`, exec'd by builders): clear acrylic leaves hung in pairs, one surface
   RFID electronic cabinet lock per pair (Magnús: acrylic doors, electronic locks where reasonable; the detail is my
   design). Enclosure door objects carry `layout_skip` and belong to their item's `objects`. Portable tools live behind

@@ -16,7 +16,7 @@ ROOT = bpy.path.abspath("//")
 ORDER = ["build_machines", "build_print_farm", "build_laser_room", "build_bank_lounge", "build_sofas",
          "build_craft_spine", "build_worktables", "build_life", "build_microelectronics", "build_felt_dividers", "build_textile",
          "build_bank_walls", "build_cupboard", "build_material_storage", "build_welcome", "build_staff_area",
-         "build_cnc_room"]
+         "build_cnc_room", "build_jobs"]
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 if "--only" in argv:
     ORDER = argv[argv.index("--only") + 1].split(",")

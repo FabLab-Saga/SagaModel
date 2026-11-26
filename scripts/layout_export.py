@@ -72,7 +72,7 @@ def zone_of(p):
 
 # ------------------------------------------------------------------ items
 FURN = ["Machines", "LaserRoom", "PrintFarm", "CraftZone", "Textile", "WorkTables", "Welcome", "Lounge", "Spine",
-        "MaterialStorage", "Microelectronics", "EquipmentBank", "MuralCupboard", "CNCRoom", "StaffArea", "Life", "FeltDividers"]
+        "MaterialStorage", "Microelectronics", "EquipmentBank", "MuralCupboard", "CNCRoom", "StaffArea", "Life", "FeltDividers", "Jobs"]
 EXCLUDE = re.compile(r"(Door|Glass(?!Bench|TW|ToolWall)|Infill|Tiles|Paving|Fixture|Plaque|Wall_Details|^WC_|"
                      r"Exterior|^Hall_|Window|SecretDoor|Art_HexRelief|Floff|Mural$|^Staff_LaserWall)")
 KEEP_FRAME = {"PrintFarm_Frame", "GlassToolWall_Frame"}

@@ -153,15 +153,27 @@ def glowforge_pro(w=0.965, d=0.527, h=0.211):
     front flip-down door with the Pro pass-through slot, glowing button top front right, rear exhaust + switch."""
     p = Part()
     glow = mat("Glowforge_Button", "#9FE7F2", 0.2, emit=3.0)
-    _rbox(p, M["white"], 0.0, w, 0.0, d, 0.012, h - 0.012, 0.03)                       # shell
+    # shell: base up to the bed + walls round the cavity under the lid glass (hollow so the bed reads through the
+    # tinted lid, branch 2026-11-26), honeycomb crumb tray on the bed
+    _rbox(p, M["white"], 0.0, w, 0.0, d, 0.012, 0.035, 0.03)
+    for x0, x1, y0, y1 in ((0.0, w, 0.0, 0.05), (0.0, w, d - 0.125, d), (0.0, 0.055, 0.0, d), (w - 0.055, w, 0.0, d)):
+        _rbox(p, M["white"], x0, x1, y0, y1, 0.012, h - 0.012, min(0.03, (x1 - x0) / 2 - 0.001, (y1 - y0) / 2 - 0.001))
+    hc = mat("Honeycomb_Dark", "#4A4D50", 0.5, metal=0.6)
+    p.box(hc, 0.07, w - 0.07, 0.06, d - 0.135, 0.035, 0.043)
+    for k in range(1, 24):                                                               # tray cells (hint)
+        x = 0.07 + k * (w - 0.14) / 24
+        p.box(M["dark"], x - 0.0006, x + 0.0006, 0.06, d - 0.135, 0.043, 0.0432)
     for x in (0.06, w - 0.06):                                                           # feet
         for y in (0.06, d - 0.06):
             p.cyl(M["rubber"], (x, y, 0.0), (x, y, 0.012), 0.022, seg=16)
     p.box(M["black"], 0.03, w - 0.03, -0.001, 0.0, 0.135, 0.137)                         # door seam (top)
     p.box(M["black"], 0.07, w - 0.07, -0.0015, 0.0, 0.082, 0.090)                        # pass-through slot
     p.box(M["smoke"], 0.10, w - 0.10, -0.002, -0.001, 0.0835, 0.0885)                    # Pro shield in the slot
-    p.box(M["white"], 0.03, w - 0.03, 0.030, d - 0.105, h - 0.012, h - 0.004, bevel=0.004)  # lid frame
-    p.box(M["smoke"], 0.055, w - 0.055, 0.050, d - 0.125, h - 0.0045, h - 0.0015)        # lid glass
+    for x0, x1, y0, y1 in ((0.03, w - 0.03, 0.030, 0.050), (0.03, w - 0.03, d - 0.125, d - 0.105),
+                           (0.03, 0.055, 0.030, d - 0.105), (w - 0.055, w - 0.03, 0.030, d - 0.105)):
+        p.box(M["white"], x0, x1, y0, y1, h - 0.012, h - 0.004, bevel=0.002)               # lid frame (ring)
+    p.box(_acrylic("Glowforge_LidGlass", "#2A2420", 0.05, alpha=0.38), 0.055, w - 0.055, 0.050, d - 0.125, h - 0.0045,
+          h - 0.0015)                                                                     # lid glass (tinted, see-through)
     _rbox(p, M["white"], 0.02, w - 0.02, d - 0.100, d - 0.012, h - 0.012, h + 0.004, 0.012)  # rear hinge band
     p.box(M["grey"], w * 0.38, w * 0.62, -0.002, 0.018, h - 0.030, h - 0.016, bevel=0.004)   # lid lift recess
     p.cyl(M["white"], (w - 0.075, 0.072, h - 0.006), (w - 0.075, 0.072, h + 0.003), 0.030, seg=32)  # button
