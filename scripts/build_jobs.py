@@ -3,8 +3,8 @@ on the machines, tied to the projects on the work tables, so the lab reads as us
 ("Jobs" collection). Each job is built in its machine's local frame and placed on the machine's current pose, so it
 must run AFTER the machine builders (machines, print farm, laser room); layout.yaml carries each job as an `on:` item.
 
-- ShopBot: a 2440 x 1220 x 18 birch sheet screwed to the spoilboard, mid-way through the CNC-stool nest that is being
-  dry-fitted on work table 2: six seats cut, the leg row being cut under the spindle, the rest still to come.
+- ShopBot PRSalpha 144-60 (the teaching wiki's model): a 2440 x 1220 x 18 birch sheet on the deck, mid-way through
+  the CNC-stool nest being dry-fitted on work table 2: six seats cut, the leg row being cut under the parked spindle.
 - Glowforge Pro HD 1: 3 mm ply on the crumb tray with the finger-joint box (work table 0's laser-cut box) cut out and
   its lid engraving in progress; the head carriage over it.
 - SRM-20 1: isolation-milling a small ATtiny board in the copper blank (end mill down on the board).
@@ -25,7 +25,7 @@ exec(open(HERE + "profile_furniture.py").read(), lib)
 MAT = lib["materials"]()
 Part, mat = lib["Part"], lib["simple_mat"]
 
-KERF = mat("Kerf_Dark", "#3B2A1D", 0.9)
+KERF = mat("Kerf_Dark", "#4A3420", 0.95)
 SCORE = mat("Laser_Engrave", "#6E4A2B", 0.85)
 ZINC = MAT["zinc"]
 
@@ -65,37 +65,40 @@ def rect_lines(p, m, x0, y0, x1, y1, z, w=0.006):
 
 
 def shopbot_job(col):
-    f = frame("ShopBot_PRSAlpha_120")
+    """On the wiki ShopBot's deck (frame = the machine's local frame, wiki cm * 0.01; deck top z 0.90; the wiki's own
+    stock position: machine (2, 2) = local x 1.59-4.03, y 0.726-1.946). Tool parked at local (2.55, 1.266), the
+    gantry's rest pose. A 2440 x 1220 x 18 birch sheet mid-way through the CNC-stool nest that work table 2 is
+    dry-fitting: six ø340 seats cut (held by tabs) along the far edge; the leg row through the spindle, legs on the
+    operator side of the cutter done, the leg under the cutter three sides cut."""
+    f = frame("ShopBot_PRSalpha_144_60")
     if not f:
         return
     p = Part()
     ply = MAT["ply"]
-    X0, X1, Y0, Y1, Z = 0.545, 1.765, 0.36, 2.80, 0.86              # sheet on the spoilboard (machine frame)
+    X0, X1, Y0, Y1, Z = 1.59, 4.03, 0.726, 1.946, 0.904            # sheet (deck top + 4 mm spoilboard skim)
     zt = Z + 0.018
     p.box(ply, X0, X1, Y0, Y1, Z, zt, bevel=0.001)
-    for x in (X0 + 0.03, (X0 + X1) / 2, X1 - 0.03):                  # hold-down screws round the edge
-        for y in (Y0 + 0.03, Y0 + 0.62, Y0 + 1.22, Y0 + 1.82, Y1 - 0.03):
-            if x == (X0 + X1) / 2 and Y0 + 0.1 < y < Y1 - 0.1:
+    for x in (X0 + 0.03, X0 + 0.62, X0 + 1.22, X0 + 1.82, X1 - 0.03):   # hold-down screws round the edge
+        for y in (Y0 + 0.03, (Y0 + Y1) / 2, Y1 - 0.03):
+            if y == (Y0 + Y1) / 2 and X0 + 0.1 < x < X1 - 0.1:
                 continue
             p.cyl(ZINC, (x, y, zt), (x, y, zt + 0.002), 0.005, seg=10)
-    seats = [(X0 + 0.205 + i * 0.405, Y0 + 0.24 + j * 0.405) for j in range(2) for i in range(3)]
+    seats = [(X0 + 0.21 + i * 0.405, Y1 - 0.215) for i in range(6)]
     for cx, cy in seats:                                             # seats: cut (held by tabs)
         for a0 in (0.15, 0.15 + math.pi / 2, 0.15 + math.pi, 0.15 + 3 * math.pi / 2):
             ring(p, KERF, cx, cy, zt, 0.17, seg=10, a0=a0, a1=a0 + math.pi / 2 - 0.06)
         p.cyl(KERF, (cx, cy, zt), (cx, cy, zt + 0.0004), 0.004, seg=10)          # centre drill mark
-    spx, spy = 1.04, 3.66 * 0.42 - 0.21                              # spindle (shopbot(): cx = W * 0.45, gy - 0.21)
-    ly0 = spy - 0.02                                                 # leg strip under the spindle
-    x = X0 + 0.05
-    k = 0
-    while x + 0.075 < X1 - 0.04:
-        if x + 0.075 < spx - 0.005:                                  # legs left of the cutter: done
-            rect_lines(p, KERF, x, ly0, x + 0.075, ly0 + 0.44, zt)
-        elif x < spx:                                                # the leg being cut: 3 sides so far
-            line(p, KERF, x, ly0, x, ly0 + 0.44, zt)
-            line(p, KERF, x, ly0 + 0.44, x + 0.075, ly0 + 0.44, zt)
-            line(p, KERF, x + 0.075, ly0 + 0.44, x + 0.075, spy, zt)
-        x += 0.10
-        k += 1
+    spx, spy = 2.55, 1.266                                           # tool at rest (wiki PARK)
+    ly0, ly1 = spy - 0.30, spy + 0.14                                 # leg row: 440 long along y, spindle near its end
+    x = X1 - 0.05 - 0.075                                            # operator side (high x) first: done
+    while x > X0 + 0.04:
+        if x > spx + 0.005:
+            rect_lines(p, KERF, x, ly0, x + 0.075, ly1, zt)
+        elif x + 0.075 > spx:                                        # the leg under the cutter: 3 sides so far
+            line(p, KERF, x + 0.075, ly0, x + 0.075, ly1, zt)
+            line(p, KERF, x, ly0, x + 0.075, ly0, zt)
+            line(p, KERF, x, ly0, x, spy, zt)
+        x -= 0.10
     dust = mat("Sawdust", "#D9BE8E", 0.95)
     for i, (dx, dy, s) in enumerate(((0.03, 0.02, 0.05), (-0.06, 0.05, 0.035), (0.09, -0.04, 0.03), (-0.02, -0.08, 0.04),
                                      (0.14, 0.07, 0.025), (-0.12, -0.02, 0.03))):

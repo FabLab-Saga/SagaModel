@@ -76,7 +76,7 @@ FURN = ["Machines", "LaserRoom", "PrintFarm", "CraftZone", "Textile", "WorkTable
 EXCLUDE = re.compile(r"(Door|Glass(?!Bench|TW|ToolWall)|Infill|Tiles|Paving|Fixture|Plaque|Wall_Details|^WC_|"
                      r"Exterior|^Hall_|Window|SecretDoor|Art_HexRelief|Floff|Mural$|^Staff_LaserWall)")
 KEEP_FRAME = {"PrintFarm_Frame", "GlassToolWall_Frame"}
-MACHINE = re.compile(r"^(Glowforge|Epilog_FusionEdge|xTool_F1_Ultra$|ShopBot_PRSAlpha|ACword|Prusa_MK3S|Bambu|"
+MACHINE = re.compile(r"^(Glowforge|Epilog_FusionEdge|xTool_F1_Ultra$|ShopBot_PRS[Aa]lpha|ACword|Prusa_MK3S|Bambu|"
                      r"Roland_|Cricut_|Mayku|Brother_|Overlock|Creality|Flashforge|Eazao|Clay_Microwave|"
                      r"Handheld_3DScanner|HeatPress|LOKLiK)")
 STORAGE = re.compile(r"Shelving|Rack|Storage|Cab|Cupboard|Cart|ToolLibrary|BoardRack|Bin|DryCell|Demo_Pieces|Box|"
@@ -87,8 +87,7 @@ LOCKED = {"Exhaust_Central", "Staff_Kitchen", "Electronics_BoardRun", "LaserSafe
 COMPANION_RE = [(re.compile(r"^WB_Text"), "Electronics_BoardRun"), (re.compile(r"^Staff_Coat_"), "Staff_CoatHooks"),
                 (re.compile(r"^(DrawerCab_|ToolRail_)"), "MicroBench")]
 FLOOR_Z = 0.05
-COMPANION = {"Spine_Panel": "Spine_Boxes_Shelving", "ShopBot_DustBoom": "ShopBot_PRSAlpha_120",
-             "ShopBot_DustHose": "ShopBot_PRSAlpha_120", "Epilog_Logo": "Epilog_FusionEdge24",
+COMPANION = {"Spine_Panel": "Spine_Boxes_Shelving", "Epilog_Logo": "Epilog_FusionEdge24",
              "Epilog_Model": "Epilog_FusionEdge24", "xTool_Wordmark": "xTool_F1_Ultra",
              "LaserBench_Staging": "LaserBench", "Staff_Appliances": "Staff_Kitchen", "Staff_Mugs": "Staff_Kitchen",
              "Staff_Tote": "Staff_CoatHooks", "SMD_Reels": "ComponentStorage", "GlassBench_Spools": "GlassBench",

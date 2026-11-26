@@ -3,7 +3,7 @@
 import re
 import sys
 
-HOST = {"Job_ShopBot": "ShopBot_PRSAlpha_120", "Job_Glowforge_1": "Glowforge_ProHD_1", "Job_Prusa_01": "Prusa_MK3S_01",
+HOST = {"Job_ShopBot": "ShopBot_PRSalpha_144_60", "Job_Glowforge_1": "Glowforge_ProHD_1", "Job_Prusa_01": "Prusa_MK3S_01",
         "Job_Prusa_03": "Prusa_MK3S_03", "Job_Prusa_04": "Prusa_MK3S_04", "Job_Prusa_06": "Prusa_MK3S_06", "Job_SRM20_1": "Roland_SRM20_1",
         "Job_xTool": "xTool_F1_Ultra"}
 p = "layout/layout.yaml"

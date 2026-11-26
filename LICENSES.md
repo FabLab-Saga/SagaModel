@@ -32,3 +32,9 @@ All of the above are placeholders until replaced with our own photography/materi
 `scripts/saga_tag.py` re-creates the Fab Lab SAGA keyring tag from the lab's own teaching wiki (print-cycle job,
 original geometry by the project's agents); lettering in Roboto Bold from `refs/branding/fonts` (the brand font
 already used in the model). No external mesh is imported.
+
+## Teaching-wiki machines (2026-11-26)
+`assets/wiki/*.json` are part lists exported from the lab's own machine wikis (Magnús Pétursson's repositories,
+original procedural geometry by the project's agents; rights held by him). Not third-party models. The Prusa wiki is
+NOT used: its printer contains GPL-3.0 Prusa STLs.
+

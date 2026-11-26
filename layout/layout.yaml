@@ -184,28 +184,6 @@ items:
     locked: false
     objects: [OffcutCart]
 
-  - id: cnc.shopbot-control
-    label: ShopBot Control
-    kind: machine
-    zone: cnc-room
-    pos: [24.62, 19.07]
-    z: 0
-    rot: 0
-    size: [0.5, 0.32, 0.7]
-    locked: false
-    objects: [ShopBot_Control]
-
-  - id: cnc.shopbot-prsalpha-120
-    label: ShopBot PRSAlpha 120
-    kind: machine
-    zone: cnc-room
-    pos: [22.747, 19.198]
-    z: 0
-    rot: 0
-    size: [2.606, 4.951, 3.93]
-    locked: false
-    objects: [ShopBot_PRSAlpha_120, ShopBot_DustBoom, ShopBot_DustHose]
-
   - id: cnc.stepstool
     label: StepStool
     kind: furniture
@@ -1453,102 +1431,6 @@ items:
     locked: false
     objects: [Overlock]
 
-  - id: laser.job-glowforge-1
-    label: Job Glowforge 1
-    kind: fixture
-    zone: laser-room
-    pos: [32.088, 20.792]
-    z: 0.823
-    rot: -90
-    size: [0.805, 0.35, 0.137]
-    "on": laser.glowforge-prohd-1
-    locked: false
-    objects: [Job_Glowforge_1]
-
-  - id: laser.job-xtool
-    label: Job xTool
-    kind: fixture
-    zone: laser-room
-    pos: [32.185, 23.396]
-    z: 0.804
-    rot: -90
-    size: [0.1, 0.1, 0.005]
-    "on": laser.xtool-f1-ultra
-    locked: false
-    objects: [Job_xTool]
-
-  - id: cnc.job-shopbot
-    label: Job ShopBot
-    kind: fixture
-    zone: cnc-room
-    pos: [22.895, 19.48]
-    z: 0.86
-    rot: 0
-    size: [1.22, 2.44, 0.021]
-    "on": cnc.shopbot-prsalpha-120
-    locked: false
-    objects: [Job_ShopBot]
-
-  - id: lab.job-srm20-1
-    label: Job SRM20 1
-    kind: fixture
-    zone: main-lab
-    pos: [25.881, 34.067]
-    z: 0.867
-    rot: 0
-    size: [0.072, 0.057, 0]
-    "on": lab.roland-srm20-1
-    locked: false
-    objects: [Job_SRM20_1]
-
-  - id: lab.job-prusa-01
-    label: Job Prusa 01
-    kind: fixture
-    zone: main-lab
-    pos: [29.095, 24.963]
-    z: 1.544
-    rot: -90
-    size: [0.09, 0.06, 0.03]
-    "on": lab.prusa-mk3s-01
-    locked: false
-    objects: [Job_Prusa_01]
-
-  - id: lab.job-prusa-03
-    label: Job Prusa 03
-    kind: fixture
-    zone: main-lab
-    pos: [29.095, 23.635]
-    z: 0.184
-    rot: -90
-    size: [0.084, 0.084, 0.06]
-    "on": lab.prusa-mk3s-03
-    locked: false
-    objects: [Job_Prusa_03]
-
-  - id: lab.job-prusa-04
-    label: Job Prusa 04
-    kind: fixture
-    zone: main-lab
-    pos: [29.095, 24.325]
-    z: 0.864
-    rot: -90
-    size: [0.122, 0.084, 0.004]
-    "on": lab.prusa-mk3s-04
-    locked: false
-    objects: [Job_Prusa_04]
-
-  - id: lab.job-prusa-06
-    label: Job Prusa 06
-    kind: fixture
-    zone: main-lab
-    pos: [29.065, 22.953]
-    z: 0.864
-    rot: -90
-    size: [0.243, 0.154, 0.016]
-    "on": lab.prusa-mk3s-06
-    locked: false
-    objects: [Job_Prusa_06]
-
   - id: lab.prusa-mk3s-01
     label: Prusa MK3S 01
     kind: machine
@@ -1644,3 +1526,110 @@ items:
     "on": lab.worktable-2
     locked: false
     objects: [BenchProps_2]
+
+  - id: laser.job-glowforge-1
+    label: Job Glowforge 1
+    kind: fixture
+    zone: laser-room
+    pos: [32.088, 20.792]
+    z: 0.823
+    rot: -90
+    size: [0.805, 0.35, 0.137]
+    "on": laser.glowforge-prohd-1
+    locked: false
+    objects: [Job_Glowforge_1]
+
+  - id: laser.job-xtool
+    label: Job xTool
+    kind: fixture
+    zone: laser-room
+    pos: [32.185, 23.396]
+    z: 0.804
+    rot: -90
+    size: [0.1, 0.1, 0.005]
+    "on": laser.xtool-f1-ultra
+    locked: false
+    objects: [Job_xTool]
+
+  - id: cnc.job-shopbot
+    label: Job ShopBot
+    kind: fixture
+    zone: cnc-room
+    pos: [22.754, 19.88]
+    z: 0.904
+    rot: 90
+    size: [2.44, 1.22, 0.021]
+    "on": cnc.shopbot-prsalpha-144-60
+    locked: false
+    objects: [Job_ShopBot]
+
+  - id: cnc.shopbot-prsalpha-144-60
+    label: ShopBot PRSalpha 144 60
+    kind: machine
+    zone: cnc-room
+    pos: [22.775, 19.082]
+    z: 0
+    rot: 90
+    size: [4.725, 2.653, 2.94]
+    locked: false
+    objects: [ShopBot_PRSalpha_144_60]
+
+  - id: lab.job-srm20-1
+    label: Job SRM20 1
+    kind: fixture
+    zone: main-lab
+    pos: [25.881, 34.067]
+    z: 0.867
+    rot: 0
+    size: [0.072, 0.057, 0]
+    "on": lab.roland-srm20-1
+    locked: false
+    objects: [Job_SRM20_1]
+
+  - id: lab.job-prusa-01
+    label: Job Prusa 01
+    kind: fixture
+    zone: main-lab
+    pos: [29.095, 24.963]
+    z: 1.544
+    rot: -90
+    size: [0.09, 0.06, 0.03]
+    "on": lab.prusa-mk3s-01
+    locked: false
+    objects: [Job_Prusa_01]
+
+  - id: lab.job-prusa-03
+    label: Job Prusa 03
+    kind: fixture
+    zone: main-lab
+    pos: [29.095, 23.635]
+    z: 0.184
+    rot: -90
+    size: [0.084, 0.084, 0.06]
+    "on": lab.prusa-mk3s-03
+    locked: false
+    objects: [Job_Prusa_03]
+
+  - id: lab.job-prusa-04
+    label: Job Prusa 04
+    kind: fixture
+    zone: main-lab
+    pos: [29.095, 24.325]
+    z: 0.864
+    rot: -90
+    size: [0.122, 0.084, 0.004]
+    "on": lab.prusa-mk3s-04
+    locked: false
+    objects: [Job_Prusa_04]
+
+  - id: lab.job-prusa-06
+    label: Job Prusa 06
+    kind: fixture
+    zone: main-lab
+    pos: [29.065, 22.953]
+    z: 0.864
+    rot: -90
+    size: [0.243, 0.154, 0.016]
+    "on": lab.prusa-mk3s-06
+    locked: false
+    objects: [Job_Prusa_06]

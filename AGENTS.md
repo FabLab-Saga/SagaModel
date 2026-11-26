@@ -190,11 +190,13 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   the rest stays clear so the ShopBot is visible from the main room. The colleague's glazed front
   (y 23.05) is cut away (`Cut_CNC_Front`/`Cut_CNC_Side`), the strip in front is main lab. The colleague's 1.08 x 2.49 m hallway door was invented (user): replaced by a normal
   Icelandic interior door (90 x 210, frame + casings, wall completed to the slab), the knocked-down WC's doorway next
-  to it walled up. ShopBot PRS Alpha 120-60 at its REAL size 3.66 x 2.31 x 1.70 (spec sheet; was 4.30 x 2.15) kept
-  along the INTERIOR wall (my call; room 3.34 m wide), at x 21.74–24.05, y 17.90–21.56, ~0.9 m aisle on the glass
-  side; ACword FT100 in the far glass corner; ribbed hose on a ceiling-hung swing boom (`ShopBot_DustBoom`). Operator
-  corner in the ex-WC bay:
-  standing PC station (control box under it, e-stop pendant) + tool bench with drawers and pegboard (bits, wrenches,
+  to it walled up. ShopBot = HÍ's PRSalpha 144-60 (branch 2026-11-26; Magnús: the 120-60 was the wrong size): the
+  geometry is the lab's ShopBot teaching wiki's own part list (`assets/wiki/`, `scripts/wiki_machine.py`, imported in
+  build_machines.py as `ShopBot_PRSalpha_144_60`): 4.19 x 2.33 m table, deck 0.90, gantry parked, floor-standing dust
+  boom by the loading end, hose to the ACword FT100 inlet, under-table control box + VFD, cable carriers. Along the
+  interior wall (far side 0.20 m off it), table x ~21.62-24.10, y 17.07-21.26 (+ the wiki's end braces to 21.45);
+  the glass door's swing clears the x-chain by 44 mm, PC station desk 0.175 m. Operator corner in the ex-WC bay:
+  standing PC station (e-stop pendant; the old separate control box is gone, the wiki's is under the table) + tool bench with drawers and pegboard (bits, wrenches,
   ear defenders, glasses); E9 (branch, my design): the pegboard is inside a 0.20 deep ply wall cabinet behind an acrylic
   pair with one e-lock. Shop vac + extinguisher by the WNW wall. (Clearance ignored per user.) No SRM-20s here.
   WNW end wall (y 14.87–15.08): the 2.32 m gap (x 22.40–24.72) is a LOADING DOOR - classic double door, two
@@ -370,7 +372,9 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
 
 ## Open items
 - On-site 360° photo for the window view → `refs/skybox/` (current HDRI is a CC0 stand-in).
-- CNC model settled (Magnús 2026-11-25): PRS Alpha 120-60 as modelled, stock 3 x 1.5 m, reduced clearance accepted.
+- CNC model: settled as PRS Alpha 120-60 on 2026-11-25, then Magnús 2026-11-26: the ShopBot is the wrong size and should
+  look like the teaching wiki's -> branch uses the wiki's PRSalpha 144-60 (HÍ's machine per the wiki: SB3 3.8.70,
+  firmware 224).
 - Stairwell (Magnús 2026-11-25): the windowless box x 29.2–34.3, y 12.8–16.1 at the ShopBot end is its exterior; no
   door from the lab; interior not modelled. The room behind the staff room is electrical/storage.
 - Signs: the source PDFs' typos (VERKÆRI, ELECTRONCS) are fixed in assets/signs by `scripts/make_signs.py`, which

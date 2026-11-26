@@ -17,6 +17,7 @@ Placement (model frame: +X = SSW, +Y = ESE). Laser models are defined here; the 
   Colleague's placeholders in those spots are hidden, not deleted.
 """
 import math
+import re
 
 import bmesh
 import bpy
@@ -767,37 +768,6 @@ def overlock(w=0.335, d=0.282, h=0.296):
     return p
 
 
-def shopbot(W=2.31, Lg=3.66):
-    """ShopBot PRS Alpha 120 (60" x 120" table): black steel frame, MDF spoilboard, aluminium gantry."""
-    p = Part()
-    blk, alu, mdf = M["black"], M["alusatin"], M["mdf"]
-    for x in (0.08, W - 0.20):                                                                  # side beams
-        p.box(blk, x, x + 0.12, 0.0, Lg, 0.62, 0.82, bevel=0.004)
-        p.box(alu, x + 0.02, x + 0.10, 0.0, Lg, 0.82, 0.85)                                    # Y rails
-    for y in (0.15, 1.45, 2.85, Lg - 0.23):                                                    # legs + feet + cross members
-        for x in (0.10, W - 0.18):
-            p.box(blk, x, x + 0.08, y, y + 0.08, 0.04, 0.62)
-            p.cyl(M["rubber"], (x + 0.04, y + 0.04, 0.0), (x + 0.04, y + 0.04, 0.04), 0.045, seg=16)
-        p.box(blk, 0.10, W - 0.10, y, y + 0.06, 0.25, 0.31)
-        p.box(blk, 0.10, W - 0.10, y, y + 0.06, 0.70, 0.78)
-    p.box(mdf, 0.22, W - 0.22, 0.10, Lg - 0.10, 0.80, 0.86)                                   # spoilboard
-    for i in range(12):                                                                         # surfacing marks
-        y = 0.25 + i * 0.32
-        p.box(M["mdfdark"], 0.24, W - 0.24, y, y + 0.004, 0.8601, 0.8605)
-    gy = Lg * 0.42                                                                              # gantry position
-    for x in (0.02, W - 0.12):                                                                  # gantry side cars
-        p.box(blk, x, x + 0.10, gy - 0.20, gy + 0.20, 0.78, 1.32, bevel=0.006)
-    p.box(alu, 0.0, W, gy - 0.07, gy + 0.07, 1.20, 1.40, bevel=0.006)                          # gantry beam
-    p.box(blk, 0.0, W, gy + 0.07, gy + 0.09, 1.30, 1.40)                                       # cable tray on beam
-    cx = W * 0.45
-    p.box(blk, cx - 0.14, cx + 0.14, gy - 0.16, gy - 0.07, 1.10, 1.45, bevel=0.005)            # X car
-    p.box(blk, cx - 0.08, cx + 0.08, gy - 0.26, gy - 0.16, 0.98, 1.52, bevel=0.005)            # Z axis
-    p.cyl(alu, (cx, gy - 0.21, 0.95), (cx, gy - 0.21, 1.18), 0.045, seg=24)                    # spindle
-    p.cyl(blk, (cx, gy - 0.21, 0.90), (cx, gy - 0.21, 0.95), 0.10, seg=24)                     # dust shoe
-    p.box(blk, W - 0.06, W, 0.2, Lg - 0.2, 0.86, 0.96)                                          # cable chain
-    return p
-
-
 def dust_collector(w=0.84, d=0.50, h=2.20):
     """ACword FT100 single-bag collector: stand, motor/impeller, white filter bag, clear lower bag."""
     p = Part()
@@ -1374,47 +1344,50 @@ def build():
     # ---- print farm: build_print_farm.py (run it after this script)
     k = 0
 
-    # ---- CNC room: ShopBot PRS Alpha 120 along the interior wall (x 24.15, 0.10 m gap), collector out by the far
-    #      glass corner (user layout, 2026-10-07). Moved back to y 17.15-21.45 when the room's front wall became
-    #      flush with the mural wall (y 21.66, user 2026-10-08): x 21.74-24.05, y 17.90-21.56; control box under the
-    #      PC station (build_cnc_room.py)
-    # Real footprint of the PRSalpha 120-60 (ShopBot spec sheet: L 144" x W 91" x H 67" = 3.66 x 2.31 x 1.70 m;
-    # cut area 120" x 60"). Was 4.30 x 2.15 (wrong for any PRS size). The 96-60 would be 3.05 x 2.31.
-    W, Lg = 2.31, 3.66
-    sb_loc = Vector((24.05 - W, 21.56 - Lg, 0.0))
-    shopbot(W, Lg).emit("ShopBot_PRSAlpha_120", col, sb_loc, 0.0)
+    # ---- CNC room: ShopBot PRSalpha 144-60 (HÍ's machine: the teaching wiki MagnusPetursson/shopbot-prsalpha-wiki
+    #      documents it with its SB3/firmware versions; the equipment list's "120-60" was wrong; Magnús 2026-11-26:
+    #      "the shopbot is still the wrong size"). Geometry = the wiki's own part list (assets/wiki/, scripts/
+    #      wiki_machine.py): 4.19 x 2.33 m table, 0.90 m deck, gantry parked, floor-standing dust boom, under-table
+    #      control box + VFD, cable carriers and hoses at rest. Placement (mine): long axis along the room, boom end
+    #      to the loading door, x-chain side to the glass aisle, far side 45 mm off the interior wall; front end at
+    #      y 21.26 so the glass door's 1.0 m swing clears the x-chain (it touched the old machine too). Left out of
+    #      the wiki set: its PC cart + pendant (the PC station is ours), its generic collector (the lab's ACword
+    #      FT100 stands in the same spot; the floor hose is retargeted to its inlet), its demo stock/screws/clamps
+    #      and the z-plate on the stock (build_jobs puts our job on the deck).
+    _w = {}
+    _HERE = bpy.path.abspath("//scripts/")
+    exec(open(_HERE + "wiki_machine.py").read(), _w)
+    sb_x0, sb_y0 = 24.09, 21.26 - 4.19                                  # wiki (0, 0) -> room; machine x along room +y
+    METAL = {"alu": 1.0, "rail": 1.0, "gearbox": 0.9, "collet": 1.0, "carbide": 1.0, "zplate": 1.0, "prox": 0.8,
+             "copper": 1.0, "clamp": 1.0, "shard": 1.0, "spindle": 0.0, "steel": 0.15}
+    def sb_mat(name, e, mats):
+        if name == "mdf":
+            return M["mdf"]
+        if name == "ply":
+            return lib["MAT"]["ply"]
+        key = f"SB_{name}"
+        if key in bpy.data.materials:
+            return bpy.data.materials[key]
+        c, sp = mats[name]["rgb"], mats[name]["spec"]
+        m_ = bpy.data.materials.new(key)
+        m_.use_nodes = True
+        bs = next(n_ for n_ in m_.node_tree.nodes if n_.type == "BSDF_PRINCIPLED")
+        bs.inputs["Base Color"].default_value = (*c, 1)
+        bs.inputs["Metallic"].default_value = METAL.get(name, 0.0)
+        bs.inputs["Roughness"].default_value = max(0.12, 0.72 - 0.6 * sp)
+        if name in ("led", "label"):
+            bs.inputs["Emission Color"].default_value = (*c, 1)
+            bs.inputs["Emission Strength"].default_value = 0.6 if name == "led" else 0.0
+        m_.diffuse_color = (*c, 1)
+        return m_
+    skip = re.compile(r"^(pc\.|pendant|tray|collector|stock|screw|clamp|cable\.(pendant|usb)|zplate$|zplate\.post$)")
+    # hose.floor ends at the wiki collector's inlet (room 20.81, 16.45, 1.20): move it to the ACword inlet
+    # (21.50, 16.72, 1.12). Local frame = room rotated -90 deg: local (dx, dy) = (room dy, -room dx).
+    sbp, nparts, _d = _w["wiki_part"](Part, _HERE + "../assets/wiki/shopbot_prsalpha_144_60.json", sb_mat, skip=skip,
+                                       retarget={"hose.floor": (0.27, -0.69, -0.08)})
+    sbp.emit("ShopBot_PRSalpha_144_60", col, Vector((sb_x0, sb_y0, 0.0)), math.pi / 2)
     place(dust_collector(), "ACword_FT100", col, 21.50, 16.45, 0.0, 0.84, 0.50, "+y")
-    place(control_box(), "ShopBot_Control", col, 24.62, 19.08, 0.0, 0.50, 0.30, "-y")
-    # dust extraction: brush skirt on the spindle, ribbed hose up to a ceiling-hung swing boom (40x40 profile on
-    # a drop rod by the collector), along the boom in rings, spring balancer at the boom end, down to the inlet
-    gy = sb_loc.y + Lg * 0.42
-    hx = sb_loc.x + W * 0.45
-    sx, sy = hx, gy - 0.21                                              # spindle axis
-    dx = Part()
-    dx.cyl(mat("Brush_Black", "#141414", 0.95), (sx, sy, 0.845), (sx, sy, 0.905), 0.108, seg=32)   # brush skirt
-    dx.cyl(M["hose"], (sx + 0.07, sy, 0.95), (sx + 0.11, sy, 1.10), 0.045, seg=20)                 # shoe port
-    pv, end = Vector((21.65, 17.55, 2.90)), Vector((sx, sy - 0.10, 2.90))
-    axis = end - pv
-    dx.cyl(M["galv"], (pv.x, pv.y, 3.93), (pv.x, pv.y, pv.z + 0.06), 0.03, seg=16)                 # drop rod
-    dx.cyl(M["galv"], (pv.x, pv.y, pv.z + 0.02), (pv.x, pv.y, pv.z + 0.08), 0.07, seg=24)           # swivel bearing
-    q = axis.to_track_quat("Z", "Y").to_matrix().to_4x4()
-    bmesh.ops.create_cube(dx.bm(lib["MAT"]["profile"]), size=1.0,
-                          matrix=Matrix.Translation(pv + axis / 2) @ q @ Matrix.Diagonal((0.04, 0.04, axis.length, 1)))
-    dx.cyl(M["galv"], (pv.x, pv.y, 3.55), tuple(pv + axis * 0.6 + Vector((0, 0, 0.02))), 0.004, seg=8)  # tie rod
-    for t in (0.2, 0.42, 0.64, 0.86):                                                                 # hose rings
-        c = pv + axis * t - Vector((0, 0, 0.12))
-        dx.cyl(M["galv"], tuple(c + Vector((0, 0, 0.10))), tuple(c + Vector((0, 0, 0.065))), 0.004, seg=6)
-        bmesh.ops.create_cone(dx.bm(M["galv"]), cap_ends=False, segments=24, radius1=0.066, radius2=0.066, depth=0.012,
-                              matrix=Matrix.Translation(c) @ q)
-    dx.box(M["dark"], end.x - 0.04, end.x + 0.04, end.y - 0.03, end.y + 0.03, 2.72, 2.88, bevel=0.006)  # balancer
-    dx.cyl(M["galv"], (end.x, end.y, 2.72), (end.x, end.y, 2.30), 0.0015, seg=6)
-    dx.emit("ShopBot_DustBoom", col, Vector((0, 0, 0)), 0.0)
-    path = [Vector(v) for v in ((sx + 0.11, sy, 1.10), (sx + 0.14, sy - 0.02, 1.45), (end.x + 0.06, end.y + 0.02, 2.05),
-                                (end.x, end.y, 2.26))]
-    path += [pv + axis * t - Vector((0, 0, 0.12)) for t in (0.86, 0.64, 0.42, 0.2)]
-    path += [Vector(v) for v in ((21.60, 17.40, 2.55), (21.52, 17.15, 1.90), (21.50, 17.00, 1.35), (21.50, 16.86, 1.14),
-                                 (21.50, 16.72, 1.12))]
-    ribbed_hose(M["hose"], path, 0.055).emit("ShopBot_DustHose", col, Vector((0, 0, 0)), 0.0)
+    print("ShopBot from the wiki:", nparts, "parts")
     return k, hidden
 
 
