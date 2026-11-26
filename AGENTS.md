@@ -368,6 +368,8 @@ A later project: a Blender add-on that generates the user's black-profile shelvi
   switch Ground_Paving/Ground_Grass ON (hidden in the file; otherwise the HDRI ground shows as a static zoomed picture).
 - Cameras reframed 2026-11-25 (`scripts/reframe_cameras.py`): Entrance, Lounge, SecretDoor; new Cam_EntranceHero
   (TV + on-call desk) and Cam_ToolLibrary (no shot_order yet: not in the finals set until Magnús picks).
+  Branch 2026-11-26: FeltDetail, Craft, SewingDetail, Micro, Workshop, ShopBot reframed too (old framings in the script
+  for undo; my framings). Cam_Cutaway still shows the slab top (upper floors not modelled): unused.
 - Confirmed by the lab: Epilog is 80 W; scanner is a handheld one; presses = a LOKLiK + a classic red industrial
   clam press (+ the Cricut ones); the Flashforge model doesn't matter. Still unknown (stand-ins in the model): clay
   printer (Eazao Zero; lab unsure), handheld scanner model, red press model, LOKLiK model, Brother sewing/embroidery,
